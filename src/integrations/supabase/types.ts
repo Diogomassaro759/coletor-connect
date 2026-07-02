@@ -782,33 +782,33 @@ export type Database = {
         Row: {
           area_atuacao: string | null
           association_id: string | null
-          autodeclaracao_racial: string
-          cadastro_gov_br: boolean
+          autodeclaracao_racial: string | null
+          cadastro_gov_br: boolean | null
           comprovante_residencia_url: string | null
           conta_bancaria_digital: string | null
-          contribui_inss: boolean
-          cpf: string
+          contribui_inss: boolean | null
+          cpf: string | null
           cpf_foto_url: string | null
           created_by: string | null
           ctps: string | null
           ctps_foto_url: string | null
           data_cadastro: string
           email: string | null
-          endereco_completo: string
-          escolaridade: string
-          genero: Database["public"]["Enums"]["catador_genero"]
+          endereco_completo: string | null
+          escolaridade: string | null
+          genero: Database["public"]["Enums"]["catador_genero"] | null
           id: string
-          inscrito_cadunico: boolean
-          materiais_coletados: string[]
+          inscrito_cadunico: boolean | null
+          materiais_coletados: string[] | null
           nis: string | null
           nis_foto_url: string | null
           nivel_cadastro_gov_br: string | null
-          nome_completo: string
+          nome_completo: string | null
           nome_cooperativa: string | null
-          possui_bolsa_familia: boolean
-          possui_carroca: boolean
-          renda_media_mensal: number
-          rg_cin: string
+          possui_bolsa_familia: boolean | null
+          possui_carroca: boolean | null
+          renda_media_mensal: number | null
+          rg_cin: string | null
           rg_cin_foto_url: string | null
           status: Database["public"]["Enums"]["catador_status"]
           telefone: string | null
@@ -821,33 +821,33 @@ export type Database = {
         Insert: {
           area_atuacao?: string | null
           association_id?: string | null
-          autodeclaracao_racial: string
-          cadastro_gov_br?: boolean
+          autodeclaracao_racial?: string | null
+          cadastro_gov_br?: boolean | null
           comprovante_residencia_url?: string | null
           conta_bancaria_digital?: string | null
-          contribui_inss?: boolean
-          cpf: string
+          contribui_inss?: boolean | null
+          cpf?: string | null
           cpf_foto_url?: string | null
           created_by?: string | null
           ctps?: string | null
           ctps_foto_url?: string | null
           data_cadastro?: string
           email?: string | null
-          endereco_completo: string
-          escolaridade: string
-          genero: Database["public"]["Enums"]["catador_genero"]
+          endereco_completo?: string | null
+          escolaridade?: string | null
+          genero?: Database["public"]["Enums"]["catador_genero"] | null
           id?: string
-          inscrito_cadunico?: boolean
-          materiais_coletados?: string[]
+          inscrito_cadunico?: boolean | null
+          materiais_coletados?: string[] | null
           nis?: string | null
           nis_foto_url?: string | null
           nivel_cadastro_gov_br?: string | null
-          nome_completo: string
+          nome_completo?: string | null
           nome_cooperativa?: string | null
-          possui_bolsa_familia?: boolean
-          possui_carroca?: boolean
-          renda_media_mensal?: number
-          rg_cin: string
+          possui_bolsa_familia?: boolean | null
+          possui_carroca?: boolean | null
+          renda_media_mensal?: number | null
+          rg_cin?: string | null
           rg_cin_foto_url?: string | null
           status?: Database["public"]["Enums"]["catador_status"]
           telefone?: string | null
@@ -860,33 +860,33 @@ export type Database = {
         Update: {
           area_atuacao?: string | null
           association_id?: string | null
-          autodeclaracao_racial?: string
-          cadastro_gov_br?: boolean
+          autodeclaracao_racial?: string | null
+          cadastro_gov_br?: boolean | null
           comprovante_residencia_url?: string | null
           conta_bancaria_digital?: string | null
-          contribui_inss?: boolean
-          cpf?: string
+          contribui_inss?: boolean | null
+          cpf?: string | null
           cpf_foto_url?: string | null
           created_by?: string | null
           ctps?: string | null
           ctps_foto_url?: string | null
           data_cadastro?: string
           email?: string | null
-          endereco_completo?: string
-          escolaridade?: string
-          genero?: Database["public"]["Enums"]["catador_genero"]
+          endereco_completo?: string | null
+          escolaridade?: string | null
+          genero?: Database["public"]["Enums"]["catador_genero"] | null
           id?: string
-          inscrito_cadunico?: boolean
-          materiais_coletados?: string[]
+          inscrito_cadunico?: boolean | null
+          materiais_coletados?: string[] | null
           nis?: string | null
           nis_foto_url?: string | null
           nivel_cadastro_gov_br?: string | null
-          nome_completo?: string
+          nome_completo?: string | null
           nome_cooperativa?: string | null
-          possui_bolsa_familia?: boolean
-          possui_carroca?: boolean
-          renda_media_mensal?: number
-          rg_cin?: string
+          possui_bolsa_familia?: boolean | null
+          possui_carroca?: boolean | null
+          renda_media_mensal?: number | null
+          rg_cin?: string | null
           rg_cin_foto_url?: string | null
           status?: Database["public"]["Enums"]["catador_status"]
           telefone?: string | null
