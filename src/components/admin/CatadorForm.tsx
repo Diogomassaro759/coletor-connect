@@ -59,7 +59,7 @@ const schema = z.object({
   escolaridade: z.string().min(1, "Obrigatório"),
   email: z.string().trim().email("E-mail inválido").max(150).optional().or(z.literal("")),
   telefone: z.string().trim().max(20).optional().or(z.literal("")),
-  endereco_completo: z.string().trim().min(5, "Endereço obrigatório").max(500),
+  endereco_completo: z.string().trim().max(500).optional().or(z.literal("")),
   cpf: z.string().refine(isValidCPF, "CPF inválido"),
   rg_cin: z.string().trim().min(3, "Obrigatório").max(30),
   titulo_eleitor: z.string().trim().max(30).optional().or(z.literal("")),
@@ -77,6 +77,8 @@ const schema = z.object({
   tipo_carroca: z.string().optional().or(z.literal("")),
   area_atuacao: z.string().trim().max(500).optional().or(z.literal("")),
 });
+
+
 
 export type CatadorFormData = z.infer<typeof schema>;
 
@@ -106,6 +108,7 @@ export function CatadorForm({
   const [naoTem, setNaoTem] = useState({
     email: false,
     telefone: false,
+    endereco: false,
     comprovante_residencia: false,
     cpf_foto: false,
     rg_foto: false,
@@ -113,6 +116,22 @@ export function CatadorForm({
     ctps_foto: false,
     nis_foto: false,
   });
+  type SimNaoKey =
+    | "contribui_inss"
+    | "inscrito_cadunico"
+    | "possui_bolsa_familia"
+    | "cadastro_gov_br"
+    | "possui_carroca";
+  const [simNaoTouched, setSimNaoTouched] = useState<Record<SimNaoKey, boolean>>({
+    contribui_inss: mode === "edit",
+    inscrito_cadunico: mode === "edit",
+    possui_bolsa_familia: mode === "edit",
+    cadastro_gov_br: mode === "edit",
+    possui_carroca: mode === "edit",
+  });
+  function markSimNaoTouched(key: SimNaoKey) {
+    setSimNaoTouched((s) => ({ ...s, [key]: true }));
+  }
   const { data: associations = [] } = useQuery({
     queryKey: ["associations-active"],
     queryFn: async () => {
@@ -185,6 +204,18 @@ export function CatadorForm({
   }, [associationId, form, mode]);
 
   async function onSubmit(values: CatadorFormData) {
+    // Require explicit selection on all sim/não questions
+    const missing = (Object.keys(simNaoTouched) as SimNaoKey[]).filter(
+      (k) => !simNaoTouched[k],
+    );
+    if (missing.length > 0) {
+      toast.error("Responda todas as perguntas de Sim/Não antes de salvar.");
+      return;
+    }
+    if (!naoTem.endereco && (!values.endereco_completo || values.endereco_completo.trim().length < 5)) {
+      toast.error("Preencha o endereço ou marque \"não tem\".");
+      return;
+    }
     setSubmitting(true);
     const association = associations.find((item) => item.id === values.association_id);
     const payload = {
@@ -192,6 +223,7 @@ export function CatadorForm({
       association_id: values.association_id,
       email: naoTem.email ? null : values.email || null,
       telefone: naoTem.telefone ? null : values.telefone || null,
+      endereco_completo: naoTem.endereco ? "Não informado" : values.endereco_completo || "",
       nome_cooperativa: associationName ?? association?.nome ?? (values.nome_cooperativa || null),
       titulo_eleitor: values.titulo_eleitor || null,
       ctps: values.ctps || null,
@@ -240,7 +272,10 @@ export function CatadorForm({
 
   return (
     <form
-      onSubmit={form.handleSubmit(onSubmit)}
+      onSubmit={form.handleSubmit(onSubmit, (errors) => {
+        const first = Object.values(errors)[0] as { message?: string } | undefined;
+        toast.error(first?.message ? `Verifique: ${first.message}` : "Preencha os campos obrigatórios destacados.");
+      })}
       className="mx-auto grid max-w-6xl items-start gap-6 lg:grid-cols-[280px_minmax(0,1fr)]"
     >
       <aside className="rounded-3xl border border-border bg-card p-5 shadow-card lg:sticky lg:top-24">
@@ -452,7 +487,21 @@ export function CatadorForm({
             label="Endereço residencial completo (logradouro, número, complemento, bairro, município):"
             error={e.endereco_completo?.message}
           >
-            <Textarea {...form.register("endereco_completo")} rows={3} />
+            <div className="space-y-2">
+              <Textarea
+                {...form.register("endereco_completo")}
+                rows={3}
+                disabled={naoTem.endereco}
+                placeholder={naoTem.endereco ? "Sem endereço informado" : ""}
+              />
+              <label className="flex items-center gap-2 text-xs text-muted-foreground cursor-pointer">
+                <Checkbox
+                  checked={naoTem.endereco}
+                  onCheckedChange={(c) => setNaoTem((s) => ({ ...s, endereco: !!c }))}
+                />
+                <span>Não tem endereço fixo / não informado</span>
+              </label>
+            </div>
             <Anexo
               label="Foto de comprovante de residência"
               fieldKey="comprovante_residencia_url"
@@ -565,19 +614,22 @@ export function CatadorForm({
             n={14}
             label="Contribui com o INSS?"
             value={v.contribui_inss}
-            onChange={(b) => form.setValue("contribui_inss", b)}
+            touched={simNaoTouched.contribui_inss}
+            onChange={(b) => { form.setValue("contribui_inss", b); markSimNaoTouched("contribui_inss"); }}
           />
           <SimNao
             n={15}
             label="Inscrito(a) no CadÚnico?"
             value={v.inscrito_cadunico}
-            onChange={(b) => form.setValue("inscrito_cadunico", b)}
+            touched={simNaoTouched.inscrito_cadunico}
+            onChange={(b) => { form.setValue("inscrito_cadunico", b); markSimNaoTouched("inscrito_cadunico"); }}
           />
           <SimNao
             n={16}
             label="Possui Bolsa Família?"
             value={v.possui_bolsa_familia}
-            onChange={(b) => form.setValue("possui_bolsa_familia", b)}
+            touched={simNaoTouched.possui_bolsa_familia}
+            onChange={(b) => { form.setValue("possui_bolsa_familia", b); markSimNaoTouched("possui_bolsa_familia"); }}
           />
 
           <Item n={17} label="Conta bancária digital (App Caixa Tem):">
@@ -588,7 +640,8 @@ export function CatadorForm({
             n={18}
             label="Cadastro no gov.br?"
             value={v.cadastro_gov_br}
-            onChange={(b) => form.setValue("cadastro_gov_br", b)}
+            touched={simNaoTouched.cadastro_gov_br}
+            onChange={(b) => { form.setValue("cadastro_gov_br", b); markSimNaoTouched("cadastro_gov_br"); }}
           />
 
           {v.cadastro_gov_br && (
@@ -650,7 +703,8 @@ export function CatadorForm({
             n={21}
             label="Possui carroça?"
             value={v.possui_carroca}
-            onChange={(b) => form.setValue("possui_carroca", b)}
+            touched={simNaoTouched.possui_carroca}
+            onChange={(b) => { form.setValue("possui_carroca", b); markSimNaoTouched("possui_carroca"); }}
           />
 
           {v.possui_carroca && (
@@ -791,11 +845,13 @@ function SimNao({
   label,
   value,
   onChange,
+  touched = true,
 }: {
   n: number;
   label: string;
   value: boolean;
   onChange: (v: boolean) => void;
+  touched?: boolean;
 }) {
   return (
     <div className="space-y-2">
@@ -803,12 +859,13 @@ function SimNao({
         <span className="flex gap-2">
           <span className="text-primary font-bold">{n}.</span>
           <span>{label}</span>
+          {!touched && <span className="text-xs text-destructive font-normal">(selecione)</span>}
         </span>
         <div className="flex gap-4 pl-6 sm:pl-0">
           <label className="flex items-center gap-2 cursor-pointer font-normal">
             <input
               type="radio"
-              checked={value === true}
+              checked={touched && value === true}
               onChange={() => onChange(true)}
               className="accent-primary"
             />
@@ -817,7 +874,7 @@ function SimNao({
           <label className="flex items-center gap-2 cursor-pointer font-normal">
             <input
               type="radio"
-              checked={value === false}
+              checked={touched && value === false}
               onChange={() => onChange(false)}
               className="accent-primary"
             />

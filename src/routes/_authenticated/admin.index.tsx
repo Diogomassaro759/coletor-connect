@@ -85,11 +85,12 @@ type Catador = {
   contribui_inss: boolean;
   inscrito_cadunico: boolean;
   possui_bolsa_familia: boolean;
+  created_by: string | null;
 };
 
 function AdminDashboard() {
   const qc = useQueryClient();
-  const { isAdmin, isRecenseador } = Route.useRouteContext();
+  const { isAdmin, isRecenseador, user } = Route.useRouteContext();
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState<string>("todos");
   const [materialFilter, setMaterialFilter] = useState<string>("todos");
@@ -101,7 +102,7 @@ function AdminDashboard() {
       const { data, error } = await supabase
         .from("catadores")
         .select(
-          "id,nome_completo,cpf,genero,escolaridade,renda_media_mensal,materiais_coletados,status,data_cadastro,nome_cooperativa,contribui_inss,inscrito_cadunico,possui_bolsa_familia",
+          "id,nome_completo,cpf,genero,escolaridade,renda_media_mensal,materiais_coletados,status,data_cadastro,nome_cooperativa,contribui_inss,inscrito_cadunico,possui_bolsa_familia,created_by",
         )
         .order("data_cadastro", { ascending: false });
       if (error) throw error;
@@ -314,22 +315,31 @@ function AdminDashboard() {
           <h1 className="text-3xl font-bold tracking-tight">Catadores</h1>
           <p className="text-muted-foreground">Gerencie cadastros, filtre e exporte dados.</p>
         </div>
-        <div className="flex gap-2">
+        <div className="flex flex-wrap gap-2">
           {isAdmin && (
             <Button variant="outline" onClick={exportXLSX}>
               <Download className="size-4" /> Exportar Excel
             </Button>
           )}
           {isRecenseador && (
-            <Link to="/admin/importar">
-              <Button variant="outline">
-                <Download className="size-4 rotate-180" /> Importar planilha
+            <Link to="/admin/novo">
+              <Button>
+                <Plus className="size-4" /> Cadastrar catador
               </Button>
             </Link>
           )}
-          <Link to="/admin/associacoes">
-            <Button variant={isRecenseador ? "outline" : "default"}>Escolher entidade</Button>
-          </Link>
+          {isAdmin && (
+            <>
+              <Link to="/admin/importar">
+                <Button variant="outline">
+                  <Download className="size-4 rotate-180" /> Importar planilha
+                </Button>
+              </Link>
+              <Link to="/admin/associacoes">
+                <Button>Escolher entidade</Button>
+              </Link>
+            </>
+          )}
         </div>
       </div>
 
@@ -470,7 +480,7 @@ function AdminDashboard() {
                           <Eye className="size-4" /> Ver detalhes
                         </DropdownMenuItem>
                       </Link>
-                      {isRecenseador && (
+                      {isRecenseador && c.created_by === user.id && (
                         <Link to="/admin/$id/editar" params={{ id: c.id }}>
                           <DropdownMenuItem>
                             <Pencil className="size-4" /> Editar
