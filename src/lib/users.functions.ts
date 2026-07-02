@@ -22,7 +22,12 @@ export const createOperationalUser = createServerFn({ method: "POST" })
   .inputValidator(
     z.object({
       full_name: z.string().min(3),
-      cpf: z.string().regex(cpfRegex, "CPF deve ter 11 dígitos numéricos"),
+      cpf: z
+        .string()
+        .optional()
+        .nullable()
+        .transform((v) => (v ? v.replace(/\D/g, "") : ""))
+        .refine((v) => v === "" || cpfRegex.test(v), "CPF deve ter 11 dígitos numéricos"),
       birth_date: z.string().optional().nullable(),
       email: z.string().email(),
       password: z.string().min(8),
