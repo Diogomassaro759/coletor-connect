@@ -494,10 +494,13 @@ export function CatadorForm({
                 disabled={naoTem.endereco}
                 placeholder={naoTem.endereco ? "Sem endereço informado" : ""}
               />
-              <NaoTem
-                checked={naoTem.endereco}
-                onChange={(c) => setNaoTem((s) => ({ ...s, endereco: c }))}
-              />
+              <label className="flex items-center gap-2 text-xs text-muted-foreground cursor-pointer">
+                <Checkbox
+                  checked={naoTem.endereco}
+                  onCheckedChange={(c) => setNaoTem((s) => ({ ...s, endereco: !!c }))}
+                />
+                <span>Não tem endereço fixo / não informado</span>
+              </label>
             </div>
             <Anexo
               label="Foto de comprovante de residência"
