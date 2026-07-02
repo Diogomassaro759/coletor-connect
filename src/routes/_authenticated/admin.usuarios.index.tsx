@@ -17,7 +17,7 @@ import {
 import { toast } from "sonner";
 import { listOperationalUsers, deleteOperationalUser } from "@/lib/users.functions";
 
-export const Route = createFileRoute("/_authenticated/admin/usuarios")({
+export const Route = createFileRoute("/_authenticated/admin/usuarios/")({
   beforeLoad: ({ context }) => {
     if (!context.isAdmin) throw redirect({ to: "/admin" });
   },
