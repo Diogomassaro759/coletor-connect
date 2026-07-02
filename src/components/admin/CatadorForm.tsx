@@ -577,6 +577,11 @@ export function CatadorForm({
                 form.setValue("cpf", maskCPF(ev.target.value), { shouldValidate: true })
               }
               placeholder="000.000.000-00"
+              disabled={naoTem.cpf}
+            />
+            <NaoInformar
+              checked={naoTem.cpf}
+              onChange={(c) => setNaoTem((s) => ({ ...s, cpf: c }))}
             />
             <Anexo
               label="Foto do CPF (frente e verso)"
@@ -589,7 +594,11 @@ export function CatadorForm({
           </Item>
 
           <Item n={9} label="RG / CIN:" error={e.rg_cin?.message}>
-            <Input {...form.register("rg_cin")} />
+            <Input {...form.register("rg_cin")} disabled={naoTem.rg} />
+            <NaoInformar
+              checked={naoTem.rg}
+              onChange={(c) => setNaoTem((s) => ({ ...s, rg: c }))}
+            />
             <Anexo
               label="Foto do RG / CIN (frente e verso)"
               fieldKey="rg_cin_foto_url"
