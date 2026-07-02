@@ -204,6 +204,18 @@ export function CatadorForm({
   }, [associationId, form, mode]);
 
   async function onSubmit(values: CatadorFormData) {
+    // Require explicit selection on all sim/não questions
+    const missing = (Object.keys(simNaoTouched) as SimNaoKey[]).filter(
+      (k) => !simNaoTouched[k],
+    );
+    if (missing.length > 0) {
+      toast.error("Responda todas as perguntas de Sim/Não antes de salvar.");
+      return;
+    }
+    if (!naoTem.endereco && (!values.endereco_completo || values.endereco_completo.trim().length < 5)) {
+      toast.error("Preencha o endereço ou marque \"não tem\".");
+      return;
+    }
     setSubmitting(true);
     const association = associations.find((item) => item.id === values.association_id);
     const payload = {
