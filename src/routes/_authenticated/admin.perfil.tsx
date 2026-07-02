@@ -191,8 +191,7 @@ function PerfilPage() {
       )}
 
       <Tabs
-        key={mustChange ? "senha-first" : "dados-first"}
-        defaultValue={mustChange ? "senha" : "dados"}
+        defaultValue="dados"
         className="max-w-3xl"
       >
         <TabsList>
