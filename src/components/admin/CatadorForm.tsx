@@ -611,19 +611,22 @@ export function CatadorForm({
             n={14}
             label="Contribui com o INSS?"
             value={v.contribui_inss}
-            onChange={(b) => form.setValue("contribui_inss", b)}
+            touched={simNaoTouched.contribui_inss}
+            onChange={(b) => { form.setValue("contribui_inss", b); markSimNaoTouched("contribui_inss"); }}
           />
           <SimNao
             n={15}
             label="Inscrito(a) no CadÚnico?"
             value={v.inscrito_cadunico}
-            onChange={(b) => form.setValue("inscrito_cadunico", b)}
+            touched={simNaoTouched.inscrito_cadunico}
+            onChange={(b) => { form.setValue("inscrito_cadunico", b); markSimNaoTouched("inscrito_cadunico"); }}
           />
           <SimNao
             n={16}
             label="Possui Bolsa Família?"
             value={v.possui_bolsa_familia}
-            onChange={(b) => form.setValue("possui_bolsa_familia", b)}
+            touched={simNaoTouched.possui_bolsa_familia}
+            onChange={(b) => { form.setValue("possui_bolsa_familia", b); markSimNaoTouched("possui_bolsa_familia"); }}
           />
 
           <Item n={17} label="Conta bancária digital (App Caixa Tem):">
