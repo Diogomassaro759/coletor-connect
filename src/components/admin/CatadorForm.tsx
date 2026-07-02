@@ -120,6 +120,14 @@ export function CatadorForm({
     nis_foto_url: defaultValues?.nis_foto_url ?? null,
   });
   const [naoTem, setNaoTem] = useState({
+    nome: false,
+    genero: false,
+    raca: false,
+    escolaridade: false,
+    cpf: false,
+    rg: false,
+    renda: false,
+    materiais: false,
     email: false,
     telefone: false,
     endereco: false,
