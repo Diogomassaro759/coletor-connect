@@ -116,6 +116,22 @@ export function CatadorForm({
     ctps_foto: false,
     nis_foto: false,
   });
+  type SimNaoKey =
+    | "contribui_inss"
+    | "inscrito_cadunico"
+    | "possui_bolsa_familia"
+    | "cadastro_gov_br"
+    | "possui_carroca";
+  const [simNaoTouched, setSimNaoTouched] = useState<Record<SimNaoKey, boolean>>({
+    contribui_inss: mode === "edit",
+    inscrito_cadunico: mode === "edit",
+    possui_bolsa_familia: mode === "edit",
+    cadastro_gov_br: mode === "edit",
+    possui_carroca: mode === "edit",
+  });
+  function markSimNaoTouched(key: SimNaoKey) {
+    setSimNaoTouched((s) => ({ ...s, [key]: true }));
+  }
   const { data: associations = [] } = useQuery({
     queryKey: ["associations-active"],
     queryFn: async () => {
