@@ -22,7 +22,12 @@ export const createOperationalUser = createServerFn({ method: "POST" })
   .inputValidator(
     z.object({
       full_name: z.string().min(3),
-      cpf: z.string().regex(cpfRegex, "CPF deve ter 11 dígitos numéricos"),
+      cpf: z
+        .string()
+        .optional()
+        .nullable()
+        .transform((v) => (v ? v.replace(/\D/g, "") : ""))
+        .refine((v) => v === "" || cpfRegex.test(v), "CPF deve ter 11 dígitos numéricos"),
       birth_date: z.string().optional().nullable(),
       email: z.string().email(),
       password: z.string().min(8),
@@ -51,7 +56,7 @@ export const createOperationalUser = createServerFn({ method: "POST" })
     const { error: profileErr } = await supabaseAdmin.from("profiles").insert({
       user_id: newUserId,
       full_name: data.full_name,
-      cpf: data.cpf,
+      cpf: data.cpf || null,
       birth_date: data.birth_date || null,
       email: data.email,
       municipio_referencia: data.municipio_referencia || null,
