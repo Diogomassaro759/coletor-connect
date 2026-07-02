@@ -221,7 +221,7 @@ function CatadorDetails() {
         <Section title="Contato">
           <Field k="E-mail" v={showFull ? (c.email ?? "—") : maskEmail(c.email)} sensitive={!showFull} />
           <Field k="Telefone" v={showFull ? (c.telefone ?? "—") : maskPhone(c.telefone)} sensitive={!showFull} />
-          <Field k="Endereço" v={showFull ? c.endereco_completo : maskAddress(c.endereco_completo)} sensitive={!showFull} />
+          <Field k="Endereço" v={showFull ? (c.endereco_completo ?? "—") : maskAddress(c.endereco_completo)} sensitive={!showFull} />
         </Section>
 
         <Section title="Documentação">
