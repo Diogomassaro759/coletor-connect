@@ -887,6 +887,23 @@ function Linha({ label, children }: { label: string; children: React.ReactNode }
   );
 }
 
+function NaoInformar({
+  checked,
+  onChange,
+  label = "Não informar / não tem",
+}: {
+  checked: boolean;
+  onChange: (v: boolean) => void;
+  label?: string;
+}) {
+  return (
+    <label className="mt-2 flex items-center gap-2 text-xs text-muted-foreground cursor-pointer">
+      <Checkbox checked={checked} onCheckedChange={(c) => onChange(!!c)} />
+      <span>{label}</span>
+    </label>
+  );
+}
+
 function SimNao({
   n,
   label,
