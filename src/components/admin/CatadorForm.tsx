@@ -160,7 +160,7 @@ export function CatadorForm({
   });
 
   const form = useForm<CatadorFormData>({
-    resolver: zodResolver(schema),
+    resolver: zodResolver(schema) as any,
     defaultValues: {
       association_id: associationId ?? "",
       nome_cooperativa: "",
