@@ -173,7 +173,7 @@ export function CatadorForm({
       association_id: associationId ?? "",
       nome_cooperativa: "",
       nome_completo: "",
-      genero: "nao_responder",
+      genero: undefined,
       autodeclaracao_racial: "",
       escolaridade: "",
       email: "",
