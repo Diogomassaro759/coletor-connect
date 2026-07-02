@@ -76,17 +76,18 @@ const schema = z.object({
   titulo_eleitor: z.string().trim().max(30).optional().or(z.literal("")),
   ctps: z.string().trim().max(30).optional().or(z.literal("")),
   nis: z.string().trim().max(30).optional().or(z.literal("")),
-  renda_media_mensal: z
-    .union([z.coerce.number().min(0, "Valor inválido"), z.literal("").transform(() => undefined)])
-    .optional(),
-  contribui_inss: z.boolean().optional(),
-  inscrito_cadunico: z.boolean().optional(),
-  possui_bolsa_familia: z.boolean().optional(),
+  renda_media_mensal: z.preprocess(
+    (v) => (v === "" || v === null || v === undefined ? undefined : v),
+    z.coerce.number().min(0, "Valor inválido").optional(),
+  ),
+  contribui_inss: z.boolean().default(false),
+  inscrito_cadunico: z.boolean().default(false),
+  possui_bolsa_familia: z.boolean().default(false),
   conta_bancaria_digital: z.string().trim().max(100).optional().or(z.literal("")),
-  cadastro_gov_br: z.boolean().optional(),
+  cadastro_gov_br: z.boolean().default(false),
   nivel_cadastro_gov_br: z.string().optional().or(z.literal("")),
-  materiais_coletados: z.array(z.string()).optional().default([]),
-  possui_carroca: z.boolean().optional(),
+  materiais_coletados: z.array(z.string()).default([]),
+  possui_carroca: z.boolean().default(false),
   tipo_carroca: z.string().optional().or(z.literal("")),
   area_atuacao: z.string().trim().max(500).optional().or(z.literal("")),
 });
