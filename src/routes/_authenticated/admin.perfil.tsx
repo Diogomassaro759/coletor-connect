@@ -176,17 +176,25 @@ function PerfilPage() {
       </p>
 
       {mustChange && (
-        <Alert variant="destructive" className="mb-6 max-w-3xl">
-          <AlertCircle className="size-4" />
-          <AlertTitle>Troque sua senha</AlertTitle>
-          <AlertDescription>
-            Esta é uma senha temporária definida por um administrador. Defina uma nova senha para
-            continuar usando o sistema.
-          </AlertDescription>
-        </Alert>
+        <div className="mb-6 max-w-3xl rounded-lg border border-destructive/50 bg-destructive/5 p-4 text-destructive">
+          <div className="flex items-start gap-2">
+            <AlertCircle className="size-4 mt-0.5" />
+            <div>
+              <p className="font-medium">Troque sua senha</p>
+              <p className="text-sm">
+                Esta é uma senha temporária definida por um administrador. Defina uma nova senha
+                para continuar usando o sistema.
+              </p>
+            </div>
+          </div>
+        </div>
       )}
 
-      <Tabs defaultValue={mustChange ? "senha" : "dados"} className="max-w-3xl">
+      <Tabs
+        key={mustChange ? "senha-first" : "dados-first"}
+        defaultValue={mustChange ? "senha" : "dados"}
+        className="max-w-3xl"
+      >
         <TabsList>
           <TabsTrigger value="dados">Dados</TabsTrigger>
           <TabsTrigger value="foto">Foto</TabsTrigger>
