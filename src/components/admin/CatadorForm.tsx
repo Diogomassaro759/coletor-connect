@@ -663,6 +663,11 @@ export function CatadorForm({
               min="0"
               {...form.register("renda_media_mensal")}
               placeholder="R$"
+              disabled={naoTem.renda}
+            />
+            <NaoInformar
+              checked={naoTem.renda}
+              onChange={(c) => setNaoTem((s) => ({ ...s, renda: c }))}
             />
           </Item>
 
