@@ -23,13 +23,18 @@ function AuthPage() {
   const [password, setPassword] = useState("");
 
   async function goPostLogin(userId: string) {
-    const { data: profile } = await supabase
-      .from("profiles")
-      .select("must_change_password")
-      .eq("user_id", userId)
-      .maybeSingle();
+    const [{ data: profile }, { data: roles }] = await Promise.all([
+      supabase.from("profiles").select("must_change_password").eq("user_id", userId).maybeSingle(),
+      supabase.from("user_roles").select("role").eq("user_id", userId),
+    ]);
     if (profile?.must_change_password) {
       navigate({ to: "/admin/perfil" });
+      return;
+    }
+    const isAdmin = !!roles?.some((r) => r.role === "admin");
+    const isRecenseador = !!roles?.some((r) => r.role === "recenseador");
+    if (isAdmin || isRecenseador) {
+      navigate({ to: "/admin" });
     } else {
       navigate({ to: "/admin/associacoes" });
     }
