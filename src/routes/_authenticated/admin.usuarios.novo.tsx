@@ -45,7 +45,7 @@ function NovoUsuarioPage() {
     birth_date: "",
     email: "",
     password: genPassword(),
-    role: "recenseador" as "recenseador" | "consultor",
+    role: "recenseador" as "recenseador" | "consultor" | "admin",
     municipio_referencia: "",
     identificacao_profissional: "",
   });
@@ -132,7 +132,7 @@ function NovoUsuarioPage() {
               <Label>Tipo de perfil *</Label>
               <Select
                 value={form.role}
-                onValueChange={(v) => set("role", v as "recenseador" | "consultor")}
+                onValueChange={(v) => set("role", v as "recenseador" | "consultor" | "admin")}
               >
                 <SelectTrigger>
                   <SelectValue />
@@ -140,6 +140,7 @@ function NovoUsuarioPage() {
                 <SelectContent>
                   <SelectItem value="recenseador">Recenseador (cadastra catadores)</SelectItem>
                   <SelectItem value="consultor">Consultor de Campo (diagnósticos)</SelectItem>
+                  <SelectItem value="admin">Administrador UCIP (acesso total)</SelectItem>
                 </SelectContent>
               </Select>
             </div>
