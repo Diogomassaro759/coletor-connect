@@ -53,27 +53,41 @@ type DocKey =
 const schema = z.object({
   association_id: z.string().uuid("Selecione uma entidade"),
   nome_cooperativa: z.string().trim().max(150).optional().or(z.literal("")),
-  nome_completo: z.string().trim().min(2, "Nome obrigatório").max(150),
-  genero: z.enum(["feminino", "masculino", "lgbtqia", "nao_responder"]),
-  autodeclaracao_racial: z.string().min(1, "Obrigatório"),
-  escolaridade: z.string().min(1, "Obrigatório"),
-  email: z.string().trim().email("E-mail inválido").max(150).optional().or(z.literal("")),
+  nome_completo: z.string().trim().max(150).optional().or(z.literal("")),
+  genero: z.enum(["feminino", "masculino", "lgbtqia", "nao_responder"]).optional(),
+  autodeclaracao_racial: z.string().optional().or(z.literal("")),
+  escolaridade: z.string().optional().or(z.literal("")),
+  email: z
+    .string()
+    .trim()
+    .max(150)
+    .optional()
+    .or(z.literal(""))
+    .refine((v) => !v || /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v), "E-mail inválido"),
   telefone: z.string().trim().max(20).optional().or(z.literal("")),
   endereco_completo: z.string().trim().max(500).optional().or(z.literal("")),
-  cpf: z.string().refine(isValidCPF, "CPF inválido"),
-  rg_cin: z.string().trim().min(3, "Obrigatório").max(30),
+  cpf: z
+    .string()
+    .trim()
+    .optional()
+    .or(z.literal(""))
+    .refine((v) => !v || isValidCPF(v), "CPF inválido"),
+  rg_cin: z.string().trim().max(30).optional().or(z.literal("")),
   titulo_eleitor: z.string().trim().max(30).optional().or(z.literal("")),
   ctps: z.string().trim().max(30).optional().or(z.literal("")),
   nis: z.string().trim().max(30).optional().or(z.literal("")),
-  renda_media_mensal: z.coerce.number().min(0, "Valor inválido"),
-  contribui_inss: z.boolean(),
-  inscrito_cadunico: z.boolean(),
-  possui_bolsa_familia: z.boolean(),
+  renda_media_mensal: z.preprocess(
+    (v) => (v === "" || v === null || v === undefined ? undefined : v),
+    z.coerce.number().min(0, "Valor inválido").optional(),
+  ),
+  contribui_inss: z.boolean().default(false),
+  inscrito_cadunico: z.boolean().default(false),
+  possui_bolsa_familia: z.boolean().default(false),
   conta_bancaria_digital: z.string().trim().max(100).optional().or(z.literal("")),
-  cadastro_gov_br: z.boolean(),
+  cadastro_gov_br: z.boolean().default(false),
   nivel_cadastro_gov_br: z.string().optional().or(z.literal("")),
-  materiais_coletados: z.array(z.string()).min(1, "Selecione pelo menos um material"),
-  possui_carroca: z.boolean(),
+  materiais_coletados: z.array(z.string()).default([]),
+  possui_carroca: z.boolean().default(false),
   tipo_carroca: z.string().optional().or(z.literal("")),
   area_atuacao: z.string().trim().max(500).optional().or(z.literal("")),
 });
@@ -106,6 +120,14 @@ export function CatadorForm({
     nis_foto_url: defaultValues?.nis_foto_url ?? null,
   });
   const [naoTem, setNaoTem] = useState({
+    nome: false,
+    genero: false,
+    raca: false,
+    escolaridade: false,
+    cpf: false,
+    rg: false,
+    renda: false,
+    materiais: false,
     email: false,
     telefone: false,
     endereco: false,
@@ -146,7 +168,7 @@ export function CatadorForm({
   });
 
   const form = useForm<CatadorFormData>({
-    resolver: zodResolver(schema),
+    resolver: zodResolver(schema) as any,
     defaultValues: {
       association_id: associationId ?? "",
       nome_cooperativa: "",
@@ -204,26 +226,32 @@ export function CatadorForm({
   }, [associationId, form, mode]);
 
   async function onSubmit(values: CatadorFormData) {
-    // Require explicit selection on all sim/não questions
-    const missing = (Object.keys(simNaoTouched) as SimNaoKey[]).filter(
-      (k) => !simNaoTouched[k],
-    );
-    if (missing.length > 0) {
-      toast.error("Responda todas as perguntas de Sim/Não antes de salvar.");
-      return;
-    }
-    if (!naoTem.endereco && (!values.endereco_completo || values.endereco_completo.trim().length < 5)) {
-      toast.error("Preencha o endereço ou marque \"não tem\".");
-      return;
-    }
     setSubmitting(true);
     const association = associations.find((item) => item.id === values.association_id);
     const payload = {
       ...values,
       association_id: values.association_id,
+      nome_completo: naoTem.nome ? null : values.nome_completo?.trim() || null,
+      genero: naoTem.genero ? null : values.genero ?? null,
+      autodeclaracao_racial: naoTem.raca ? null : values.autodeclaracao_racial || null,
+      escolaridade: naoTem.escolaridade ? null : values.escolaridade || null,
+      cpf: naoTem.cpf ? null : values.cpf || null,
+      rg_cin: naoTem.rg ? null : values.rg_cin || null,
       email: naoTem.email ? null : values.email || null,
       telefone: naoTem.telefone ? null : values.telefone || null,
-      endereco_completo: naoTem.endereco ? "Não informado" : values.endereco_completo || "",
+      endereco_completo: naoTem.endereco ? null : values.endereco_completo || null,
+      renda_media_mensal:
+        naoTem.renda || values.renda_media_mensal === undefined
+          ? null
+          : values.renda_media_mensal,
+      materiais_coletados: naoTem.materiais ? [] : values.materiais_coletados ?? [],
+      contribui_inss: simNaoTouched.contribui_inss ? !!values.contribui_inss : null,
+      inscrito_cadunico: simNaoTouched.inscrito_cadunico ? !!values.inscrito_cadunico : null,
+      possui_bolsa_familia: simNaoTouched.possui_bolsa_familia
+        ? !!values.possui_bolsa_familia
+        : null,
+      cadastro_gov_br: simNaoTouched.cadastro_gov_br ? !!values.cadastro_gov_br : null,
+      possui_carroca: simNaoTouched.possui_carroca ? !!values.possui_carroca : null,
       nome_cooperativa: associationName ?? association?.nome ?? (values.nome_cooperativa || null),
       titulo_eleitor: values.titulo_eleitor || null,
       ctps: values.ctps || null,
@@ -272,9 +300,9 @@ export function CatadorForm({
 
   return (
     <form
-      onSubmit={form.handleSubmit(onSubmit, (errors) => {
+      onSubmit={form.handleSubmit(onSubmit as any, (errors) => {
         const first = Object.values(errors)[0] as { message?: string } | undefined;
-        toast.error(first?.message ? `Verifique: ${first.message}` : "Preencha os campos obrigatórios destacados.");
+        toast.error(first?.message ? `Verifique: ${first.message}` : "Verifique os campos destacados.");
       })}
       className="mx-auto grid max-w-6xl items-start gap-6 lg:grid-cols-[280px_minmax(0,1fr)]"
     >
@@ -397,7 +425,11 @@ export function CatadorForm({
             tone="blue"
           />
           <Item n={1} label="Nome completo do(a) Catador(a):" error={e.nome_completo?.message}>
-            <Input {...form.register("nome_completo")} />
+            <Input {...form.register("nome_completo")} disabled={naoTem.nome} />
+            <NaoInformar
+              checked={naoTem.nome}
+              onChange={(c) => setNaoTem((s) => ({ ...s, nome: c }))}
+            />
           </Item>
 
           <Item n={2} label="Gênero:" error={e.genero?.message}>
@@ -405,6 +437,7 @@ export function CatadorForm({
               value={v.genero}
               onValueChange={(val) => form.setValue("genero", val as CatadorFormData["genero"])}
               className="flex flex-wrap gap-x-6 gap-y-2"
+              disabled={naoTem.genero}
             >
               {GENERO_OPTIONS.map((o) => (
                 <label key={o.value} className="flex items-center gap-2 cursor-pointer text-sm">
@@ -413,12 +446,17 @@ export function CatadorForm({
                 </label>
               ))}
             </RadioGroup>
+            <NaoInformar
+              checked={naoTem.genero}
+              onChange={(c) => setNaoTem((s) => ({ ...s, genero: c }))}
+            />
           </Item>
 
           <Item n={3} label="Autodeclaração racial:" error={e.autodeclaracao_racial?.message}>
             <Select
               value={v.autodeclaracao_racial}
               onValueChange={(val) => form.setValue("autodeclaracao_racial", val)}
+              disabled={naoTem.raca}
             >
               <SelectTrigger>
                 <SelectValue placeholder="Selecione" />
@@ -431,12 +469,17 @@ export function CatadorForm({
                 ))}
               </SelectContent>
             </Select>
+            <NaoInformar
+              checked={naoTem.raca}
+              onChange={(c) => setNaoTem((s) => ({ ...s, raca: c }))}
+            />
           </Item>
 
           <Item n={4} label="Escolaridade:" error={e.escolaridade?.message}>
             <Select
               value={v.escolaridade}
               onValueChange={(val) => form.setValue("escolaridade", val)}
+              disabled={naoTem.escolaridade}
             >
               <SelectTrigger>
                 <SelectValue placeholder="Selecione" />
@@ -449,6 +492,10 @@ export function CatadorForm({
                 ))}
               </SelectContent>
             </Select>
+            <NaoInformar
+              checked={naoTem.escolaridade}
+              onChange={(c) => setNaoTem((s) => ({ ...s, escolaridade: c }))}
+            />
           </Item>
 
           <Item n={5} label="E-mail:" error={e.email?.message}>
@@ -530,6 +577,11 @@ export function CatadorForm({
                 form.setValue("cpf", maskCPF(ev.target.value), { shouldValidate: true })
               }
               placeholder="000.000.000-00"
+              disabled={naoTem.cpf}
+            />
+            <NaoInformar
+              checked={naoTem.cpf}
+              onChange={(c) => setNaoTem((s) => ({ ...s, cpf: c }))}
             />
             <Anexo
               label="Foto do CPF (frente e verso)"
@@ -542,7 +594,11 @@ export function CatadorForm({
           </Item>
 
           <Item n={9} label="RG / CIN:" error={e.rg_cin?.message}>
-            <Input {...form.register("rg_cin")} />
+            <Input {...form.register("rg_cin")} disabled={naoTem.rg} />
+            <NaoInformar
+              checked={naoTem.rg}
+              onChange={(c) => setNaoTem((s) => ({ ...s, rg: c }))}
+            />
             <Anexo
               label="Foto do RG / CIN (frente e verso)"
               fieldKey="rg_cin_foto_url"
@@ -607,6 +663,11 @@ export function CatadorForm({
               min="0"
               {...form.register("renda_media_mensal")}
               placeholder="R$"
+              disabled={naoTem.renda}
+            />
+            <NaoInformar
+              checked={naoTem.renda}
+              onChange={(c) => setNaoTem((s) => ({ ...s, renda: c }))}
             />
           </Item>
 
@@ -673,7 +734,7 @@ export function CatadorForm({
             tone="blue"
           />
           <Item n={20} label="Materiais coletados:" error={e.materiais_coletados?.message}>
-            <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
+            <div className={`grid grid-cols-2 sm:grid-cols-3 gap-2 ${naoTem.materiais ? "opacity-50 pointer-events-none" : ""}`}>
               {MATERIAIS_OPTIONS.map((m) => {
                 const checked = v.materiais_coletados.includes(m);
                 return (
@@ -697,6 +758,11 @@ export function CatadorForm({
                 );
               })}
             </div>
+            <NaoInformar
+              checked={naoTem.materiais}
+              onChange={(c) => setNaoTem((s) => ({ ...s, materiais: c }))}
+              label="Não informar materiais coletados"
+            />
           </Item>
 
           <SimNao
@@ -837,6 +903,23 @@ function Linha({ label, children }: { label: string; children: React.ReactNode }
       <label className="text-sm font-semibold text-foreground">{label}</label>
       {children}
     </div>
+  );
+}
+
+function NaoInformar({
+  checked,
+  onChange,
+  label = "Não informar / não tem",
+}: {
+  checked: boolean;
+  onChange: (v: boolean) => void;
+  label?: string;
+}) {
+  return (
+    <label className="mt-2 flex items-center gap-2 text-xs text-muted-foreground cursor-pointer">
+      <Checkbox checked={checked} onCheckedChange={(c) => onChange(!!c)} />
+      <span>{label}</span>
+    </label>
   );
 }
 
