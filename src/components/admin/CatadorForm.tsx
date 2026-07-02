@@ -51,9 +51,8 @@ type DocKey =
   | "nis_foto_url";
 
 const simNao = z
-  .boolean({ invalid_type_error: "Responda sim ou não" })
-  .nullable()
-  .refine((v) => v !== null, "Responda sim ou não");
+  .union([z.boolean(), z.null(), z.undefined()])
+  .refine((v): v is boolean => v === true || v === false, "Responda sim ou não");
 
 const schema = z.object({
   association_id: z.string().uuid("Selecione uma entidade"),
@@ -82,6 +81,7 @@ const schema = z.object({
   tipo_carroca: z.string().optional().or(z.literal("")),
   area_atuacao: z.string().trim().max(500).optional().or(z.literal("")),
 });
+
 
 export type CatadorFormData = z.infer<typeof schema>;
 
