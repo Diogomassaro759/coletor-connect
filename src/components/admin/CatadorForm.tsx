@@ -734,7 +734,7 @@ export function CatadorForm({
             tone="blue"
           />
           <Item n={20} label="Materiais coletados:" error={e.materiais_coletados?.message}>
-            <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
+            <div className={`grid grid-cols-2 sm:grid-cols-3 gap-2 ${naoTem.materiais ? "opacity-50 pointer-events-none" : ""}`}>
               {MATERIAIS_OPTIONS.map((m) => {
                 const checked = v.materiais_coletados.includes(m);
                 return (
@@ -758,6 +758,11 @@ export function CatadorForm({
                 );
               })}
             </div>
+            <NaoInformar
+              checked={naoTem.materiais}
+              onChange={(c) => setNaoTem((s) => ({ ...s, materiais: c }))}
+              label="Não informar materiais coletados"
+            />
           </Item>
 
           <SimNao
