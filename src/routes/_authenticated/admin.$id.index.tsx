@@ -210,11 +210,11 @@ function CatadorDetails() {
           </div>
         )}
         <Section title="Identificação">
-          <Field k="CPF" v={showFull ? c.cpf : maskCPF(c.cpf)} sensitive={!showFull} />
-          <Field k="RG / CIN" v={showFull ? c.rg_cin : maskRG(c.rg_cin)} sensitive={!showFull} />
-          <Field k="Gênero" v={GENERO_LABEL[c.genero] ?? c.genero} />
-          <Field k="Autodeclaração racial" v={c.autodeclaracao_racial} />
-          <Field k="Escolaridade" v={c.escolaridade} />
+          <Field k="CPF" v={showFull ? (c.cpf ?? "—") : maskCPF(c.cpf)} sensitive={!showFull} />
+          <Field k="RG / CIN" v={showFull ? (c.rg_cin ?? "—") : maskRG(c.rg_cin)} sensitive={!showFull} />
+          <Field k="Gênero" v={c.genero ? (GENERO_LABEL[c.genero] ?? c.genero) : "—"} />
+          <Field k="Autodeclaração racial" v={c.autodeclaracao_racial ?? "—"} />
+          <Field k="Escolaridade" v={c.escolaridade ?? "—"} />
           <Field k="Cooperativa / Grupo" v={c.nome_cooperativa ?? "—"} />
         </Section>
 
