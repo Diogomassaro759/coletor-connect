@@ -272,7 +272,10 @@ export function CatadorForm({
 
   return (
     <form
-      onSubmit={form.handleSubmit(onSubmit)}
+      onSubmit={form.handleSubmit(onSubmit, (errors) => {
+        const first = Object.values(errors)[0] as { message?: string } | undefined;
+        toast.error(first?.message ? `Verifique: ${first.message}` : "Preencha os campos obrigatórios destacados.");
+      })}
       className="mx-auto grid max-w-6xl items-start gap-6 lg:grid-cols-[280px_minmax(0,1fr)]"
     >
       <aside className="rounded-3xl border border-border bg-card p-5 shadow-card lg:sticky lg:top-24">
