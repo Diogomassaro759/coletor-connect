@@ -85,11 +85,12 @@ type Catador = {
   contribui_inss: boolean;
   inscrito_cadunico: boolean;
   possui_bolsa_familia: boolean;
+  created_by: string | null;
 };
 
 function AdminDashboard() {
   const qc = useQueryClient();
-  const { isAdmin, isRecenseador } = Route.useRouteContext();
+  const { isAdmin, isRecenseador, user } = Route.useRouteContext();
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState<string>("todos");
   const [materialFilter, setMaterialFilter] = useState<string>("todos");
@@ -101,7 +102,7 @@ function AdminDashboard() {
       const { data, error } = await supabase
         .from("catadores")
         .select(
-          "id,nome_completo,cpf,genero,escolaridade,renda_media_mensal,materiais_coletados,status,data_cadastro,nome_cooperativa,contribui_inss,inscrito_cadunico,possui_bolsa_familia",
+          "id,nome_completo,cpf,genero,escolaridade,renda_media_mensal,materiais_coletados,status,data_cadastro,nome_cooperativa,contribui_inss,inscrito_cadunico,possui_bolsa_familia,created_by",
         )
         .order("data_cadastro", { ascending: false });
       if (error) throw error;
