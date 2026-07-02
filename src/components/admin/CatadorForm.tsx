@@ -218,26 +218,32 @@ export function CatadorForm({
   }, [associationId, form, mode]);
 
   async function onSubmit(values: CatadorFormData) {
-    // Require explicit selection on all sim/não questions
-    const missing = (Object.keys(simNaoTouched) as SimNaoKey[]).filter(
-      (k) => !simNaoTouched[k],
-    );
-    if (missing.length > 0) {
-      toast.error("Responda todas as perguntas de Sim/Não antes de salvar.");
-      return;
-    }
-    if (!naoTem.endereco && (!values.endereco_completo || values.endereco_completo.trim().length < 5)) {
-      toast.error("Preencha o endereço ou marque \"não tem\".");
-      return;
-    }
     setSubmitting(true);
     const association = associations.find((item) => item.id === values.association_id);
     const payload = {
       ...values,
       association_id: values.association_id,
+      nome_completo: naoTem.nome ? null : values.nome_completo?.trim() || null,
+      genero: naoTem.genero ? null : values.genero ?? null,
+      autodeclaracao_racial: naoTem.raca ? null : values.autodeclaracao_racial || null,
+      escolaridade: naoTem.escolaridade ? null : values.escolaridade || null,
+      cpf: naoTem.cpf ? null : values.cpf || null,
+      rg_cin: naoTem.rg ? null : values.rg_cin || null,
       email: naoTem.email ? null : values.email || null,
       telefone: naoTem.telefone ? null : values.telefone || null,
-      endereco_completo: naoTem.endereco ? "Não informado" : values.endereco_completo || "",
+      endereco_completo: naoTem.endereco ? null : values.endereco_completo || null,
+      renda_media_mensal:
+        naoTem.renda || values.renda_media_mensal === undefined
+          ? null
+          : values.renda_media_mensal,
+      materiais_coletados: naoTem.materiais ? [] : values.materiais_coletados ?? [],
+      contribui_inss: simNaoTouched.contribui_inss ? !!values.contribui_inss : null,
+      inscrito_cadunico: simNaoTouched.inscrito_cadunico ? !!values.inscrito_cadunico : null,
+      possui_bolsa_familia: simNaoTouched.possui_bolsa_familia
+        ? !!values.possui_bolsa_familia
+        : null,
+      cadastro_gov_br: simNaoTouched.cadastro_gov_br ? !!values.cadastro_gov_br : null,
+      possui_carroca: simNaoTouched.possui_carroca ? !!values.possui_carroca : null,
       nome_cooperativa: associationName ?? association?.nome ?? (values.nome_cooperativa || null),
       titulo_eleitor: values.titulo_eleitor || null,
       ctps: values.ctps || null,
