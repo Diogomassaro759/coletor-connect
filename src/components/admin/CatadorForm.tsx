@@ -637,7 +637,8 @@ export function CatadorForm({
             n={18}
             label="Cadastro no gov.br?"
             value={v.cadastro_gov_br}
-            onChange={(b) => form.setValue("cadastro_gov_br", b)}
+            touched={simNaoTouched.cadastro_gov_br}
+            onChange={(b) => { form.setValue("cadastro_gov_br", b); markSimNaoTouched("cadastro_gov_br"); }}
           />
 
           {v.cadastro_gov_br && (
