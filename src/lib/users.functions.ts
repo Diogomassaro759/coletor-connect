@@ -26,7 +26,7 @@ export const createOperationalUser = createServerFn({ method: "POST" })
       birth_date: z.string().optional().nullable(),
       email: z.string().email(),
       password: z.string().min(8),
-      role: z.enum(["recenseador", "consultor"]),
+      role: z.enum(["recenseador", "consultor", "admin"]),
       municipio_referencia: z.string().optional().nullable(),
       identificacao_profissional: z.string().optional().nullable(),
     }),
