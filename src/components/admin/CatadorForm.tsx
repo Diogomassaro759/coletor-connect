@@ -837,11 +837,13 @@ function SimNao({
   label,
   value,
   onChange,
+  touched = true,
 }: {
   n: number;
   label: string;
   value: boolean;
   onChange: (v: boolean) => void;
+  touched?: boolean;
 }) {
   return (
     <div className="space-y-2">
@@ -849,12 +851,13 @@ function SimNao({
         <span className="flex gap-2">
           <span className="text-primary font-bold">{n}.</span>
           <span>{label}</span>
+          {!touched && <span className="text-xs text-destructive font-normal">(selecione)</span>}
         </span>
         <div className="flex gap-4 pl-6 sm:pl-0">
           <label className="flex items-center gap-2 cursor-pointer font-normal">
             <input
               type="radio"
-              checked={value === true}
+              checked={touched && value === true}
               onChange={() => onChange(true)}
               className="accent-primary"
             />
@@ -863,7 +866,7 @@ function SimNao({
           <label className="flex items-center gap-2 cursor-pointer font-normal">
             <input
               type="radio"
-              checked={value === false}
+              checked={touched && value === false}
               onChange={() => onChange(false)}
               className="accent-primary"
             />
