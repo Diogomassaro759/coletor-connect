@@ -425,7 +425,11 @@ export function CatadorForm({
             tone="blue"
           />
           <Item n={1} label="Nome completo do(a) Catador(a):" error={e.nome_completo?.message}>
-            <Input {...form.register("nome_completo")} />
+            <Input {...form.register("nome_completo")} disabled={naoTem.nome} />
+            <NaoInformar
+              checked={naoTem.nome}
+              onChange={(c) => setNaoTem((s) => ({ ...s, nome: c }))}
+            />
           </Item>
 
           <Item n={2} label="Gênero:" error={e.genero?.message}>
@@ -433,6 +437,7 @@ export function CatadorForm({
               value={v.genero}
               onValueChange={(val) => form.setValue("genero", val as CatadorFormData["genero"])}
               className="flex flex-wrap gap-x-6 gap-y-2"
+              disabled={naoTem.genero}
             >
               {GENERO_OPTIONS.map((o) => (
                 <label key={o.value} className="flex items-center gap-2 cursor-pointer text-sm">
@@ -441,12 +446,17 @@ export function CatadorForm({
                 </label>
               ))}
             </RadioGroup>
+            <NaoInformar
+              checked={naoTem.genero}
+              onChange={(c) => setNaoTem((s) => ({ ...s, genero: c }))}
+            />
           </Item>
 
           <Item n={3} label="Autodeclaração racial:" error={e.autodeclaracao_racial?.message}>
             <Select
               value={v.autodeclaracao_racial}
               onValueChange={(val) => form.setValue("autodeclaracao_racial", val)}
+              disabled={naoTem.raca}
             >
               <SelectTrigger>
                 <SelectValue placeholder="Selecione" />
@@ -459,12 +469,17 @@ export function CatadorForm({
                 ))}
               </SelectContent>
             </Select>
+            <NaoInformar
+              checked={naoTem.raca}
+              onChange={(c) => setNaoTem((s) => ({ ...s, raca: c }))}
+            />
           </Item>
 
           <Item n={4} label="Escolaridade:" error={e.escolaridade?.message}>
             <Select
               value={v.escolaridade}
               onValueChange={(val) => form.setValue("escolaridade", val)}
+              disabled={naoTem.escolaridade}
             >
               <SelectTrigger>
                 <SelectValue placeholder="Selecione" />
@@ -477,6 +492,10 @@ export function CatadorForm({
                 ))}
               </SelectContent>
             </Select>
+            <NaoInformar
+              checked={naoTem.escolaridade}
+              onChange={(c) => setNaoTem((s) => ({ ...s, escolaridade: c }))}
+            />
           </Item>
 
           <Item n={5} label="E-mail:" error={e.email?.message}>
