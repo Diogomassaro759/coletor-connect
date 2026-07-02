@@ -50,7 +50,7 @@ function PerfilPage() {
   });
 
   const profile = profileQuery.data;
-  const mustChange = false; // profile?.must_change_password ?? false;
+  const mustChange = profile?.must_change_password ?? false;
 
   // Resolve signed URL for avatar
   useEffect(() => {
