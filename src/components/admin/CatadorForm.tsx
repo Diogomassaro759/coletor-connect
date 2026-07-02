@@ -108,6 +108,7 @@ export function CatadorForm({
   const [naoTem, setNaoTem] = useState({
     email: false,
     telefone: false,
+    endereco: false,
     comprovante_residencia: false,
     cpf_foto: false,
     rg_foto: false,
