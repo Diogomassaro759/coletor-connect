@@ -56,7 +56,7 @@ export const createOperationalUser = createServerFn({ method: "POST" })
     const { error: profileErr } = await supabaseAdmin.from("profiles").insert({
       user_id: newUserId,
       full_name: data.full_name,
-      cpf: data.cpf,
+      cpf: data.cpf || null,
       birth_date: data.birth_date || null,
       email: data.email,
       municipio_referencia: data.municipio_referencia || null,
