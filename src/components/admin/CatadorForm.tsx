@@ -53,27 +53,40 @@ type DocKey =
 const schema = z.object({
   association_id: z.string().uuid("Selecione uma entidade"),
   nome_cooperativa: z.string().trim().max(150).optional().or(z.literal("")),
-  nome_completo: z.string().trim().min(2, "Nome obrigatório").max(150),
-  genero: z.enum(["feminino", "masculino", "lgbtqia", "nao_responder"]),
-  autodeclaracao_racial: z.string().min(1, "Obrigatório"),
-  escolaridade: z.string().min(1, "Obrigatório"),
-  email: z.string().trim().email("E-mail inválido").max(150).optional().or(z.literal("")),
+  nome_completo: z.string().trim().max(150).optional().or(z.literal("")),
+  genero: z.enum(["feminino", "masculino", "lgbtqia", "nao_responder"]).optional(),
+  autodeclaracao_racial: z.string().optional().or(z.literal("")),
+  escolaridade: z.string().optional().or(z.literal("")),
+  email: z
+    .string()
+    .trim()
+    .max(150)
+    .optional()
+    .or(z.literal(""))
+    .refine((v) => !v || /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v), "E-mail inválido"),
   telefone: z.string().trim().max(20).optional().or(z.literal("")),
   endereco_completo: z.string().trim().max(500).optional().or(z.literal("")),
-  cpf: z.string().refine(isValidCPF, "CPF inválido"),
-  rg_cin: z.string().trim().min(3, "Obrigatório").max(30),
+  cpf: z
+    .string()
+    .trim()
+    .optional()
+    .or(z.literal(""))
+    .refine((v) => !v || isValidCPF(v), "CPF inválido"),
+  rg_cin: z.string().trim().max(30).optional().or(z.literal("")),
   titulo_eleitor: z.string().trim().max(30).optional().or(z.literal("")),
   ctps: z.string().trim().max(30).optional().or(z.literal("")),
   nis: z.string().trim().max(30).optional().or(z.literal("")),
-  renda_media_mensal: z.coerce.number().min(0, "Valor inválido"),
-  contribui_inss: z.boolean(),
-  inscrito_cadunico: z.boolean(),
-  possui_bolsa_familia: z.boolean(),
+  renda_media_mensal: z
+    .union([z.coerce.number().min(0, "Valor inválido"), z.literal("").transform(() => undefined)])
+    .optional(),
+  contribui_inss: z.boolean().optional(),
+  inscrito_cadunico: z.boolean().optional(),
+  possui_bolsa_familia: z.boolean().optional(),
   conta_bancaria_digital: z.string().trim().max(100).optional().or(z.literal("")),
-  cadastro_gov_br: z.boolean(),
+  cadastro_gov_br: z.boolean().optional(),
   nivel_cadastro_gov_br: z.string().optional().or(z.literal("")),
-  materiais_coletados: z.array(z.string()).min(1, "Selecione pelo menos um material"),
-  possui_carroca: z.boolean(),
+  materiais_coletados: z.array(z.string()).optional().default([]),
+  possui_carroca: z.boolean().optional(),
   tipo_carroca: z.string().optional().or(z.literal("")),
   area_atuacao: z.string().trim().max(500).optional().or(z.literal("")),
 });
