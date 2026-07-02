@@ -700,7 +700,8 @@ export function CatadorForm({
             n={21}
             label="Possui carroça?"
             value={v.possui_carroca}
-            onChange={(b) => form.setValue("possui_carroca", b)}
+            touched={simNaoTouched.possui_carroca}
+            onChange={(b) => { form.setValue("possui_carroca", b); markSimNaoTouched("possui_carroca"); }}
           />
 
           {v.possui_carroca && (
