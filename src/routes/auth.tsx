@@ -22,23 +22,37 @@ function AuthPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
+  async function goPostLogin(userId: string) {
+    const { data: profile } = await supabase
+      .from("profiles")
+      .select("must_change_password")
+      .eq("user_id", userId)
+      .maybeSingle();
+    if (profile?.must_change_password) {
+      navigate({ to: "/admin/perfil" });
+    } else {
+      navigate({ to: "/admin/associacoes" });
+    }
+  }
+
   useEffect(() => {
     supabase.auth.getSession().then(({ data }) => {
-      if (data.session) navigate({ to: "/admin/associacoes" });
+      if (data.session) void goPostLogin(data.session.user.id);
     });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [navigate]);
 
   async function handleLogin(e: React.FormEvent) {
     e.preventDefault();
     setLoading(true);
-    const { error } = await supabase.auth.signInWithPassword({ email, password });
+    const { data, error } = await supabase.auth.signInWithPassword({ email, password });
     setLoading(false);
-    if (error) {
-      toast.error("Falha no login", { description: error.message });
+    if (error || !data.user) {
+      toast.error("Falha no login", { description: error?.message ?? "Erro desconhecido" });
       return;
     }
     toast.success("Bem-vindo!");
-    navigate({ to: "/admin/associacoes" });
+    await goPostLogin(data.user.id);
   }
 
   return (
