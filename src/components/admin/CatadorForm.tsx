@@ -456,7 +456,18 @@ export function CatadorForm({
             label="Endereço residencial completo (logradouro, número, complemento, bairro, município):"
             error={e.endereco_completo?.message}
           >
-            <Textarea {...form.register("endereco_completo")} rows={3} />
+            <div className="space-y-2">
+              <Textarea
+                {...form.register("endereco_completo")}
+                rows={3}
+                disabled={naoTem.endereco}
+                placeholder={naoTem.endereco ? "Sem endereço informado" : ""}
+              />
+              <NaoTem
+                checked={naoTem.endereco}
+                onChange={(c) => setNaoTem((s) => ({ ...s, endereco: c }))}
+              />
+            </div>
             <Anexo
               label="Foto de comprovante de residência"
               fieldKey="comprovante_residencia_url"
