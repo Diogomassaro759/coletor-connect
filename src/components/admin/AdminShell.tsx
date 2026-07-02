@@ -62,7 +62,7 @@ export function AdminShell({ children }: { children: React.ReactNode }) {
             </span>
           </Link>
           <nav className="flex items-center gap-1">
-            {(isAdmin || isRecenseador) && (
+            {isAdmin && (
               <Link to="/admin">
                 <Button variant="ghost" size="sm">
                   <LayoutDashboard className="size-4" />{" "}
@@ -70,18 +70,20 @@ export function AdminShell({ children }: { children: React.ReactNode }) {
                 </Button>
               </Link>
             )}
-            <Link to="/admin/associacoes">
-              <Button variant="ghost" size="sm">
-                {isAdmin ? (
-                  <Building2 className="size-4" />
-                ) : (
-                  <ClipboardPenLine className="size-4" />
-                )}{" "}
-                <span className="hidden md:inline">
-                  {isAdmin ? "Associações" : "Cadastros de campo"}
-                </span>
-              </Button>
-            </Link>
+            {(isAdmin || isConsultant) && (
+              <Link to="/admin/associacoes">
+                <Button variant="ghost" size="sm">
+                  {isAdmin ? (
+                    <Building2 className="size-4" />
+                  ) : (
+                    <ClipboardPenLine className="size-4" />
+                  )}{" "}
+                  <span className="hidden md:inline">
+                    {isAdmin ? "Associações" : "Cadastros de campo"}
+                  </span>
+                </Button>
+              </Link>
+            )}
             {isAdmin && (
               <Link to="/admin/diagnosticos">
                 <Button variant="ghost" size="sm">
