@@ -175,12 +175,18 @@ function PerfilPage() {
         Atualize seus dados, sua foto e sua senha.
       </p>
 
-      {mustChange ? <p className="mb-6">MUST_CHANGE_ON</p> : null}
+      {mustChange && (
+        <Alert variant="destructive" className="mb-6 max-w-3xl">
+          <AlertCircle className="size-4" />
+          <AlertTitle>Troque sua senha</AlertTitle>
+          <AlertDescription>
+            Esta é uma senha temporária definida por um administrador. Defina uma nova senha para
+            continuar usando o sistema.
+          </AlertDescription>
+        </Alert>
+      )}
 
-      <Tabs
-        defaultValue="dados"
-        className="max-w-3xl"
-      >
+      <Tabs defaultValue={mustChange ? "senha" : "dados"} className="max-w-3xl">
         <TabsList>
           <TabsTrigger value="dados">Dados</TabsTrigger>
           <TabsTrigger value="foto">Foto</TabsTrigger>
