@@ -50,10 +50,6 @@ type DocKey =
   | "ctps_foto_url"
   | "nis_foto_url";
 
-const simNao = z
-  .union([z.boolean(), z.null(), z.undefined()])
-  .refine((v): v is boolean => v === true || v === false, "Responda sim ou não");
-
 const schema = z.object({
   association_id: z.string().uuid("Selecione uma entidade"),
   nome_cooperativa: z.string().trim().max(150).optional().or(z.literal("")),
@@ -70,17 +66,18 @@ const schema = z.object({
   ctps: z.string().trim().max(30).optional().or(z.literal("")),
   nis: z.string().trim().max(30).optional().or(z.literal("")),
   renda_media_mensal: z.coerce.number().min(0, "Valor inválido"),
-  contribui_inss: simNao,
-  inscrito_cadunico: simNao,
-  possui_bolsa_familia: simNao,
+  contribui_inss: z.boolean(),
+  inscrito_cadunico: z.boolean(),
+  possui_bolsa_familia: z.boolean(),
   conta_bancaria_digital: z.string().trim().max(100).optional().or(z.literal("")),
-  cadastro_gov_br: simNao,
+  cadastro_gov_br: z.boolean(),
   nivel_cadastro_gov_br: z.string().optional().or(z.literal("")),
   materiais_coletados: z.array(z.string()).min(1, "Selecione pelo menos um material"),
-  possui_carroca: simNao,
+  possui_carroca: z.boolean(),
   tipo_carroca: z.string().optional().or(z.literal("")),
   area_atuacao: z.string().trim().max(500).optional().or(z.literal("")),
 });
+
 
 
 export type CatadorFormData = z.infer<typeof schema>;
