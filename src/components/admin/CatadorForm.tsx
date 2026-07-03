@@ -586,7 +586,7 @@ export function CatadorForm({
                   checked={naoTem.endereco}
                   onCheckedChange={(c) => setNaoTem((s) => ({ ...s, endereco: !!c }))}
                 />
-                <span>Não tem endereço fixo / não informado</span>
+                <span>Prefere não informar</span>
               </label>
             </div>
             <Anexo
