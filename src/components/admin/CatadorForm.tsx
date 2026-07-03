@@ -486,10 +486,6 @@ export function CatadorForm({
                 </label>
               ))}
             </RadioGroup>
-            <NaoInformar
-              checked={naoTem.genero}
-              onChange={(c) => setNaoTem((s) => ({ ...s, genero: c }))}
-            />
           </Item>
 
           <Item n={3} label="Autodeclaração racial:" error={e.autodeclaracao_racial?.message}>
