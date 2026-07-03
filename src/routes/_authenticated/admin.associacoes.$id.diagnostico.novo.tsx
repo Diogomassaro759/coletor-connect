@@ -356,20 +356,23 @@ function NewAssessment() {
         <p className="text-xs font-bold uppercase tracking-[0.16em] text-primary">
           3 tipos de cadastro de campo
         </p>
-        <h1 className="mt-1 text-3xl font-bold">Social, Jurídico e Contábil</h1>
-        <p className="mt-2 text-muted-foreground">
-          Selecione o tipo de cadastro e preencha o formulário correspondente ao documento de campo.
-        </p>
+        <h1 className="mt-1 text-3xl font-bold">{currentMeta.title}</h1>
+        <p className="mt-2 text-muted-foreground">{currentMeta.description}</p>
         <form onSubmit={submit} className="mt-7">
           <div className="mb-6 grid gap-4 rounded-xl border border-border bg-card p-5 shadow-card md:grid-cols-3">
             <Field label="Nome do consultor">
-              <Input name="consultant_name" required />
+              <Input
+                name="consultant_name"
+                required
+                defaultValue={consultantProfile?.full_name ?? ""}
+                key={consultantProfile?.full_name ?? "loading"}
+              />
             </Field>
             <Field label="Data da visita">
-              <Input name="data_visita" type="date" required />
+              <Input name="data_visita" type="date" required defaultValue={defaultDate} />
             </Field>
             <Field label="Horário da visita">
-              <Input name="horario_visita" type="time" required />
+              <Input name="horario_visita" type="time" required defaultValue={defaultTime} />
             </Field>
           </div>
           <Tabs
