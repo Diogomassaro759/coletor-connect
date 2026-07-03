@@ -229,6 +229,7 @@ function AssociationDetails() {
                 <div>
                   <p className="font-medium">
                     Visita de {new Date(`${item.data_visita}T12:00:00`).toLocaleDateString("pt-BR")}
+                    {item.horario_visita ? ` às ${String(item.horario_visita).slice(0, 5)}` : ""}
                   </p>
                   <p className="text-sm text-muted-foreground">
                     Consultor(a): {item.consultant_name}
