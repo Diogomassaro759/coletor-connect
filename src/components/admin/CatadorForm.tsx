@@ -171,6 +171,42 @@ export function CatadorForm({
     },
   });
 
+  // Sanitize defaultValues coming from the DB: PostgREST returns null for
+  // unset columns, but the zod schema (z.boolean(), z.array()) rejects null.
+  // Map nulls to safe defaults so editing existing records doesn't fail
+  // validation with "Verifique os campos" and prevents saving.
+  const sanitizedDefaults = (() => {
+    const d = (defaultValues ?? {}) as any;
+    const s = (v: any) => (v === null || v === undefined ? "" : v);
+    return {
+      ...d,
+      nome_cooperativa: s(d.nome_cooperativa),
+      nome_completo: s(d.nome_completo),
+      autodeclaracao_racial: s(d.autodeclaracao_racial),
+      escolaridade: s(d.escolaridade),
+      email: s(d.email),
+      telefone: s(d.telefone),
+      endereco_completo: s(d.endereco_completo),
+      cpf: s(d.cpf),
+      rg_cin: s(d.rg_cin),
+      titulo_eleitor: s(d.titulo_eleitor),
+      ctps: s(d.ctps),
+      nis: s(d.nis),
+      conta_bancaria_digital: s(d.conta_bancaria_digital),
+      nivel_cadastro_gov_br: s(d.nivel_cadastro_gov_br),
+      tipo_carroca: s(d.tipo_carroca),
+      area_atuacao: s(d.area_atuacao),
+      genero: d.genero ?? undefined,
+      renda_media_mensal: d.renda_media_mensal ?? 0,
+      contribui_inss: d.contribui_inss ?? false,
+      inscrito_cadunico: d.inscrito_cadunico ?? false,
+      possui_bolsa_familia: d.possui_bolsa_familia ?? false,
+      cadastro_gov_br: d.cadastro_gov_br ?? false,
+      possui_carroca: d.possui_carroca ?? false,
+      materiais_coletados: Array.isArray(d.materiais_coletados) ? d.materiais_coletados : [],
+    };
+  })();
+
   const form = useForm<CatadorFormData>({
     resolver: zodResolver(schema) as any,
     defaultValues: {
@@ -199,7 +235,7 @@ export function CatadorForm({
       possui_carroca: false,
       tipo_carroca: "",
       area_atuacao: "",
-      ...defaultValues,
+      ...sanitizedDefaults,
     },
   });
 
