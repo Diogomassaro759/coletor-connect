@@ -39,6 +39,23 @@ function NewAssessment() {
   const [activeModule, setActiveModule] = useState(modulo);
   const [materials, setMaterials] = useState<string[]>([]);
   const [choices, setChoices] = useState<Record<string, string>>({});
+  const now = new Date();
+  const pad = (n: number) => String(n).padStart(2, "0");
+  const defaultDate = `${now.getFullYear()}-${pad(now.getMonth() + 1)}-${pad(now.getDate())}`;
+  const defaultTime = `${pad(now.getHours())}:${pad(now.getMinutes())}`;
+  const { data: consultantProfile } = useQuery({
+    queryKey: ["consultant-profile-me"],
+    queryFn: async () => {
+      const { data: auth } = await supabase.auth.getUser();
+      if (!auth.user) return null;
+      const { data } = await supabase
+        .from("profiles")
+        .select("full_name")
+        .eq("user_id", auth.user.id)
+        .maybeSingle();
+      return data;
+    },
+  });
   const { data: association, isLoading: loadingAssociation } = useQuery({
     queryKey: ["association-social-form", id],
     queryFn: async () => {
@@ -47,6 +64,24 @@ function NewAssessment() {
       return data;
     },
   });
+  const moduleMeta: Record<typeof activeModule, { title: string; description: string }> = {
+    social: {
+      title: "Cadastro Social",
+      description:
+        "Perfil dos associados, saúde, renda, benefícios, cota e estrutura social.",
+    },
+    juridico: {
+      title: "Cadastro Jurídico",
+      description: "Diretoria, atas, contratos, processos, regras internas e regulação.",
+    },
+    contabil: {
+      title: "Cadastro Contábil",
+      description:
+        "Documentos, contador, livros, controles, balanços e pendências contábeis.",
+    },
+  };
+  const currentMeta = moduleMeta[activeModule];
+
 
   function choice(name: string, fallback = "Não") {
     return choices[name] ?? fallback;
