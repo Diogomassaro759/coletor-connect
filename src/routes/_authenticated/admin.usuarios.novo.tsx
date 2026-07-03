@@ -105,6 +105,58 @@ function NovoUsuarioPage() {
         O usuário será criado com a senha inicial abaixo e deverá redefini-la no primeiro acesso.
       </p>
 
+      {createdCreds && (
+        <Card className="p-6 mb-6 max-w-2xl border-primary bg-primary/5">
+          <h2 className="text-lg font-semibold mb-1">Usuário criado com sucesso</h2>
+          <p className="text-sm text-muted-foreground mb-4">
+            Copie e compartilhe as credenciais abaixo com o usuário <strong>agora</strong>. A senha
+            não poderá ser visualizada novamente depois que você sair desta tela.
+          </p>
+          <div className="space-y-3">
+            <div>
+              <Label className="text-xs">E-mail (login)</Label>
+              <div className="flex gap-2">
+                <Input readOnly value={createdCreds.email} className="font-mono" />
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={() => copyValue("email", createdCreds.email)}
+                >
+                  {copied === "email" ? <Check className="size-4" /> : <Copy className="size-4" />}
+                </Button>
+              </div>
+            </div>
+            <div>
+              <Label className="text-xs">Senha inicial (a que foi realmente salva)</Label>
+              <div className="flex gap-2">
+                <Input readOnly value={createdCreds.password} className="font-mono" />
+                <Button
+                  type="button"
+                  onClick={() => copyValue("password", createdCreds.password)}
+                >
+                  {copied === "password" ? (
+                    <Check className="size-4" />
+                  ) : (
+                    <Copy className="size-4" />
+                  )}
+                  Copiar senha
+                </Button>
+              </div>
+            </div>
+          </div>
+          <div className="flex justify-end gap-2 pt-4">
+            <Button
+              type="button"
+              variant="outline"
+              onClick={() => navigate({ to: "/admin/usuarios" })}
+            >
+              Ir para lista de usuários
+            </Button>
+          </div>
+        </Card>
+      )}
+
+
       <form
         onSubmit={(e) => {
           e.preventDefault();
