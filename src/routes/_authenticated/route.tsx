@@ -1,5 +1,7 @@
 import { createFileRoute, Outlet, redirect } from "@tanstack/react-router";
 import { supabase } from "@/integrations/supabase/client";
+import { resolveFirstLoginRedirect } from "@/lib/auth-flow";
+
 
 export const Route = createFileRoute("/_authenticated")({
   ssr: false,
@@ -32,10 +34,13 @@ export const Route = createFileRoute("/_authenticated")({
       .eq("user_id", data.user.id)
       .maybeSingle();
     const mustChangePassword = !!profile?.must_change_password;
-    if (mustChangePassword && location.pathname !== "/admin/trocar-senha") {
-      throw redirect({ to: "/admin/trocar-senha" });
-    }
+    const redirectTo = resolveFirstLoginRedirect({
+      mustChangePassword,
+      pathname: location.pathname,
+    });
+    if (redirectTo) throw redirect({ to: redirectTo });
     return { user: data.user, role, isAdmin, isConsultant, isRecenseador, mustChangePassword };
+
   },
   component: () => <Outlet />,
 });

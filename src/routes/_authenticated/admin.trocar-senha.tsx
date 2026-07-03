@@ -10,6 +10,7 @@ import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { toast } from "sonner";
 import { AlertCircle, KeyRound } from "lucide-react";
 import procateLogo from "@/assets/procate-logo.png";
+import { performPasswordChangeAndLogout } from "@/lib/auth-flow";
 
 export const Route = createFileRoute("/_authenticated/admin/trocar-senha")({
   component: TrocarSenhaPage,
@@ -21,26 +22,31 @@ function TrocarSenhaPage() {
   const [pwd, setPwd] = useState({ next: "", confirm: "" });
 
   const changePwd = useMutation({
-    mutationFn: async () => {
-      if (pwd.next.length < 8) throw new Error("Mínimo 8 caracteres.");
-      if (!/[A-Z]/.test(pwd.next) || !/[a-z]/.test(pwd.next) || !/\d/.test(pwd.next)) {
-        throw new Error("Use letras maiúsculas, minúsculas e números.");
-      }
-      if (pwd.next !== pwd.confirm) throw new Error("As senhas não coincidem.");
-      const { error } = await supabase.auth.updateUser({ password: pwd.next });
-      if (error) throw new Error(error.message);
-      await supabase
-        .from("profiles")
-        .update({ must_change_password: false })
-        .eq("user_id", user.id);
-    },
-    onSuccess: async () => {
+    mutationFn: () =>
+      performPasswordChangeAndLogout(
+        {
+          updatePassword: (password) => supabase.auth.updateUser({ password }),
+          clearMustChangePassword: async (userId) => {
+            await supabase
+              .from("profiles")
+              .update({ must_change_password: false })
+              .eq("user_id", userId);
+          },
+          signOut: async () => {
+            await supabase.auth.signOut();
+          },
+          navigate: (to) => navigate({ to }),
+        },
+        user.id,
+        pwd.next,
+        pwd.confirm,
+      ),
+    onSuccess: () => {
       toast.success("Senha alterada. Entre novamente com a nova senha.");
-      await supabase.auth.signOut();
-      navigate({ to: "/auth" });
     },
     onError: (e: Error) => toast.error(e.message),
   });
+
 
   return (
     <div className="min-h-screen grid place-items-center bg-muted/30 p-6">
