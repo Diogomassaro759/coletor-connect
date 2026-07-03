@@ -39,7 +39,7 @@ function NovoUsuarioPage() {
   const navigate = useNavigate();
   const create = useServerFn(createOperationalUser);
 
-  const [form, setForm] = useState({
+  const [form, setForm] = useState(() => ({
     full_name: "",
     cpf: "",
     birth_date: "",
@@ -48,22 +48,30 @@ function NovoUsuarioPage() {
     role: "recenseador" as "recenseador" | "consultor" | "admin",
     municipio_referencia: "",
     identificacao_profissional: "",
-  });
+  }));
+
+  // Guarda a senha e email exatos que foram efetivamente enviados/salvos.
+  const [createdCreds, setCreatedCreds] = useState<{ email: string; password: string } | null>(
+    null,
+  );
+  const [copied, setCopied] = useState<"email" | "password" | null>(null);
 
   const mut = useMutation({
-    mutationFn: () =>
-      create({
-        data: {
-          ...form,
-          cpf: form.cpf.replace(/\D/g, ""),
-          birth_date: form.birth_date || null,
-          municipio_referencia: form.municipio_referencia || null,
-          identificacao_profissional: form.identificacao_profissional || null,
-        },
-      }),
-    onSuccess: () => {
-      toast.success("Usuário criado. Compartilhe a senha inicial.");
-      navigate({ to: "/admin/usuarios" });
+    mutationFn: async () => {
+      // Snapshot no exato momento do envio.
+      const snapshot = {
+        ...form,
+        cpf: form.cpf.replace(/\D/g, ""),
+        birth_date: form.birth_date || null,
+        municipio_referencia: form.municipio_referencia || null,
+        identificacao_profissional: form.identificacao_profissional || null,
+      };
+      const res = await create({ data: snapshot });
+      return { res, sent: snapshot };
+    },
+    onSuccess: ({ sent }) => {
+      setCreatedCreds({ email: sent.email, password: sent.password });
+      toast.success("Usuário criado. Copie a senha abaixo antes de sair.");
     },
     onError: (e: Error) => toast.error(e.message),
   });
@@ -71,6 +79,18 @@ function NovoUsuarioPage() {
   function set<K extends keyof typeof form>(k: K, v: (typeof form)[K]) {
     setForm((f) => ({ ...f, [k]: v }));
   }
+
+  async function copyValue(kind: "email" | "password", value: string) {
+    try {
+      await navigator.clipboard.writeText(value);
+      setCopied(kind);
+      setTimeout(() => setCopied(null), 1500);
+    } catch {
+      toast.error("Não foi possível copiar. Selecione o texto manualmente.");
+    }
+  }
+
+
 
   return (
     <AdminShell>
