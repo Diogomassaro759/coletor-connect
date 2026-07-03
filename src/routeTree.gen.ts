@@ -15,7 +15,6 @@ import { Route as IndexRouteImport } from './routes/index'
 import { Route as AuthenticatedAdminRouteImport } from './routes/_authenticated/admin'
 import { Route as AuthenticatedAdminIndexRouteImport } from './routes/_authenticated/admin.index'
 import { Route as AuthenticatedAdminTrocarSenhaRouteImport } from './routes/_authenticated/admin.trocar-senha'
-import { Route as AuthenticatedAdminQaRouteImport } from './routes/_authenticated/admin.qa'
 import { Route as AuthenticatedAdminPerfilRouteImport } from './routes/_authenticated/admin.perfil'
 import { Route as AuthenticatedAdminNovoRouteImport } from './routes/_authenticated/admin.novo'
 import { Route as AuthenticatedAdminNotificacoesRouteImport } from './routes/_authenticated/admin.notificacoes'
@@ -65,11 +64,6 @@ const AuthenticatedAdminTrocarSenhaRoute =
     path: '/trocar-senha',
     getParentRoute: () => AuthenticatedAdminRoute,
   } as any)
-const AuthenticatedAdminQaRoute = AuthenticatedAdminQaRouteImport.update({
-  id: '/qa',
-  path: '/qa',
-  getParentRoute: () => AuthenticatedAdminRoute,
-} as any)
 const AuthenticatedAdminPerfilRoute =
   AuthenticatedAdminPerfilRouteImport.update({
     id: '/perfil',
@@ -187,7 +181,6 @@ export interface FileRoutesByFullPath {
   '/admin/notificacoes': typeof AuthenticatedAdminNotificacoesRoute
   '/admin/novo': typeof AuthenticatedAdminNovoRoute
   '/admin/perfil': typeof AuthenticatedAdminPerfilRoute
-  '/admin/qa': typeof AuthenticatedAdminQaRoute
   '/admin/trocar-senha': typeof AuthenticatedAdminTrocarSenhaRoute
   '/admin/': typeof AuthenticatedAdminIndexRoute
   '/admin/$id/editar': typeof AuthenticatedAdminIdEditarRoute
@@ -212,7 +205,6 @@ export interface FileRoutesByTo {
   '/admin/notificacoes': typeof AuthenticatedAdminNotificacoesRoute
   '/admin/novo': typeof AuthenticatedAdminNovoRoute
   '/admin/perfil': typeof AuthenticatedAdminPerfilRoute
-  '/admin/qa': typeof AuthenticatedAdminQaRoute
   '/admin/trocar-senha': typeof AuthenticatedAdminTrocarSenhaRoute
   '/admin': typeof AuthenticatedAdminIndexRoute
   '/admin/$id/editar': typeof AuthenticatedAdminIdEditarRoute
@@ -240,7 +232,6 @@ export interface FileRoutesById {
   '/_authenticated/admin/notificacoes': typeof AuthenticatedAdminNotificacoesRoute
   '/_authenticated/admin/novo': typeof AuthenticatedAdminNovoRoute
   '/_authenticated/admin/perfil': typeof AuthenticatedAdminPerfilRoute
-  '/_authenticated/admin/qa': typeof AuthenticatedAdminQaRoute
   '/_authenticated/admin/trocar-senha': typeof AuthenticatedAdminTrocarSenhaRoute
   '/_authenticated/admin/': typeof AuthenticatedAdminIndexRoute
   '/_authenticated/admin/$id/editar': typeof AuthenticatedAdminIdEditarRoute
@@ -268,7 +259,6 @@ export interface FileRouteTypes {
     | '/admin/notificacoes'
     | '/admin/novo'
     | '/admin/perfil'
-    | '/admin/qa'
     | '/admin/trocar-senha'
     | '/admin/'
     | '/admin/$id/editar'
@@ -293,7 +283,6 @@ export interface FileRouteTypes {
     | '/admin/notificacoes'
     | '/admin/novo'
     | '/admin/perfil'
-    | '/admin/qa'
     | '/admin/trocar-senha'
     | '/admin'
     | '/admin/$id/editar'
@@ -320,7 +309,6 @@ export interface FileRouteTypes {
     | '/_authenticated/admin/notificacoes'
     | '/_authenticated/admin/novo'
     | '/_authenticated/admin/perfil'
-    | '/_authenticated/admin/qa'
     | '/_authenticated/admin/trocar-senha'
     | '/_authenticated/admin/'
     | '/_authenticated/admin/$id/editar'
@@ -386,13 +374,6 @@ declare module '@tanstack/react-router' {
       path: '/trocar-senha'
       fullPath: '/admin/trocar-senha'
       preLoaderRoute: typeof AuthenticatedAdminTrocarSenhaRouteImport
-      parentRoute: typeof AuthenticatedAdminRoute
-    }
-    '/_authenticated/admin/qa': {
-      id: '/_authenticated/admin/qa'
-      path: '/qa'
-      fullPath: '/admin/qa'
-      preLoaderRoute: typeof AuthenticatedAdminQaRouteImport
       parentRoute: typeof AuthenticatedAdminRoute
     }
     '/_authenticated/admin/perfil': {
@@ -530,7 +511,6 @@ interface AuthenticatedAdminRouteChildren {
   AuthenticatedAdminNotificacoesRoute: typeof AuthenticatedAdminNotificacoesRoute
   AuthenticatedAdminNovoRoute: typeof AuthenticatedAdminNovoRoute
   AuthenticatedAdminPerfilRoute: typeof AuthenticatedAdminPerfilRoute
-  AuthenticatedAdminQaRoute: typeof AuthenticatedAdminQaRoute
   AuthenticatedAdminTrocarSenhaRoute: typeof AuthenticatedAdminTrocarSenhaRoute
   AuthenticatedAdminIndexRoute: typeof AuthenticatedAdminIndexRoute
   AuthenticatedAdminIdEditarRoute: typeof AuthenticatedAdminIdEditarRoute
@@ -554,7 +534,6 @@ const AuthenticatedAdminRouteChildren: AuthenticatedAdminRouteChildren = {
   AuthenticatedAdminNotificacoesRoute: AuthenticatedAdminNotificacoesRoute,
   AuthenticatedAdminNovoRoute: AuthenticatedAdminNovoRoute,
   AuthenticatedAdminPerfilRoute: AuthenticatedAdminPerfilRoute,
-  AuthenticatedAdminQaRoute: AuthenticatedAdminQaRoute,
   AuthenticatedAdminTrocarSenhaRoute: AuthenticatedAdminTrocarSenhaRoute,
   AuthenticatedAdminIndexRoute: AuthenticatedAdminIndexRoute,
   AuthenticatedAdminIdEditarRoute: AuthenticatedAdminIdEditarRoute,
