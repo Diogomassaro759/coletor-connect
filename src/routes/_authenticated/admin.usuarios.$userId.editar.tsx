@@ -80,11 +80,12 @@ function EditarUsuarioPage() {
   });
 
   const [newPwd, setNewPwd] = useState(genPassword());
+  const [lastAppliedPwd, setLastAppliedPwd] = useState<string | null>(null);
   const resetMut = useMutation({
-    mutationFn: () => resetPwd({ data: { user_id: userId, new_password: newPwd } }),
-    onSuccess: () => {
-      toast.success("Senha redefinida. Compartilhe com o usuário.");
-      setNewPwd(genPassword());
+    mutationFn: (pwd: string) => resetPwd({ data: { user_id: userId, new_password: pwd } }),
+    onSuccess: (_data, pwd) => {
+      setLastAppliedPwd(pwd);
+      toast.success("Senha redefinida. Compartilhe exatamente a senha exibida abaixo.");
     },
     onError: (e: Error) => toast.error(e.message),
   });
