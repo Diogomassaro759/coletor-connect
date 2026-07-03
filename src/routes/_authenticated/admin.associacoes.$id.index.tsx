@@ -134,13 +134,6 @@ function AssociationDetails() {
               </Button>
             </Link>
           )}
-          {isRecenseador && (
-            <Link to="/admin/associacoes/$id/catadores/novo" params={{ id }}>
-              <Button size="lg">
-                <UserPlus className="size-4" /> Cadastrar catador
-              </Button>
-            </Link>
-          )}
           {isConsultant && (
             <Link
               to="/admin/associacoes/$id/diagnostico/novo"
