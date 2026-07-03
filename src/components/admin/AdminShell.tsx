@@ -4,7 +4,6 @@ import {
   LayoutDashboard,
   Building2,
   BarChart3,
-  Beaker,
   Bell,
   ClipboardPenLine,
   UserCog,
@@ -97,13 +96,6 @@ export function AdminShell({ children }: { children: React.ReactNode }) {
                 <Button variant="ghost" size="sm">
                   <UserCog className="size-4" />{" "}
                   <span className="hidden lg:inline">Usuários</span>
-                </Button>
-              </Link>
-            )}
-            {(isAdmin || isConsultant) && (
-              <Link to="/admin/qa">
-                <Button variant="ghost" size="sm" title="Painel de QA">
-                  <Beaker className="size-4" />
                 </Button>
               </Link>
             )}
