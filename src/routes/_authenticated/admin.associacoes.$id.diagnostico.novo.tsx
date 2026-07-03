@@ -357,7 +357,9 @@ function NewAssessment() {
           3 tipos de cadastro de campo
         </p>
         <h1 className="mt-1 text-3xl font-bold">{currentMeta.title}</h1>
-        <p className="mt-2 text-muted-foreground">{currentMeta.description}</p>
+        <p className="mt-2 text-muted-foreground">
+          Selecione o tipo de cadastro e preencha o formulário correspondente ao documento de campo.
+        </p>
         <form onSubmit={submit} className="mt-7">
           <div className="mb-6 grid gap-4 rounded-xl border border-border bg-card p-5 shadow-card md:grid-cols-3">
             <Field label="Nome do consultor">
