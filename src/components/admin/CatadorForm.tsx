@@ -119,24 +119,28 @@ export function CatadorForm({
     ctps_foto_url: defaultValues?.ctps_foto_url ?? null,
     nis_foto_url: defaultValues?.nis_foto_url ?? null,
   });
-  const [naoTem, setNaoTem] = useState({
-    nome: false,
-    genero: false,
-    raca: false,
-    escolaridade: false,
-    cpf: false,
-    rg: false,
-    renda: false,
-    materiais: false,
-    email: false,
-    telefone: false,
-    endereco: false,
-    comprovante_residencia: false,
-    cpf_foto: false,
-    rg_foto: false,
-    titulo_foto: false,
-    ctps_foto: false,
-    nis_foto: false,
+  const [naoTem, setNaoTem] = useState(() => {
+    const d = defaultValues ?? {};
+    const isNull = (v: any) => v === null || v === undefined || v === "";
+    return {
+      nome: mode === "edit" ? isNull((d as any).nome_completo) : false,
+      genero: mode === "edit" ? isNull((d as any).genero) : false,
+      raca: mode === "edit" ? isNull((d as any).autodeclaracao_racial) : false,
+      escolaridade: mode === "edit" ? isNull((d as any).escolaridade) : false,
+      cpf: mode === "edit" ? isNull((d as any).cpf) : false,
+      rg: mode === "edit" ? isNull((d as any).rg_cin) : false,
+      renda: mode === "edit" ? (d as any).renda_media_mensal === null || (d as any).renda_media_mensal === undefined : false,
+      materiais: mode === "edit" ? !((d as any).materiais_coletados?.length) : false,
+      email: mode === "edit" ? isNull((d as any).email) : false,
+      telefone: mode === "edit" ? isNull((d as any).telefone) : false,
+      endereco: mode === "edit" ? isNull((d as any).endereco_completo) : false,
+      comprovante_residencia: false,
+      cpf_foto: false,
+      rg_foto: false,
+      titulo_foto: false,
+      ctps_foto: false,
+      nis_foto: false,
+    };
   });
   type SimNaoKey =
     | "contribui_inss"
@@ -909,7 +913,7 @@ function Linha({ label, children }: { label: string; children: React.ReactNode }
 function NaoInformar({
   checked,
   onChange,
-  label = "Não informar / não tem",
+  label = "Prefere não informar",
 }: {
   checked: boolean;
   onChange: (v: boolean) => void;
@@ -1023,7 +1027,7 @@ function Anexo({
         <span className="text-muted-foreground">📎 {label}</span>
         <label className="flex items-center gap-2 cursor-pointer text-muted-foreground">
           <Checkbox checked={checked} onCheckedChange={(c) => onChange(!!c)} />
-          <span>não tem</span>
+          <span>Prefere não informar</span>
         </label>
       </div>
       {!checked && (
@@ -1082,7 +1086,7 @@ function NaoTem({ checked, onChange }: { checked: boolean; onChange: (v: boolean
   return (
     <label className="flex items-center gap-2 text-xs text-muted-foreground cursor-pointer whitespace-nowrap">
       <Checkbox checked={checked} onCheckedChange={(c) => onChange(!!c)} />
-      <span>não tem</span>
+      <span>Prefere não informar</span>
     </label>
   );
 }
