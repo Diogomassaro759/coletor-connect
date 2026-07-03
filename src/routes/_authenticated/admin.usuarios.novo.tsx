@@ -261,6 +261,7 @@ function NovoUsuarioPage() {
             </Button>
           </div>
         </Card>
+        </fieldset>
       </form>
     </AdminShell>
   );
