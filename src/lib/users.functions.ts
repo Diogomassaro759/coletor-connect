@@ -174,6 +174,7 @@ export const resetOperationalUserPassword = createServerFn({ method: "POST" })
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
     const { error } = await supabaseAdmin.auth.admin.updateUserById(data.user_id, {
       password: data.new_password,
+      email_confirm: true,
     });
     if (error) throw new Error(error.message);
     await supabaseAdmin
