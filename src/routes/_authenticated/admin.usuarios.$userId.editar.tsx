@@ -185,19 +185,43 @@ function EditarUsuarioPage() {
               Gere uma senha temporária. O usuário será obrigado a trocá-la no próximo login.
             </p>
             <div className="flex gap-2">
-              <Input value={newPwd} onChange={(e) => setNewPwd(e.target.value)} />
-              <Button type="button" variant="outline" onClick={() => setNewPwd(genPassword())}>
+              <Input
+                value={newPwd}
+                onChange={(e) => {
+                  setNewPwd(e.target.value);
+                  setLastAppliedPwd(null);
+                }}
+              />
+              <Button
+                type="button"
+                variant="outline"
+                onClick={() => {
+                  setNewPwd(genPassword());
+                  setLastAppliedPwd(null);
+                }}
+              >
                 Gerar
               </Button>
               <Button
                 type="button"
                 variant="secondary"
-                onClick={() => resetMut.mutate()}
-                disabled={resetMut.isPending}
+                onClick={() => resetMut.mutate(newPwd)}
+                disabled={resetMut.isPending || newPwd.length < 8}
               >
                 {resetMut.isPending ? "Redefinindo…" : "Redefinir"}
               </Button>
             </div>
+            {lastAppliedPwd && (
+              <div className="rounded-md border border-success/40 bg-success/10 p-3 text-sm">
+                <p className="font-medium">Senha aplicada com sucesso.</p>
+                <p className="mt-1">
+                  Compartilhe exatamente esta senha com o usuário:{" "}
+                  <code className="rounded bg-background px-2 py-0.5 font-mono">
+                    {lastAppliedPwd}
+                  </code>
+                </p>
+              </div>
+            )}
           </Card>
         </form>
       )}
