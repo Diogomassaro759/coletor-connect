@@ -39,6 +39,23 @@ function NewAssessment() {
   const [activeModule, setActiveModule] = useState(modulo);
   const [materials, setMaterials] = useState<string[]>([]);
   const [choices, setChoices] = useState<Record<string, string>>({});
+  const now = new Date();
+  const pad = (n: number) => String(n).padStart(2, "0");
+  const defaultDate = `${now.getFullYear()}-${pad(now.getMonth() + 1)}-${pad(now.getDate())}`;
+  const defaultTime = `${pad(now.getHours())}:${pad(now.getMinutes())}`;
+  const { data: consultantProfile } = useQuery({
+    queryKey: ["consultant-profile-me"],
+    queryFn: async () => {
+      const { data: auth } = await supabase.auth.getUser();
+      if (!auth.user) return null;
+      const { data } = await supabase
+        .from("profiles")
+        .select("full_name")
+        .eq("user_id", auth.user.id)
+        .maybeSingle();
+      return data;
+    },
+  });
   const { data: association, isLoading: loadingAssociation } = useQuery({
     queryKey: ["association-social-form", id],
     queryFn: async () => {
@@ -47,6 +64,24 @@ function NewAssessment() {
       return data;
     },
   });
+  const moduleMeta: Record<typeof activeModule, { title: string; description: string }> = {
+    social: {
+      title: "Cadastro Social",
+      description:
+        "Perfil dos associados, saúde, renda, benefícios, cota e estrutura social.",
+    },
+    juridico: {
+      title: "Cadastro Jurídico",
+      description: "Diretoria, atas, contratos, processos, regras internas e regulação.",
+    },
+    contabil: {
+      title: "Cadastro Contábil",
+      description:
+        "Documentos, contador, livros, controles, balanços e pendências contábeis.",
+    },
+  };
+  const currentMeta = moduleMeta[activeModule];
+
 
   function choice(name: string, fallback = "Não") {
     return choices[name] ?? fallback;
@@ -321,20 +356,23 @@ function NewAssessment() {
         <p className="text-xs font-bold uppercase tracking-[0.16em] text-primary">
           3 tipos de cadastro de campo
         </p>
-        <h1 className="mt-1 text-3xl font-bold">Social, Jurídico e Contábil</h1>
-        <p className="mt-2 text-muted-foreground">
-          Selecione o tipo de cadastro e preencha o formulário correspondente ao documento de campo.
-        </p>
+        <h1 className="mt-1 text-3xl font-bold">{currentMeta.title}</h1>
+        <p className="mt-2 text-muted-foreground">{currentMeta.description}</p>
         <form onSubmit={submit} className="mt-7">
           <div className="mb-6 grid gap-4 rounded-xl border border-border bg-card p-5 shadow-card md:grid-cols-3">
             <Field label="Nome do consultor">
-              <Input name="consultant_name" required />
+              <Input
+                name="consultant_name"
+                required
+                defaultValue={consultantProfile?.full_name ?? ""}
+                key={consultantProfile?.full_name ?? "loading"}
+              />
             </Field>
             <Field label="Data da visita">
-              <Input name="data_visita" type="date" required />
+              <Input name="data_visita" type="date" required defaultValue={defaultDate} />
             </Field>
             <Field label="Horário da visita">
-              <Input name="horario_visita" type="time" required />
+              <Input name="horario_visita" type="time" required defaultValue={defaultTime} />
             </Field>
           </div>
           <Tabs
