@@ -321,6 +321,13 @@ function AdminDashboard() {
               <Download className="size-4" /> Exportar Excel
             </Button>
           )}
+          {isRecenseador && (
+            <Link to="/admin/novo">
+              <Button>
+                <Plus className="size-4" /> Cadastrar catador
+              </Button>
+            </Link>
+          )}
           {isAdmin && (
             <>
               <Link to="/admin/importar">
