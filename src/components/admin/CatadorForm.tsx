@@ -801,8 +801,8 @@ export function CatadorForm({
             <NaoInformar
               checked={naoTem.materiais}
               onChange={(c) => setNaoTem((s) => ({ ...s, materiais: c }))}
-              label="Não informar materiais coletados"
             />
+
           </Item>
 
           <SimNao
