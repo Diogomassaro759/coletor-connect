@@ -2,7 +2,7 @@ import { createFileRoute, redirect, useNavigate } from "@tanstack/react-router";
 import { useMutation } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { useState } from "react";
-import { ArrowLeft } from "lucide-react";
+import { ArrowLeft, Copy, Check } from "lucide-react";
 import { AdminShell } from "@/components/admin/AdminShell";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
@@ -39,7 +39,7 @@ function NovoUsuarioPage() {
   const navigate = useNavigate();
   const create = useServerFn(createOperationalUser);
 
-  const [form, setForm] = useState({
+  const [form, setForm] = useState(() => ({
     full_name: "",
     cpf: "",
     birth_date: "",
@@ -48,22 +48,30 @@ function NovoUsuarioPage() {
     role: "recenseador" as "recenseador" | "consultor" | "admin",
     municipio_referencia: "",
     identificacao_profissional: "",
-  });
+  }));
+
+  // Guarda a senha e email exatos que foram efetivamente enviados/salvos.
+  const [createdCreds, setCreatedCreds] = useState<{ email: string; password: string } | null>(
+    null,
+  );
+  const [copied, setCopied] = useState<"email" | "password" | null>(null);
 
   const mut = useMutation({
-    mutationFn: () =>
-      create({
-        data: {
-          ...form,
-          cpf: form.cpf.replace(/\D/g, ""),
-          birth_date: form.birth_date || null,
-          municipio_referencia: form.municipio_referencia || null,
-          identificacao_profissional: form.identificacao_profissional || null,
-        },
-      }),
-    onSuccess: () => {
-      toast.success("Usuário criado. Compartilhe a senha inicial.");
-      navigate({ to: "/admin/usuarios" });
+    mutationFn: async () => {
+      // Snapshot no exato momento do envio.
+      const snapshot = {
+        ...form,
+        cpf: form.cpf.replace(/\D/g, ""),
+        birth_date: form.birth_date || null,
+        municipio_referencia: form.municipio_referencia || null,
+        identificacao_profissional: form.identificacao_profissional || null,
+      };
+      const res = await create({ data: snapshot });
+      return { res, sent: snapshot };
+    },
+    onSuccess: ({ sent }) => {
+      setCreatedCreds({ email: sent.email, password: sent.password });
+      toast.success("Usuário criado. Copie a senha abaixo antes de sair.");
     },
     onError: (e: Error) => toast.error(e.message),
   });
@@ -71,6 +79,18 @@ function NovoUsuarioPage() {
   function set<K extends keyof typeof form>(k: K, v: (typeof form)[K]) {
     setForm((f) => ({ ...f, [k]: v }));
   }
+
+  async function copyValue(kind: "email" | "password", value: string) {
+    try {
+      await navigator.clipboard.writeText(value);
+      setCopied(kind);
+      setTimeout(() => setCopied(null), 1500);
+    } catch {
+      toast.error("Não foi possível copiar. Selecione o texto manualmente.");
+    }
+  }
+
+
 
   return (
     <AdminShell>
@@ -85,12 +105,67 @@ function NovoUsuarioPage() {
         O usuário será criado com a senha inicial abaixo e deverá redefini-la no primeiro acesso.
       </p>
 
+      {createdCreds && (
+        <Card className="p-6 mb-6 max-w-2xl border-primary bg-primary/5">
+          <h2 className="text-lg font-semibold mb-1">Usuário criado com sucesso</h2>
+          <p className="text-sm text-muted-foreground mb-4">
+            Copie e compartilhe as credenciais abaixo com o usuário <strong>agora</strong>. A senha
+            não poderá ser visualizada novamente depois que você sair desta tela.
+          </p>
+          <div className="space-y-3">
+            <div>
+              <Label className="text-xs">E-mail (login)</Label>
+              <div className="flex gap-2">
+                <Input readOnly value={createdCreds.email} className="font-mono" />
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={() => copyValue("email", createdCreds.email)}
+                >
+                  {copied === "email" ? <Check className="size-4" /> : <Copy className="size-4" />}
+                </Button>
+              </div>
+            </div>
+            <div>
+              <Label className="text-xs">Senha inicial (a que foi realmente salva)</Label>
+              <div className="flex gap-2">
+                <Input readOnly value={createdCreds.password} className="font-mono" />
+                <Button
+                  type="button"
+                  onClick={() => copyValue("password", createdCreds.password)}
+                >
+                  {copied === "password" ? (
+                    <Check className="size-4" />
+                  ) : (
+                    <Copy className="size-4" />
+                  )}
+                  Copiar senha
+                </Button>
+              </div>
+            </div>
+          </div>
+          <div className="flex justify-end gap-2 pt-4">
+            <Button
+              type="button"
+              variant="outline"
+              onClick={() => navigate({ to: "/admin/usuarios" })}
+            >
+              Ir para lista de usuários
+            </Button>
+          </div>
+        </Card>
+      )}
+
+
       <form
         onSubmit={(e) => {
           e.preventDefault();
+          if (createdCreds) return;
           mut.mutate();
         }}
       >
+        <fieldset disabled={!!createdCreds} className="contents">
+
         <Card className="p-6 space-y-4 max-w-2xl">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="md:col-span-2">
@@ -186,6 +261,7 @@ function NovoUsuarioPage() {
             </Button>
           </div>
         </Card>
+        </fieldset>
       </form>
     </AdminShell>
   );
