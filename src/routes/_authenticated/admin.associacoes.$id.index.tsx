@@ -226,14 +226,23 @@ function AssociationDetails() {
                 params={{ id, assessmentId: item.id }}
                 className="flex flex-wrap items-center justify-between gap-4 py-4 transition hover:bg-muted/40"
               >
-                <div>
-                  <p className="font-medium">
-                    Visita de {new Date(`${item.data_visita}T12:00:00`).toLocaleDateString("pt-BR")}
-                    {item.horario_visita ? ` às ${String(item.horario_visita).slice(0, 5)}` : ""}
-                  </p>
-                  <p className="text-sm text-muted-foreground">
-                    Consultor(a): {item.consultant_name}
-                  </p>
+                <div className="flex flex-wrap gap-x-8 gap-y-2">
+                  <div>
+                    <p className="text-xs font-medium text-muted-foreground">Nome do consultor</p>
+                    <p className="font-medium">{item.consultant_name}</p>
+                  </div>
+                  <div>
+                    <p className="text-xs font-medium text-muted-foreground">Data da visita</p>
+                    <p className="font-medium tabular-nums">
+                      {new Date(`${item.data_visita}T12:00:00`).toLocaleDateString("pt-BR")}
+                    </p>
+                  </div>
+                  <div>
+                    <p className="text-xs font-medium text-muted-foreground">Horário da visita</p>
+                    <p className="font-medium tabular-nums">
+                      {item.horario_visita ? String(item.horario_visita).slice(0, 5) : "—"}
+                    </p>
+                  </div>
                 </div>
                 <div className="flex items-center gap-2">
                   <strong className="tabular-nums">
