@@ -14,6 +14,7 @@ import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AuthenticatedAdminRouteImport } from './routes/_authenticated/admin'
 import { Route as AuthenticatedAdminIndexRouteImport } from './routes/_authenticated/admin.index'
+import { Route as AuthenticatedAdminTrocarSenhaRouteImport } from './routes/_authenticated/admin.trocar-senha'
 import { Route as AuthenticatedAdminQaRouteImport } from './routes/_authenticated/admin.qa'
 import { Route as AuthenticatedAdminPerfilRouteImport } from './routes/_authenticated/admin.perfil'
 import { Route as AuthenticatedAdminNovoRouteImport } from './routes/_authenticated/admin.novo'
@@ -57,6 +58,12 @@ const AuthenticatedAdminIndexRoute = AuthenticatedAdminIndexRouteImport.update({
   path: '/',
   getParentRoute: () => AuthenticatedAdminRoute,
 } as any)
+const AuthenticatedAdminTrocarSenhaRoute =
+  AuthenticatedAdminTrocarSenhaRouteImport.update({
+    id: '/trocar-senha',
+    path: '/trocar-senha',
+    getParentRoute: () => AuthenticatedAdminRoute,
+  } as any)
 const AuthenticatedAdminQaRoute = AuthenticatedAdminQaRouteImport.update({
   id: '/qa',
   path: '/qa',
@@ -174,6 +181,7 @@ export interface FileRoutesByFullPath {
   '/admin/novo': typeof AuthenticatedAdminNovoRoute
   '/admin/perfil': typeof AuthenticatedAdminPerfilRoute
   '/admin/qa': typeof AuthenticatedAdminQaRoute
+  '/admin/trocar-senha': typeof AuthenticatedAdminTrocarSenhaRoute
   '/admin/': typeof AuthenticatedAdminIndexRoute
   '/admin/$id/editar': typeof AuthenticatedAdminIdEditarRoute
   '/admin/associacoes/nova': typeof AuthenticatedAdminAssociacoesNovaRoute
@@ -197,6 +205,7 @@ export interface FileRoutesByTo {
   '/admin/novo': typeof AuthenticatedAdminNovoRoute
   '/admin/perfil': typeof AuthenticatedAdminPerfilRoute
   '/admin/qa': typeof AuthenticatedAdminQaRoute
+  '/admin/trocar-senha': typeof AuthenticatedAdminTrocarSenhaRoute
   '/admin': typeof AuthenticatedAdminIndexRoute
   '/admin/$id/editar': typeof AuthenticatedAdminIdEditarRoute
   '/admin/associacoes/nova': typeof AuthenticatedAdminAssociacoesNovaRoute
@@ -223,6 +232,7 @@ export interface FileRoutesById {
   '/_authenticated/admin/novo': typeof AuthenticatedAdminNovoRoute
   '/_authenticated/admin/perfil': typeof AuthenticatedAdminPerfilRoute
   '/_authenticated/admin/qa': typeof AuthenticatedAdminQaRoute
+  '/_authenticated/admin/trocar-senha': typeof AuthenticatedAdminTrocarSenhaRoute
   '/_authenticated/admin/': typeof AuthenticatedAdminIndexRoute
   '/_authenticated/admin/$id/editar': typeof AuthenticatedAdminIdEditarRoute
   '/_authenticated/admin/associacoes/nova': typeof AuthenticatedAdminAssociacoesNovaRoute
@@ -249,6 +259,7 @@ export interface FileRouteTypes {
     | '/admin/novo'
     | '/admin/perfil'
     | '/admin/qa'
+    | '/admin/trocar-senha'
     | '/admin/'
     | '/admin/$id/editar'
     | '/admin/associacoes/nova'
@@ -272,6 +283,7 @@ export interface FileRouteTypes {
     | '/admin/novo'
     | '/admin/perfil'
     | '/admin/qa'
+    | '/admin/trocar-senha'
     | '/admin'
     | '/admin/$id/editar'
     | '/admin/associacoes/nova'
@@ -297,6 +309,7 @@ export interface FileRouteTypes {
     | '/_authenticated/admin/novo'
     | '/_authenticated/admin/perfil'
     | '/_authenticated/admin/qa'
+    | '/_authenticated/admin/trocar-senha'
     | '/_authenticated/admin/'
     | '/_authenticated/admin/$id/editar'
     | '/_authenticated/admin/associacoes/nova'
@@ -353,6 +366,13 @@ declare module '@tanstack/react-router' {
       path: '/'
       fullPath: '/admin/'
       preLoaderRoute: typeof AuthenticatedAdminIndexRouteImport
+      parentRoute: typeof AuthenticatedAdminRoute
+    }
+    '/_authenticated/admin/trocar-senha': {
+      id: '/_authenticated/admin/trocar-senha'
+      path: '/trocar-senha'
+      fullPath: '/admin/trocar-senha'
+      preLoaderRoute: typeof AuthenticatedAdminTrocarSenhaRouteImport
       parentRoute: typeof AuthenticatedAdminRoute
     }
     '/_authenticated/admin/qa': {
@@ -491,6 +511,7 @@ interface AuthenticatedAdminRouteChildren {
   AuthenticatedAdminNovoRoute: typeof AuthenticatedAdminNovoRoute
   AuthenticatedAdminPerfilRoute: typeof AuthenticatedAdminPerfilRoute
   AuthenticatedAdminQaRoute: typeof AuthenticatedAdminQaRoute
+  AuthenticatedAdminTrocarSenhaRoute: typeof AuthenticatedAdminTrocarSenhaRoute
   AuthenticatedAdminIndexRoute: typeof AuthenticatedAdminIndexRoute
   AuthenticatedAdminIdEditarRoute: typeof AuthenticatedAdminIdEditarRoute
   AuthenticatedAdminAssociacoesNovaRoute: typeof AuthenticatedAdminAssociacoesNovaRoute
@@ -513,6 +534,7 @@ const AuthenticatedAdminRouteChildren: AuthenticatedAdminRouteChildren = {
   AuthenticatedAdminNovoRoute: AuthenticatedAdminNovoRoute,
   AuthenticatedAdminPerfilRoute: AuthenticatedAdminPerfilRoute,
   AuthenticatedAdminQaRoute: AuthenticatedAdminQaRoute,
+  AuthenticatedAdminTrocarSenhaRoute: AuthenticatedAdminTrocarSenhaRoute,
   AuthenticatedAdminIndexRoute: AuthenticatedAdminIndexRoute,
   AuthenticatedAdminIdEditarRoute: AuthenticatedAdminIdEditarRoute,
   AuthenticatedAdminAssociacoesNovaRoute:
@@ -558,13 +580,3 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { startInstance } from './start.ts'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-    config: Awaited<ReturnType<typeof startInstance.getOptions>>
-  }
-}
