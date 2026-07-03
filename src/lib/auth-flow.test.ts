@@ -32,11 +32,14 @@ describe("resolveFirstLoginRedirect (first-login guard)", () => {
 describe("performPasswordChangeAndLogout (fluxo pós-troca)", () => {
   const validPwd = "Senha123!";
   const makeDeps = () => ({
-    updatePassword: vi.fn(async () => ({ error: null })),
-    clearMustChangePassword: vi.fn(async () => {}),
+    updatePassword: vi.fn<(pwd: string) => Promise<{ error: { message: string } | null }>>(
+      async () => ({ error: null }),
+    ),
+    clearMustChangePassword: vi.fn(async (_userId: string) => {}),
     signOut: vi.fn(async () => {}),
-    navigate: vi.fn(),
+    navigate: vi.fn((_to: string) => {}),
   });
+
 
   it("atualiza senha, limpa must_change_password, desloga e envia para /auth", async () => {
     const deps = makeDeps();
