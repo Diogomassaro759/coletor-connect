@@ -101,13 +101,6 @@ export function AdminShell({ children }: { children: React.ReactNode }) {
               </Link>
             )}
             {(isAdmin || isConsultant) && (
-              <Link to="/admin/qa">
-                <Button variant="ghost" size="sm" title="Painel de QA">
-                  <Beaker className="size-4" />
-                </Button>
-              </Link>
-            )}
-            {(isAdmin || isConsultant) && (
               <Link to="/admin/notificacoes" className="relative">
                 <Button variant="ghost" size="sm" title="Notificações">
                   <Bell className="size-4" />
