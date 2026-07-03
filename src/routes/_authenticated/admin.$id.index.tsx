@@ -34,7 +34,7 @@ export const Route = createFileRoute("/_authenticated/admin/$id/")({
 
 function CatadorDetails() {
   const { id } = Route.useParams();
-  const { role } = Route.useRouteContext();
+  const { role, user, isAdmin } = Route.useRouteContext();
   const showFull = canViewSensitive(role);
   const navigate = useNavigate();
   const qc = useQueryClient();
@@ -117,82 +117,88 @@ function CatadorDetails() {
           </p>
         </div>
         <div className="flex gap-2">
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button variant="outline" className="gap-2">
-                <span className="text-xs text-muted-foreground">Status atual:</span>
-                <StatusPill status={c.status} />
-                <ChevronDown className="size-4 opacity-60" />
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end" className="w-80">
-              <DropdownMenuLabel className="flex items-start gap-2 py-3 bg-muted/40">
-                <Check className="size-4 mt-0.5 text-primary shrink-0" />
-                <div className="flex-1">
-                  <div className="flex items-center gap-2">
-                    <span className="text-xs uppercase tracking-wide text-muted-foreground">
-                      Status atual
-                    </span>
-                    <StatusPill status={c.status} />
-                  </div>
-                  <p className="text-xs text-muted-foreground font-normal leading-snug mt-1">
-                    {STATUS_DESCRIPTION[c.status]}
-                  </p>
-                  {c.status === "inativo" && (
-                    <ul className="mt-2 space-y-0.5 text-[11px] text-muted-foreground list-disc pl-4">
-                      {STATUS_INATIVO_CRITERIOS.map((cr) => <li key={cr}>{cr}</li>)}
-                    </ul>
-                  )}
-                </div>
-              </DropdownMenuLabel>
-              <DropdownMenuSeparator />
-              <DropdownMenuLabel className="text-[11px] font-normal uppercase tracking-wide text-muted-foreground pt-2">
-                Alterar para
-              </DropdownMenuLabel>
-              {STATUS_OPTIONS.filter((s) => s.value !== c.status).map((s) => (
-                <DropdownMenuItem
-                  key={s.value}
-                  onClick={() => statusMutation.mutate(s.value)}
-                  className="flex items-start gap-2 py-2"
-                >
-                  <div className="size-4 mt-0.5 shrink-0" />
+          {isAdmin && (
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="outline" className="gap-2">
+                  <span className="text-xs text-muted-foreground">Status atual:</span>
+                  <StatusPill status={c.status} />
+                  <ChevronDown className="size-4 opacity-60" />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end" className="w-80">
+                <DropdownMenuLabel className="flex items-start gap-2 py-3 bg-muted/40">
+                  <Check className="size-4 mt-0.5 text-primary shrink-0" />
                   <div className="flex-1">
-                    <div className="font-medium text-sm">{s.label}</div>
-                    <p className="text-xs text-muted-foreground leading-snug">
-                      {STATUS_DESCRIPTION[s.value]}
+                    <div className="flex items-center gap-2">
+                      <span className="text-xs uppercase tracking-wide text-muted-foreground">
+                        Status atual
+                      </span>
+                      <StatusPill status={c.status} />
+                    </div>
+                    <p className="text-xs text-muted-foreground font-normal leading-snug mt-1">
+                      {STATUS_DESCRIPTION[c.status]}
                     </p>
+                    {c.status === "inativo" && (
+                      <ul className="mt-2 space-y-0.5 text-[11px] text-muted-foreground list-disc pl-4">
+                        {STATUS_INATIVO_CRITERIOS.map((cr) => <li key={cr}>{cr}</li>)}
+                      </ul>
+                    )}
                   </div>
-                </DropdownMenuItem>
-              ))}
-            </DropdownMenuContent>
-          </DropdownMenu>
-          <Link to="/admin/$id/editar" params={{ id }}>
-            <Button variant="outline"><Pencil className="size-4" /> Editar</Button>
-          </Link>
-          <AlertDialog>
-            <AlertDialogTrigger asChild>
-              <Button variant="outline" className="text-destructive hover:text-destructive">
-                <Trash2 className="size-4" /> Excluir
-              </Button>
-            </AlertDialogTrigger>
-            <AlertDialogContent>
-              <AlertDialogHeader>
-                <AlertDialogTitle>Excluir cadastro?</AlertDialogTitle>
-                <AlertDialogDescription>
-                  Esta ação é irreversível. O cadastro de <strong>{c.nome_completo}</strong> será removido permanentemente.
-                </AlertDialogDescription>
-              </AlertDialogHeader>
-              <AlertDialogFooter>
-                <AlertDialogCancel>Cancelar</AlertDialogCancel>
-                <AlertDialogAction
-                  onClick={() => deleteMutation.mutate()}
-                  className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
-                >
-                  Excluir
-                </AlertDialogAction>
-              </AlertDialogFooter>
-            </AlertDialogContent>
-          </AlertDialog>
+                </DropdownMenuLabel>
+                <DropdownMenuSeparator />
+                <DropdownMenuLabel className="text-[11px] font-normal uppercase tracking-wide text-muted-foreground pt-2">
+                  Alterar para
+                </DropdownMenuLabel>
+                {STATUS_OPTIONS.filter((s) => s.value !== c.status).map((s) => (
+                  <DropdownMenuItem
+                    key={s.value}
+                    onClick={() => statusMutation.mutate(s.value)}
+                    className="flex items-start gap-2 py-2"
+                  >
+                    <div className="size-4 mt-0.5 shrink-0" />
+                    <div className="flex-1">
+                      <div className="font-medium text-sm">{s.label}</div>
+                      <p className="text-xs text-muted-foreground leading-snug">
+                        {STATUS_DESCRIPTION[s.value]}
+                      </p>
+                    </div>
+                  </DropdownMenuItem>
+                ))}
+              </DropdownMenuContent>
+            </DropdownMenu>
+          )}
+          {(isAdmin || c.created_by === user.id) && (
+            <Link to="/admin/$id/editar" params={{ id }}>
+              <Button variant="outline"><Pencil className="size-4" /> Editar</Button>
+            </Link>
+          )}
+          {isAdmin && (
+            <AlertDialog>
+              <AlertDialogTrigger asChild>
+                <Button variant="outline" className="text-destructive hover:text-destructive">
+                  <Trash2 className="size-4" /> Excluir
+                </Button>
+              </AlertDialogTrigger>
+              <AlertDialogContent>
+                <AlertDialogHeader>
+                  <AlertDialogTitle>Excluir cadastro?</AlertDialogTitle>
+                  <AlertDialogDescription>
+                    Esta ação é irreversível. O cadastro de <strong>{c.nome_completo}</strong> será removido permanentemente.
+                  </AlertDialogDescription>
+                </AlertDialogHeader>
+                <AlertDialogFooter>
+                  <AlertDialogCancel>Cancelar</AlertDialogCancel>
+                  <AlertDialogAction
+                    onClick={() => deleteMutation.mutate()}
+                    className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                  >
+                    Excluir
+                  </AlertDialogAction>
+                </AlertDialogFooter>
+              </AlertDialogContent>
+            </AlertDialog>
+          )}
         </div>
       </div>
 
