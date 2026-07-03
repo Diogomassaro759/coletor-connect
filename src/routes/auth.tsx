@@ -28,7 +28,7 @@ function AuthPage() {
       supabase.from("user_roles").select("role").eq("user_id", userId),
     ]);
     if (profile?.must_change_password) {
-      navigate({ to: "/admin/perfil" });
+      navigate({ to: "/admin/trocar-senha" });
       return;
     }
     const isAdmin = !!roles?.some((r) => r.role === "admin");

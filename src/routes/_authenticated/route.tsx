@@ -32,8 +32,8 @@ export const Route = createFileRoute("/_authenticated")({
       .eq("user_id", data.user.id)
       .maybeSingle();
     const mustChangePassword = !!profile?.must_change_password;
-    if (mustChangePassword && location.pathname !== "/admin/perfil") {
-      throw redirect({ to: "/admin/perfil" });
+    if (mustChangePassword && location.pathname !== "/admin/trocar-senha") {
+      throw redirect({ to: "/admin/trocar-senha" });
     }
     return { user: data.user, role, isAdmin, isConsultant, isRecenseador, mustChangePassword };
   },

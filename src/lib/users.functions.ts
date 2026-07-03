@@ -108,6 +108,81 @@ export const listOperationalUsers = createServerFn({ method: "GET" }).handler(
   },
 );
 
+export const updateOperationalUser = createServerFn({ method: "POST" })
+  .inputValidator(
+    z.object({
+      user_id: z.string().uuid(),
+      full_name: z.string().min(3),
+      email: z.string().email(),
+      municipio_referencia: z.string().optional().nullable(),
+      identificacao_profissional: z.string().optional().nullable(),
+      role: z.enum(["recenseador", "consultor", "admin"]).optional(),
+    }),
+  )
+  .handler(async ({ data, context }) => {
+    await assertAdmin(context as any);
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+
+    const { error: pErr } = await supabaseAdmin
+      .from("profiles")
+      .update({
+        full_name: data.full_name,
+        email: data.email,
+        municipio_referencia: data.municipio_referencia || null,
+        identificacao_profissional: data.identificacao_profissional || null,
+      })
+      .eq("user_id", data.user_id);
+    if (pErr) throw new Error(pErr.message);
+
+    const { error: aErr } = await supabaseAdmin.auth.admin.updateUserById(data.user_id, {
+      email: data.email,
+    });
+    if (aErr) throw new Error(aErr.message);
+
+    if (data.role) {
+      await supabaseAdmin.from("user_roles").delete().eq("user_id", data.user_id);
+      const { error: rErr } = await supabaseAdmin
+        .from("user_roles")
+        .insert({ user_id: data.user_id, role: data.role });
+      if (rErr) throw new Error(rErr.message);
+    }
+    return { ok: true };
+  });
+
+export const getOperationalUser = createServerFn({ method: "GET" })
+  .inputValidator(z.object({ user_id: z.string().uuid() }))
+  .handler(async ({ data, context }) => {
+    await assertAdmin(context as any);
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const { data: p, error } = await supabaseAdmin
+      .from("profiles")
+      .select("user_id, full_name, cpf, email, municipio_referencia, identificacao_profissional")
+      .eq("user_id", data.user_id)
+      .maybeSingle();
+    if (error) throw new Error(error.message);
+    const { data: roles } = await supabaseAdmin
+      .from("user_roles")
+      .select("role")
+      .eq("user_id", data.user_id);
+    return { ...(p ?? {}), roles: (roles ?? []).map((r) => r.role) };
+  });
+
+export const resetOperationalUserPassword = createServerFn({ method: "POST" })
+  .inputValidator(z.object({ user_id: z.string().uuid(), new_password: z.string().min(8) }))
+  .handler(async ({ data, context }) => {
+    await assertAdmin(context as any);
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const { error } = await supabaseAdmin.auth.admin.updateUserById(data.user_id, {
+      password: data.new_password,
+    });
+    if (error) throw new Error(error.message);
+    await supabaseAdmin
+      .from("profiles")
+      .update({ must_change_password: true })
+      .eq("user_id", data.user_id);
+    return { ok: true };
+  });
+
 export const deleteOperationalUser = createServerFn({ method: "POST" })
   .inputValidator(z.object({ user_id: z.string().uuid() }))
   .handler(async ({ data, context }) => {

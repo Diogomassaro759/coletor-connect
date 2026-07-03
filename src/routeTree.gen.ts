@@ -14,6 +14,7 @@ import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AuthenticatedAdminRouteImport } from './routes/_authenticated/admin'
 import { Route as AuthenticatedAdminIndexRouteImport } from './routes/_authenticated/admin.index'
+import { Route as AuthenticatedAdminTrocarSenhaRouteImport } from './routes/_authenticated/admin.trocar-senha'
 import { Route as AuthenticatedAdminQaRouteImport } from './routes/_authenticated/admin.qa'
 import { Route as AuthenticatedAdminPerfilRouteImport } from './routes/_authenticated/admin.perfil'
 import { Route as AuthenticatedAdminNovoRouteImport } from './routes/_authenticated/admin.novo'
@@ -27,6 +28,7 @@ import { Route as AuthenticatedAdminUsuariosNovoRouteImport } from './routes/_au
 import { Route as AuthenticatedAdminAssociacoesNovaRouteImport } from './routes/_authenticated/admin.associacoes.nova'
 import { Route as AuthenticatedAdminIdEditarRouteImport } from './routes/_authenticated/admin.$id.editar'
 import { Route as AuthenticatedAdminAssociacoesIdIndexRouteImport } from './routes/_authenticated/admin.associacoes.$id.index'
+import { Route as AuthenticatedAdminUsuariosUserIdEditarRouteImport } from './routes/_authenticated/admin.usuarios.$userId.editar'
 import { Route as AuthenticatedAdminAssociacoesIdEditarRouteImport } from './routes/_authenticated/admin.associacoes.$id.editar'
 import { Route as AuthenticatedAdminAssociacoesIdDocumentosRouteImport } from './routes/_authenticated/admin.associacoes.$id.documentos'
 import { Route as AuthenticatedAdminAssociacoesIdDiagnosticoNovoRouteImport } from './routes/_authenticated/admin.associacoes.$id.diagnostico.novo'
@@ -57,6 +59,12 @@ const AuthenticatedAdminIndexRoute = AuthenticatedAdminIndexRouteImport.update({
   path: '/',
   getParentRoute: () => AuthenticatedAdminRoute,
 } as any)
+const AuthenticatedAdminTrocarSenhaRoute =
+  AuthenticatedAdminTrocarSenhaRouteImport.update({
+    id: '/trocar-senha',
+    path: '/trocar-senha',
+    getParentRoute: () => AuthenticatedAdminRoute,
+  } as any)
 const AuthenticatedAdminQaRoute = AuthenticatedAdminQaRouteImport.update({
   id: '/qa',
   path: '/qa',
@@ -133,6 +141,12 @@ const AuthenticatedAdminAssociacoesIdIndexRoute =
     path: '/associacoes/$id/',
     getParentRoute: () => AuthenticatedAdminRoute,
   } as any)
+const AuthenticatedAdminUsuariosUserIdEditarRoute =
+  AuthenticatedAdminUsuariosUserIdEditarRouteImport.update({
+    id: '/usuarios/$userId/editar',
+    path: '/usuarios/$userId/editar',
+    getParentRoute: () => AuthenticatedAdminRoute,
+  } as any)
 const AuthenticatedAdminAssociacoesIdEditarRoute =
   AuthenticatedAdminAssociacoesIdEditarRouteImport.update({
     id: '/associacoes/$id/editar',
@@ -174,6 +188,7 @@ export interface FileRoutesByFullPath {
   '/admin/novo': typeof AuthenticatedAdminNovoRoute
   '/admin/perfil': typeof AuthenticatedAdminPerfilRoute
   '/admin/qa': typeof AuthenticatedAdminQaRoute
+  '/admin/trocar-senha': typeof AuthenticatedAdminTrocarSenhaRoute
   '/admin/': typeof AuthenticatedAdminIndexRoute
   '/admin/$id/editar': typeof AuthenticatedAdminIdEditarRoute
   '/admin/associacoes/nova': typeof AuthenticatedAdminAssociacoesNovaRoute
@@ -183,6 +198,7 @@ export interface FileRoutesByFullPath {
   '/admin/usuarios/': typeof AuthenticatedAdminUsuariosIndexRoute
   '/admin/associacoes/$id/documentos': typeof AuthenticatedAdminAssociacoesIdDocumentosRoute
   '/admin/associacoes/$id/editar': typeof AuthenticatedAdminAssociacoesIdEditarRoute
+  '/admin/usuarios/$userId/editar': typeof AuthenticatedAdminUsuariosUserIdEditarRoute
   '/admin/associacoes/$id/': typeof AuthenticatedAdminAssociacoesIdIndexRoute
   '/admin/associacoes/$id/catadores/novo': typeof AuthenticatedAdminAssociacoesIdCatadoresNovoRoute
   '/admin/associacoes/$id/diagnostico/$assessmentId': typeof AuthenticatedAdminAssociacoesIdDiagnosticoAssessmentIdRoute
@@ -197,6 +213,7 @@ export interface FileRoutesByTo {
   '/admin/novo': typeof AuthenticatedAdminNovoRoute
   '/admin/perfil': typeof AuthenticatedAdminPerfilRoute
   '/admin/qa': typeof AuthenticatedAdminQaRoute
+  '/admin/trocar-senha': typeof AuthenticatedAdminTrocarSenhaRoute
   '/admin': typeof AuthenticatedAdminIndexRoute
   '/admin/$id/editar': typeof AuthenticatedAdminIdEditarRoute
   '/admin/associacoes/nova': typeof AuthenticatedAdminAssociacoesNovaRoute
@@ -206,6 +223,7 @@ export interface FileRoutesByTo {
   '/admin/usuarios': typeof AuthenticatedAdminUsuariosIndexRoute
   '/admin/associacoes/$id/documentos': typeof AuthenticatedAdminAssociacoesIdDocumentosRoute
   '/admin/associacoes/$id/editar': typeof AuthenticatedAdminAssociacoesIdEditarRoute
+  '/admin/usuarios/$userId/editar': typeof AuthenticatedAdminUsuariosUserIdEditarRoute
   '/admin/associacoes/$id': typeof AuthenticatedAdminAssociacoesIdIndexRoute
   '/admin/associacoes/$id/catadores/novo': typeof AuthenticatedAdminAssociacoesIdCatadoresNovoRoute
   '/admin/associacoes/$id/diagnostico/$assessmentId': typeof AuthenticatedAdminAssociacoesIdDiagnosticoAssessmentIdRoute
@@ -223,6 +241,7 @@ export interface FileRoutesById {
   '/_authenticated/admin/novo': typeof AuthenticatedAdminNovoRoute
   '/_authenticated/admin/perfil': typeof AuthenticatedAdminPerfilRoute
   '/_authenticated/admin/qa': typeof AuthenticatedAdminQaRoute
+  '/_authenticated/admin/trocar-senha': typeof AuthenticatedAdminTrocarSenhaRoute
   '/_authenticated/admin/': typeof AuthenticatedAdminIndexRoute
   '/_authenticated/admin/$id/editar': typeof AuthenticatedAdminIdEditarRoute
   '/_authenticated/admin/associacoes/nova': typeof AuthenticatedAdminAssociacoesNovaRoute
@@ -232,6 +251,7 @@ export interface FileRoutesById {
   '/_authenticated/admin/usuarios/': typeof AuthenticatedAdminUsuariosIndexRoute
   '/_authenticated/admin/associacoes/$id/documentos': typeof AuthenticatedAdminAssociacoesIdDocumentosRoute
   '/_authenticated/admin/associacoes/$id/editar': typeof AuthenticatedAdminAssociacoesIdEditarRoute
+  '/_authenticated/admin/usuarios/$userId/editar': typeof AuthenticatedAdminUsuariosUserIdEditarRoute
   '/_authenticated/admin/associacoes/$id/': typeof AuthenticatedAdminAssociacoesIdIndexRoute
   '/_authenticated/admin/associacoes/$id/catadores/novo': typeof AuthenticatedAdminAssociacoesIdCatadoresNovoRoute
   '/_authenticated/admin/associacoes/$id/diagnostico/$assessmentId': typeof AuthenticatedAdminAssociacoesIdDiagnosticoAssessmentIdRoute
@@ -249,6 +269,7 @@ export interface FileRouteTypes {
     | '/admin/novo'
     | '/admin/perfil'
     | '/admin/qa'
+    | '/admin/trocar-senha'
     | '/admin/'
     | '/admin/$id/editar'
     | '/admin/associacoes/nova'
@@ -258,6 +279,7 @@ export interface FileRouteTypes {
     | '/admin/usuarios/'
     | '/admin/associacoes/$id/documentos'
     | '/admin/associacoes/$id/editar'
+    | '/admin/usuarios/$userId/editar'
     | '/admin/associacoes/$id/'
     | '/admin/associacoes/$id/catadores/novo'
     | '/admin/associacoes/$id/diagnostico/$assessmentId'
@@ -272,6 +294,7 @@ export interface FileRouteTypes {
     | '/admin/novo'
     | '/admin/perfil'
     | '/admin/qa'
+    | '/admin/trocar-senha'
     | '/admin'
     | '/admin/$id/editar'
     | '/admin/associacoes/nova'
@@ -281,6 +304,7 @@ export interface FileRouteTypes {
     | '/admin/usuarios'
     | '/admin/associacoes/$id/documentos'
     | '/admin/associacoes/$id/editar'
+    | '/admin/usuarios/$userId/editar'
     | '/admin/associacoes/$id'
     | '/admin/associacoes/$id/catadores/novo'
     | '/admin/associacoes/$id/diagnostico/$assessmentId'
@@ -297,6 +321,7 @@ export interface FileRouteTypes {
     | '/_authenticated/admin/novo'
     | '/_authenticated/admin/perfil'
     | '/_authenticated/admin/qa'
+    | '/_authenticated/admin/trocar-senha'
     | '/_authenticated/admin/'
     | '/_authenticated/admin/$id/editar'
     | '/_authenticated/admin/associacoes/nova'
@@ -306,6 +331,7 @@ export interface FileRouteTypes {
     | '/_authenticated/admin/usuarios/'
     | '/_authenticated/admin/associacoes/$id/documentos'
     | '/_authenticated/admin/associacoes/$id/editar'
+    | '/_authenticated/admin/usuarios/$userId/editar'
     | '/_authenticated/admin/associacoes/$id/'
     | '/_authenticated/admin/associacoes/$id/catadores/novo'
     | '/_authenticated/admin/associacoes/$id/diagnostico/$assessmentId'
@@ -353,6 +379,13 @@ declare module '@tanstack/react-router' {
       path: '/'
       fullPath: '/admin/'
       preLoaderRoute: typeof AuthenticatedAdminIndexRouteImport
+      parentRoute: typeof AuthenticatedAdminRoute
+    }
+    '/_authenticated/admin/trocar-senha': {
+      id: '/_authenticated/admin/trocar-senha'
+      path: '/trocar-senha'
+      fullPath: '/admin/trocar-senha'
+      preLoaderRoute: typeof AuthenticatedAdminTrocarSenhaRouteImport
       parentRoute: typeof AuthenticatedAdminRoute
     }
     '/_authenticated/admin/qa': {
@@ -446,6 +479,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAdminAssociacoesIdIndexRouteImport
       parentRoute: typeof AuthenticatedAdminRoute
     }
+    '/_authenticated/admin/usuarios/$userId/editar': {
+      id: '/_authenticated/admin/usuarios/$userId/editar'
+      path: '/usuarios/$userId/editar'
+      fullPath: '/admin/usuarios/$userId/editar'
+      preLoaderRoute: typeof AuthenticatedAdminUsuariosUserIdEditarRouteImport
+      parentRoute: typeof AuthenticatedAdminRoute
+    }
     '/_authenticated/admin/associacoes/$id/editar': {
       id: '/_authenticated/admin/associacoes/$id/editar'
       path: '/associacoes/$id/editar'
@@ -491,6 +531,7 @@ interface AuthenticatedAdminRouteChildren {
   AuthenticatedAdminNovoRoute: typeof AuthenticatedAdminNovoRoute
   AuthenticatedAdminPerfilRoute: typeof AuthenticatedAdminPerfilRoute
   AuthenticatedAdminQaRoute: typeof AuthenticatedAdminQaRoute
+  AuthenticatedAdminTrocarSenhaRoute: typeof AuthenticatedAdminTrocarSenhaRoute
   AuthenticatedAdminIndexRoute: typeof AuthenticatedAdminIndexRoute
   AuthenticatedAdminIdEditarRoute: typeof AuthenticatedAdminIdEditarRoute
   AuthenticatedAdminAssociacoesNovaRoute: typeof AuthenticatedAdminAssociacoesNovaRoute
@@ -500,6 +541,7 @@ interface AuthenticatedAdminRouteChildren {
   AuthenticatedAdminUsuariosIndexRoute: typeof AuthenticatedAdminUsuariosIndexRoute
   AuthenticatedAdminAssociacoesIdDocumentosRoute: typeof AuthenticatedAdminAssociacoesIdDocumentosRoute
   AuthenticatedAdminAssociacoesIdEditarRoute: typeof AuthenticatedAdminAssociacoesIdEditarRoute
+  AuthenticatedAdminUsuariosUserIdEditarRoute: typeof AuthenticatedAdminUsuariosUserIdEditarRoute
   AuthenticatedAdminAssociacoesIdIndexRoute: typeof AuthenticatedAdminAssociacoesIdIndexRoute
   AuthenticatedAdminAssociacoesIdCatadoresNovoRoute: typeof AuthenticatedAdminAssociacoesIdCatadoresNovoRoute
   AuthenticatedAdminAssociacoesIdDiagnosticoAssessmentIdRoute: typeof AuthenticatedAdminAssociacoesIdDiagnosticoAssessmentIdRoute
@@ -513,6 +555,7 @@ const AuthenticatedAdminRouteChildren: AuthenticatedAdminRouteChildren = {
   AuthenticatedAdminNovoRoute: AuthenticatedAdminNovoRoute,
   AuthenticatedAdminPerfilRoute: AuthenticatedAdminPerfilRoute,
   AuthenticatedAdminQaRoute: AuthenticatedAdminQaRoute,
+  AuthenticatedAdminTrocarSenhaRoute: AuthenticatedAdminTrocarSenhaRoute,
   AuthenticatedAdminIndexRoute: AuthenticatedAdminIndexRoute,
   AuthenticatedAdminIdEditarRoute: AuthenticatedAdminIdEditarRoute,
   AuthenticatedAdminAssociacoesNovaRoute:
@@ -526,6 +569,8 @@ const AuthenticatedAdminRouteChildren: AuthenticatedAdminRouteChildren = {
     AuthenticatedAdminAssociacoesIdDocumentosRoute,
   AuthenticatedAdminAssociacoesIdEditarRoute:
     AuthenticatedAdminAssociacoesIdEditarRoute,
+  AuthenticatedAdminUsuariosUserIdEditarRoute:
+    AuthenticatedAdminUsuariosUserIdEditarRoute,
   AuthenticatedAdminAssociacoesIdIndexRoute:
     AuthenticatedAdminAssociacoesIdIndexRoute,
   AuthenticatedAdminAssociacoesIdCatadoresNovoRoute:
