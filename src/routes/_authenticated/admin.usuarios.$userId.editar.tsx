@@ -146,11 +146,31 @@ function EditarUsuarioPage() {
                   </SelectTrigger>
                   <SelectContent>
                     <SelectItem value="recenseador">Recenseador</SelectItem>
-                    <SelectItem value="consultor">Consultor de Campo</SelectItem>
-                    <SelectItem value="admin">Administrador UCIP</SelectItem>
+                    <SelectItem value="consultor">Consultor (Assoc./Coop./Coletivos)</SelectItem>
+                    <SelectItem value="coordenador">Coordenador</SelectItem>
+                    <SelectItem value="admin">Entidades (acesso total)</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
+              {(form.role === "consultor" || form.role === "coordenador") && (
+                <div>
+                  <Label>Área *</Label>
+                  <Select
+                    value={form.area}
+                    onValueChange={(v) => setForm((f) => ({ ...f, area: v as any }))}
+                  >
+                    <SelectTrigger>
+                      <SelectValue placeholder="Selecione a área" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="social">Social</SelectItem>
+                      <SelectItem value="juridico">Jurídico</SelectItem>
+                      <SelectItem value="contabil">Contábil</SelectItem>
+                      <SelectItem value="infraestrutura">Infraestrutura</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+              )}
               <div>
                 <Label>Município de referência</Label>
                 <Input
