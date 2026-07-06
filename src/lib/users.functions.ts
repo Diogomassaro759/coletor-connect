@@ -73,9 +73,11 @@ export const createOperationalUser = createServerFn({ method: "POST" })
       throw new Error(`Erro ao criar perfil: ${profileErr.message}`);
     }
 
+    const areaValue =
+      data.role === "consultor" || data.role === "coordenador" ? (data.area ?? null) : null;
     const { error: roleErr } = await supabaseAdmin
       .from("user_roles")
-      .insert({ user_id: newUserId, role: data.role });
+      .insert({ user_id: newUserId, role: data.role, area: areaValue });
     if (roleErr) {
       await supabaseAdmin.auth.admin.deleteUser(newUserId);
       throw new Error(`Erro ao atribuir papel: ${roleErr.message}`);
