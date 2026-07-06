@@ -1012,18 +1012,21 @@ export type Database = {
       }
       user_roles: {
         Row: {
+          area: Database["public"]["Enums"]["operational_area"] | null
           created_at: string
           id: string
           role: Database["public"]["Enums"]["app_role"]
           user_id: string
         }
         Insert: {
+          area?: Database["public"]["Enums"]["operational_area"] | null
           created_at?: string
           id?: string
           role: Database["public"]["Enums"]["app_role"]
           user_id: string
         }
         Update: {
+          area?: Database["public"]["Enums"]["operational_area"] | null
           created_at?: string
           id?: string
           role?: Database["public"]["Enums"]["app_role"]
@@ -1036,6 +1039,17 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      get_user_area: {
+        Args: { _user_id: string }
+        Returns: Database["public"]["Enums"]["operational_area"]
+      }
+      has_area: {
+        Args: {
+          _area: Database["public"]["Enums"]["operational_area"]
+          _user_id: string
+        }
+        Returns: boolean
+      }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]
@@ -1043,6 +1057,7 @@ export type Database = {
         }
         Returns: boolean
       }
+      is_coordenador: { Args: { _user_id: string }; Returns: boolean }
       is_field_consultant: { Args: { _user_id: string }; Returns: boolean }
       is_recenseador: { Args: { _user_id: string }; Returns: boolean }
     }
