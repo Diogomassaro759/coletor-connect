@@ -1947,6 +1947,33 @@ function SocialFields({
           <Field label="CNPJ (se tiver)">
             <Input name="association_cnpj" defaultValue={association?.cnpj ?? ""} />
           </Field>
+          <Field label="Tipo">
+            <select
+              name="association_tipo"
+              defaultValue={
+                association?.tipo === "formal"
+                  ? "cooperativa"
+                  : association?.tipo === "informal"
+                    ? "coletivo"
+                    : (association?.tipo ?? "associacao")
+              }
+              className="h-10 w-full rounded-md border border-input bg-background px-3 text-sm"
+            >
+              <option value="associacao">Associação</option>
+              <option value="cooperativa">Cooperativa</option>
+              <option value="coletivo">Coletivo</option>
+            </select>
+          </Field>
+          <Field label="Situação">
+            <select
+              name="association_situacao"
+              defaultValue={association?.ativa === false ? "inativa" : "ativa"}
+              className="h-10 w-full rounded-md border border-input bg-background px-3 text-sm"
+            >
+              <option value="ativa">Ativa</option>
+              <option value="inativa">Inativa</option>
+            </select>
+          </Field>
           <Field label="Município">
             <Input name="association_municipio" defaultValue={association?.municipio} required />
           </Field>
