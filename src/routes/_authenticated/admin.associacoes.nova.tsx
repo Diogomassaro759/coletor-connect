@@ -27,7 +27,7 @@ export const Route = createFileRoute("/_authenticated/admin/associacoes/nova")({
 function NewAssociationPage() {
   const navigate = useNavigate();
   const [saving, setSaving] = useState(false);
-  const [tipo, setTipo] = useState("formal");
+  const [tipo, setTipo] = useState("associacao");
 
   async function submit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
