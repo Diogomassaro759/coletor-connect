@@ -209,18 +209,43 @@ function NovoUsuarioPage() {
               <Label>Tipo de perfil *</Label>
               <Select
                 value={form.role}
-                onValueChange={(v) => set("role", v as "recenseador" | "consultor" | "admin")}
+                onValueChange={(v) => set("role", v as typeof form.role)}
               >
                 <SelectTrigger>
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="recenseador">Recenseador (cadastra catadores)</SelectItem>
-                  <SelectItem value="consultor">Consultor de Campo (diagnósticos)</SelectItem>
-                  <SelectItem value="admin">Administrador UCIP (acesso total)</SelectItem>
+                  <SelectItem value="consultor">Consultor (Assoc./Coop./Coletivos)</SelectItem>
+                  <SelectItem value="coordenador">Coordenador</SelectItem>
+                  <SelectItem value="admin">Entidades (acesso total)</SelectItem>
                 </SelectContent>
               </Select>
             </div>
+            {(form.role === "consultor" || form.role === "coordenador") && (
+              <div>
+                <Label>Área *</Label>
+                <Select
+                  value={form.area}
+                  onValueChange={(v) => set("area", v as typeof form.area)}
+                >
+                  <SelectTrigger>
+                    <SelectValue placeholder="Selecione a área" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="social">Social</SelectItem>
+                    <SelectItem value="juridico">Jurídico</SelectItem>
+                    <SelectItem value="contabil">Contábil</SelectItem>
+                    <SelectItem value="infraestrutura">Infraestrutura</SelectItem>
+                  </SelectContent>
+                </Select>
+                <p className="text-xs text-muted-foreground mt-1">
+                  {form.role === "consultor"
+                    ? "O consultor verá apenas o formulário da área selecionada."
+                    : "O coordenador verá todos os cadastros dos consultores da área."}
+                </p>
+              </div>
+            )}
             <div>
               <Label>Município de referência</Label>
               <Input
