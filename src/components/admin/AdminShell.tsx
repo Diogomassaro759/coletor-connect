@@ -87,7 +87,7 @@ export function AdminShell({ children }: { children: React.ReactNode }) {
                     <ClipboardPenLine className="size-4" />
                   )}{" "}
                   <span className="hidden md:inline">
-                    {isAdmin ? "Associações" : "Cadastros de campo"}
+                    {isAdmin ? "Entidades" : "Cadastros de campo"}
                   </span>
                 </Button>
               </Link>
