@@ -141,11 +141,11 @@ function AssociationDetails() {
               </Button>
             </Link>
           )}
-          {isConsultant && (
+          {isConsultant && area !== "infraestrutura" && (
             <Link
               to="/admin/associacoes/$id/diagnostico/novo"
               params={{ id }}
-              search={{ modulo: "social" }}
+              search={{ modulo: (area ?? "social") as "social" | "juridico" | "contabil" }}
             >
               <Button size="lg" variant="outline">
                 <ClipboardPlus className="size-4" /> Novo cadastro de campo
