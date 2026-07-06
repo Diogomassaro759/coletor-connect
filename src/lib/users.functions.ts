@@ -156,9 +156,11 @@ export const updateOperationalUser = createServerFn({ method: "POST" })
 
     if (data.role) {
       await supabaseAdmin.from("user_roles").delete().eq("user_id", data.user_id);
+      const areaValue =
+        data.role === "consultor" || data.role === "coordenador" ? (data.area ?? null) : null;
       const { error: rErr } = await supabaseAdmin
         .from("user_roles")
-        .insert({ user_id: data.user_id, role: data.role });
+        .insert({ user_id: data.user_id, role: data.role, area: areaValue });
       if (rErr) throw new Error(rErr.message);
     }
     return { ok: true };
