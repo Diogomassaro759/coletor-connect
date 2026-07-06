@@ -206,7 +206,7 @@ function NovoUsuarioPage() {
               />
             </div>
             <div>
-              <Label>Tipo de perfil *</Label>
+              <Label>Perfil *</Label>
               <Select
                 value={form.role}
                 onValueChange={(v) => set("role", v as typeof form.role)}
@@ -216,21 +216,21 @@ function NovoUsuarioPage() {
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="recenseador">Recenseador (cadastra catadores)</SelectItem>
-                  <SelectItem value="consultor">Consultor (Assoc./Coop./Coletivos)</SelectItem>
+                  <SelectItem value="consultor">Consultor</SelectItem>
                   <SelectItem value="coordenador">Coordenador</SelectItem>
-                  <SelectItem value="admin">Administrador (acesso total)</SelectItem>
+                  <SelectItem value="admin">Administrador UCPI (acesso total)</SelectItem>
                 </SelectContent>
               </Select>
             </div>
             {(form.role === "consultor" || form.role === "coordenador") && (
               <div>
-                <Label>Área *</Label>
+                <Label>Tipo de perfil *</Label>
                 <Select
                   value={form.area}
                   onValueChange={(v) => set("area", v as typeof form.area)}
                 >
                   <SelectTrigger>
-                    <SelectValue placeholder="Selecione a área" />
+                    <SelectValue placeholder="Selecione o tipo" />
                   </SelectTrigger>
                   <SelectContent>
                     <SelectItem value="social">Social</SelectItem>
@@ -241,8 +241,8 @@ function NovoUsuarioPage() {
                 </Select>
                 <p className="text-xs text-muted-foreground mt-1">
                   {form.role === "consultor"
-                    ? "O consultor verá apenas o formulário da área selecionada."
-                    : "O coordenador verá todos os cadastros dos consultores da área."}
+                    ? "O consultor verá apenas o formulário do tipo selecionado."
+                    : "O coordenador verá todos os cadastros dos consultores do mesmo tipo."}
                 </p>
               </div>
             )}
