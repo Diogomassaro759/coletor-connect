@@ -55,7 +55,8 @@ function EditarUsuarioPage() {
     email: "",
     municipio_referencia: "",
     identificacao_profissional: "",
-    role: "recenseador" as "recenseador" | "consultor" | "admin",
+    role: "recenseador" as "recenseador" | "consultor" | "coordenador" | "admin",
+    area: "" as "" | "social" | "juridico" | "contabil" | "infraestrutura",
   });
 
   useEffect(() => {
@@ -66,12 +67,14 @@ function EditarUsuarioPage() {
         municipio_referencia: (data as any).municipio_referencia ?? "",
         identificacao_profissional: (data as any).identificacao_profissional ?? "",
         role: ((data as any).roles?.[0] ?? "recenseador") as any,
+        area: ((data as any).area ?? "") as any,
       });
     }
   }, [data]);
 
   const mut = useMutation({
-    mutationFn: () => update({ data: { user_id: userId, ...form } }),
+    mutationFn: () =>
+      update({ data: { user_id: userId, ...form, area: form.area || null } as any }),
     onSuccess: () => {
       toast.success("Usuário atualizado.");
       navigate({ to: "/admin/usuarios" });
