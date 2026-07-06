@@ -179,9 +179,10 @@ export const getOperationalUser = createServerFn({ method: "GET" })
     if (error) throw new Error(error.message);
     const { data: roles } = await supabaseAdmin
       .from("user_roles")
-      .select("role")
+      .select("role, area")
       .eq("user_id", data.user_id);
-    return { ...(p ?? {}), roles: (roles ?? []).map((r) => r.role) };
+    const area = (roles ?? []).find((r: any) => r.area)?.area ?? null;
+    return { ...(p ?? {}), roles: (roles ?? []).map((r: any) => r.role), area };
   });
 
 export const resetOperationalUserPassword = createServerFn({ method: "POST" })
