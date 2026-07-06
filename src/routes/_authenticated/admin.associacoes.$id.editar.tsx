@@ -30,7 +30,7 @@ function EditAssociationPage() {
   const { id } = Route.useParams();
   const navigate = useNavigate();
   const [saving, setSaving] = useState(false);
-  const [tipo, setTipo] = useState<"formal" | "informal">("formal");
+  const [tipo, setTipo] = useState<string>("associacao");
   const [ativa, setAtiva] = useState(true);
 
   const { data, isLoading } = useQuery({
