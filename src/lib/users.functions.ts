@@ -130,7 +130,8 @@ export const updateOperationalUser = createServerFn({ method: "POST" })
       email: z.string().email(),
       municipio_referencia: z.string().optional().nullable(),
       identificacao_profissional: z.string().optional().nullable(),
-      role: z.enum(["recenseador", "consultor", "admin"]).optional(),
+      role: roleEnum.optional(),
+      area: areaEnum,
     }),
   )
   .handler(async ({ data, context }) => {
