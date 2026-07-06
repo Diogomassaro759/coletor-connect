@@ -90,8 +90,9 @@ function NewAssociationPage() {
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="formal">Formal</SelectItem>
-                  <SelectItem value="informal">Informal</SelectItem>
+                  <SelectItem value="associacao">Associação</SelectItem>
+                  <SelectItem value="cooperativa">Cooperativa</SelectItem>
+                  <SelectItem value="coletivo">Coletivo</SelectItem>
                 </SelectContent>
               </Select>
             </Field>
