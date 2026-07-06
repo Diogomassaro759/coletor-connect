@@ -389,33 +389,46 @@ function NewAssessment() {
               <Input name="horario_visita" type="time" required defaultValue={defaultTime} />
             </Field>
           </div>
+          {isInfrastructure && (
+            <div className="mt-6 rounded-xl border border-dashed border-border bg-muted/30 p-8 text-center">
+              <h2 className="text-lg font-semibold">Formulário de Infraestrutura</h2>
+              <p className="mt-2 text-sm text-muted-foreground">
+                Em breve. O formulário desta área ainda está em definição.
+              </p>
+            </div>
+          )}
           <Tabs
             value={activeModule}
-            onValueChange={(value) => setActiveModule(value as typeof modulo)}
+            onValueChange={(value) =>
+              setActiveModule(value as "social" | "juridico" | "contabil")
+            }
+            className={isInfrastructure ? "hidden" : ""}
           >
-            <TabsList className="grid h-auto w-full grid-cols-3 rounded-2xl p-1">
-              <TabsTrigger
-                value="social"
-                className="min-w-0 py-3 data-[state=active]:text-destructive"
-              >
-                <Users className="mr-2 size-4 shrink-0" />
-                <span className="truncate">1. Social</span>
-              </TabsTrigger>
-              <TabsTrigger
-                value="juridico"
-                className="min-w-0 py-3 data-[state=active]:text-primary"
-              >
-                <Scale className="mr-2 size-4 shrink-0" />
-                <span className="truncate">2. Jurídico</span>
-              </TabsTrigger>
-              <TabsTrigger
-                value="contabil"
-                className="min-w-0 py-3 data-[state=active]:text-warning-foreground"
-              >
-                <Calculator className="mr-2 size-4 shrink-0" />
-                <span className="truncate">3. Contábil</span>
-              </TabsTrigger>
-            </TabsList>
+            {!forcedModule && (
+              <TabsList className="grid h-auto w-full grid-cols-3 rounded-2xl p-1">
+                <TabsTrigger
+                  value="social"
+                  className="min-w-0 py-3 data-[state=active]:text-destructive"
+                >
+                  <Users className="mr-2 size-4 shrink-0" />
+                  <span className="truncate">1. Social</span>
+                </TabsTrigger>
+                <TabsTrigger
+                  value="juridico"
+                  className="min-w-0 py-3 data-[state=active]:text-primary"
+                >
+                  <Scale className="mr-2 size-4 shrink-0" />
+                  <span className="truncate">2. Jurídico</span>
+                </TabsTrigger>
+                <TabsTrigger
+                  value="contabil"
+                  className="min-w-0 py-3 data-[state=active]:text-warning-foreground"
+                >
+                  <Calculator className="mr-2 size-4 shrink-0" />
+                  <span className="truncate">3. Contábil</span>
+                </TabsTrigger>
+              </TabsList>
+            )}
             <TabsContent value="social">
               {loadingAssociation ? (
                 <p className="mt-5 text-muted-foreground">Carregando dados da entidade...</p>
