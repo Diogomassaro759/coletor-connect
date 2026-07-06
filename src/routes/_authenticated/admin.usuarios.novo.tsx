@@ -45,7 +45,8 @@ function NovoUsuarioPage() {
     birth_date: "",
     email: "",
     password: genPassword(),
-    role: "recenseador" as "recenseador" | "consultor" | "admin",
+    role: "recenseador" as "recenseador" | "consultor" | "coordenador" | "admin",
+    area: "" as "" | "social" | "juridico" | "contabil" | "infraestrutura",
     municipio_referencia: "",
     identificacao_profissional: "",
   }));
