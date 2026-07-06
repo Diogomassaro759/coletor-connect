@@ -30,7 +30,7 @@ function EditAssociationPage() {
   const { id } = Route.useParams();
   const navigate = useNavigate();
   const [saving, setSaving] = useState(false);
-  const [tipo, setTipo] = useState<"formal" | "informal">("formal");
+  const [tipo, setTipo] = useState<string>("associacao");
   const [ativa, setAtiva] = useState(true);
 
   const { data, isLoading } = useQuery({
@@ -48,7 +48,7 @@ function EditAssociationPage() {
 
   useEffect(() => {
     if (data) {
-      setTipo((data.tipo as "formal" | "informal") ?? "formal");
+      setTipo(data.tipo ?? "associacao");
       setAtiva(!!data.ativa);
     }
   }, [data]);
@@ -109,13 +109,14 @@ function EditAssociationPage() {
               <Input name="nome" defaultValue={data.nome} required minLength={2} maxLength={200} />
             </Field>
             <Field label="Tipo">
-              <Select value={tipo} onValueChange={(v) => setTipo(v as "formal" | "informal")}>
+              <Select value={tipo} onValueChange={(v) => setTipo(v)}>
                 <SelectTrigger>
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="formal">Formal</SelectItem>
-                  <SelectItem value="informal">Informal</SelectItem>
+                  <SelectItem value="associacao">Associação</SelectItem>
+                  <SelectItem value="cooperativa">Cooperativa</SelectItem>
+                  <SelectItem value="coletivo">Coletivo</SelectItem>
                 </SelectContent>
               </Select>
             </Field>

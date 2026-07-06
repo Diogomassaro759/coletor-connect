@@ -21,7 +21,7 @@ import { supabase } from "@/integrations/supabase/client";
 export const Route = createFileRoute("/_authenticated/admin/associacoes/$id/documentos")({
   head: () => ({ meta: [{ title: "Documentos da associação — PROCATE" }] }),
   beforeLoad: ({ context }) => {
-    if (!context.isAdmin && !context.isConsultant) {
+    if (!context.isAdmin && !context.isConsultant && !context.isCoordenador) {
       throw redirect({ to: "/admin" });
     }
   },

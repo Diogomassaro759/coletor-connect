@@ -19,17 +19,24 @@ import { loadNotifications } from "@/lib/notifications";
 export function AdminShell({ children }: { children: React.ReactNode }) {
   const navigate = useNavigate();
   const qc = useQueryClient();
-  const { isAdmin, isConsultant, isRecenseador, user } = useRouteContext({
+  const { isAdmin, isConsultant, isCoordenador, isRecenseador, area, user } = useRouteContext({
     from: "/_authenticated",
-  });
+  }) as any;
+  const isViewer = isConsultant || isCoordenador;
+  const AREA_LABEL: Record<string, string> = {
+    social: "Social",
+    juridico: "Jurídico",
+    contabil: "Contábil",
+    infraestrutura: "Infraestrutura",
+  };
 
   const { data: notifications = [] } = useQuery({
     queryKey: ["notifications", user.id],
-    queryFn: () => loadNotifications({ isAdmin, isConsultant, userId: user.id }),
-    enabled: isAdmin || isConsultant,
+    queryFn: () => loadNotifications({ isAdmin, isConsultant: isViewer, userId: user.id }),
+    enabled: isAdmin || isViewer,
     refetchInterval: 60_000,
   });
-  const unreadCount = notifications.filter((n) => !n.read).length;
+  const unreadCount = notifications.filter((n: any) => !n.read).length;
 
   async function signOut() {
     await qc.cancelQueries();
@@ -45,7 +52,7 @@ export function AdminShell({ children }: { children: React.ReactNode }) {
           <Link
             to={isAdmin || isRecenseador ? "/admin" : "/admin/associacoes"}
             className="flex items-center gap-2"
-            aria-label="PROCATE — Painel administrativo"
+            aria-label="PROCATE — Painel"
           >
             <img
               src={procateLogo}
@@ -54,10 +61,12 @@ export function AdminShell({ children }: { children: React.ReactNode }) {
             />
             <span className="hidden sm:inline-block text-xs font-medium uppercase tracking-wider text-muted-foreground ml-2 px-2 py-0.5 rounded bg-muted">
               {isAdmin
-                ? "Administrador UCIP"
+                ? "Entidades"
                 : isRecenseador
                   ? "Recenseador"
-                  : "Consultor"}
+                  : isCoordenador
+                    ? `Coordenador${area ? ` — ${AREA_LABEL[area]}` : ""}`
+                    : `Assoc./Coop./Coletivos${area ? ` — ${AREA_LABEL[area]}` : ""}`}
             </span>
           </Link>
           <nav className="flex items-center gap-1">
@@ -69,7 +78,7 @@ export function AdminShell({ children }: { children: React.ReactNode }) {
                 </Button>
               </Link>
             )}
-            {(isAdmin || isConsultant) && (
+            {(isAdmin || isViewer) && (
               <Link to="/admin/associacoes">
                 <Button variant="ghost" size="sm">
                   {isAdmin ? (
@@ -99,7 +108,7 @@ export function AdminShell({ children }: { children: React.ReactNode }) {
                 </Button>
               </Link>
             )}
-            {(isAdmin || isConsultant) && (
+            {(isAdmin || isViewer) && (
               <Link to="/admin/notificacoes" className="relative">
                 <Button variant="ghost" size="sm" title="Notificações">
                   <Bell className="size-4" />

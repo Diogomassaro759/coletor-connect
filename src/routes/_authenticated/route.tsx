@@ -10,20 +10,31 @@ export const Route = createFileRoute("/_authenticated")({
     if (error || !data.user) throw redirect({ to: "/auth" });
     const { data: roles, error: roleError } = await supabase
       .from("user_roles")
-      .select("role")
+      .select("role, area")
       .eq("user_id", data.user.id);
     const isAdmin = !!roles?.some((item) => item.role === "admin");
     const isConsultant = !!roles?.some(
       (item) => item.role === "consultor" || item.role === "atendente",
     );
+    const isCoordenador = !!roles?.some((item) => item.role === "coordenador");
     const isRecenseador = !!roles?.some((item) => item.role === "recenseador");
+    const areaRow =
+      roles?.find((item: any) => item.area && (item.role === "consultor" || item.role === "coordenador"));
+    const area = ((areaRow as any)?.area ?? null) as
+      | "social"
+      | "juridico"
+      | "contabil"
+      | "infraestrutura"
+      | null;
     const role = isAdmin
       ? "admin"
       : isConsultant
         ? "consultor"
-        : isRecenseador
-          ? "recenseador"
-          : null;
+        : isCoordenador
+          ? "coordenador"
+          : isRecenseador
+            ? "recenseador"
+            : null;
     if (roleError || !role) {
       await supabase.auth.signOut();
       throw redirect({ to: "/auth" });
@@ -39,7 +50,16 @@ export const Route = createFileRoute("/_authenticated")({
       pathname: location.pathname,
     });
     if (redirectTo) throw redirect({ to: redirectTo });
-    return { user: data.user, role, isAdmin, isConsultant, isRecenseador, mustChangePassword };
+    return {
+      user: data.user,
+      role,
+      isAdmin,
+      isConsultant,
+      isCoordenador,
+      isRecenseador,
+      area,
+      mustChangePassword,
+    };
 
   },
   component: () => <Outlet />,

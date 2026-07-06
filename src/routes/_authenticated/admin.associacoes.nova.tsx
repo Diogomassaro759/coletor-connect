@@ -27,7 +27,7 @@ export const Route = createFileRoute("/_authenticated/admin/associacoes/nova")({
 function NewAssociationPage() {
   const navigate = useNavigate();
   const [saving, setSaving] = useState(false);
-  const [tipo, setTipo] = useState("formal");
+  const [tipo, setTipo] = useState("associacao");
 
   async function submit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -90,8 +90,9 @@ function NewAssociationPage() {
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="formal">Formal</SelectItem>
-                  <SelectItem value="informal">Informal</SelectItem>
+                  <SelectItem value="associacao">Associação</SelectItem>
+                  <SelectItem value="cooperativa">Cooperativa</SelectItem>
+                  <SelectItem value="coletivo">Coletivo</SelectItem>
                 </SelectContent>
               </Select>
             </Field>

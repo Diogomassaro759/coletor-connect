@@ -55,7 +55,8 @@ function EditarUsuarioPage() {
     email: "",
     municipio_referencia: "",
     identificacao_profissional: "",
-    role: "recenseador" as "recenseador" | "consultor" | "admin",
+    role: "recenseador" as "recenseador" | "consultor" | "coordenador" | "admin",
+    area: "" as "" | "social" | "juridico" | "contabil" | "infraestrutura",
   });
 
   useEffect(() => {
@@ -66,12 +67,14 @@ function EditarUsuarioPage() {
         municipio_referencia: (data as any).municipio_referencia ?? "",
         identificacao_profissional: (data as any).identificacao_profissional ?? "",
         role: ((data as any).roles?.[0] ?? "recenseador") as any,
+        area: ((data as any).area ?? "") as any,
       });
     }
   }, [data]);
 
   const mut = useMutation({
-    mutationFn: () => update({ data: { user_id: userId, ...form } }),
+    mutationFn: () =>
+      update({ data: { user_id: userId, ...form, area: form.area || null } as any }),
     onSuccess: () => {
       toast.success("Usuário atualizado.");
       navigate({ to: "/admin/usuarios" });
@@ -143,11 +146,31 @@ function EditarUsuarioPage() {
                   </SelectTrigger>
                   <SelectContent>
                     <SelectItem value="recenseador">Recenseador</SelectItem>
-                    <SelectItem value="consultor">Consultor de Campo</SelectItem>
-                    <SelectItem value="admin">Administrador UCIP</SelectItem>
+                    <SelectItem value="consultor">Consultor (Assoc./Coop./Coletivos)</SelectItem>
+                    <SelectItem value="coordenador">Coordenador</SelectItem>
+                    <SelectItem value="admin">Entidades (acesso total)</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
+              {(form.role === "consultor" || form.role === "coordenador") && (
+                <div>
+                  <Label>Área *</Label>
+                  <Select
+                    value={form.area}
+                    onValueChange={(v) => setForm((f) => ({ ...f, area: v as any }))}
+                  >
+                    <SelectTrigger>
+                      <SelectValue placeholder="Selecione a área" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="social">Social</SelectItem>
+                      <SelectItem value="juridico">Jurídico</SelectItem>
+                      <SelectItem value="contabil">Contábil</SelectItem>
+                      <SelectItem value="infraestrutura">Infraestrutura</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+              )}
               <div>
                 <Label>Município de referência</Label>
                 <Input

@@ -24,7 +24,7 @@ import {
 export const Route = createFileRoute("/_authenticated/admin/notificacoes")({
   head: () => ({ meta: [{ title: "Notificações — PROCATE" }] }),
   beforeLoad: ({ context }) => {
-    if (!context.isAdmin && !context.isConsultant) {
+    if (!context.isAdmin && !context.isConsultant && !context.isCoordenador && !context.isCoordenador) {
       throw redirect({ to: "/admin" });
     }
   },

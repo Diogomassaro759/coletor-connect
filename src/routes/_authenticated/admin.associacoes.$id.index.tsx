@@ -33,7 +33,7 @@ const STATUS_LABEL = {
 
 function AssociationDetails() {
   const { id } = Route.useParams();
-  const { isAdmin, isConsultant, isRecenseador } = Route.useRouteContext();
+  const { isAdmin, isConsultant, isRecenseador, area } = Route.useRouteContext() as any;
   const { data: association, isLoading } = useQuery({
     queryKey: ["association", id],
     queryFn: async () => {
@@ -141,11 +141,11 @@ function AssociationDetails() {
               </Button>
             </Link>
           )}
-          {isConsultant && (
+          {isConsultant && area !== "infraestrutura" && (
             <Link
               to="/admin/associacoes/$id/diagnostico/novo"
               params={{ id }}
-              search={{ modulo: "social" }}
+              search={{ modulo: (area ?? "social") as "social" | "juridico" | "contabil" }}
             >
               <Button size="lg" variant="outline">
                 <ClipboardPlus className="size-4" /> Novo cadastro de campo
@@ -159,40 +159,36 @@ function AssociationDetails() {
         <section className="mb-8 rounded-3xl border border-border bg-card p-6 shadow-card">
           <div className="mb-5">
             <p className="text-xs font-bold uppercase tracking-[0.16em] text-primary">
-              Formulários de campo
+              Formulário de campo
             </p>
-            <h2 className="mt-1 text-xl font-bold">Escolha um dos 3 tipos de cadastro</h2>
+            <h2 className="mt-1 text-xl font-bold">
+              {area === "juridico"
+                ? "Cadastro Jurídico"
+                : area === "contabil"
+                  ? "Cadastro Contábil"
+                  : area === "infraestrutura"
+                    ? "Cadastro de Infraestrutura"
+                    : "Cadastro Social"}
+            </h2>
             <p className="mt-1 text-sm text-muted-foreground">
-              Cada opção abre diretamente o formulário Social, Jurídico ou Contábil da
-              associação/cooperativa.
+              Abre diretamente o formulário da sua área de atuação.
             </p>
           </div>
-          <div className="grid gap-3 md:grid-cols-3">
-            <DiagnosticModule
-              id={id}
-              module="social"
-              icon={Users}
-              title="Cadastro Social"
-              description="Perfil dos associados, saúde, renda, benefícios, coleta e estrutura social."
-              tone="secondary"
-            />
-            <DiagnosticModule
-              id={id}
-              module="juridico"
-              icon={Scale}
-              title="Cadastro Jurídico"
-              description="Diretoria, atas, contratos, processos, regras internas e regularização."
-              tone="primary"
-            />
-            <DiagnosticModule
-              id={id}
-              module="contabil"
-              icon={Calculator}
-              title="Cadastro Contábil"
-              description="Documentos, contador, livros, controles, balanços e pendências contábeis."
-              tone="warning"
-            />
-          </div>
+          {area === "infraestrutura" ? (
+            <p className="text-sm text-muted-foreground">
+              Formulário de Infraestrutura em breve.
+            </p>
+          ) : (
+            <Link
+              to="/admin/associacoes/$id/diagnostico/novo"
+              params={{ id }}
+              search={{ modulo: (area ?? "social") as "social" | "juridico" | "contabil" }}
+            >
+              <Button size="lg">
+                <ClipboardPlus className="size-4" /> Abrir formulário
+              </Button>
+            </Link>
+          )}
         </section>
       )}
 

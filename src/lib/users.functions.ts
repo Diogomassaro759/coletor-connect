@@ -4,7 +4,10 @@ import { z } from "zod";
 // All server functions inherit requireSupabaseAuth (see src/start.ts), so
 // context.supabase / context.userId are always present.
 
-const ROLE_VALUES = ["admin", "recenseador", "consultor"] as const;
+const ROLE_VALUES = ["admin", "recenseador", "consultor", "coordenador"] as const;
+const AREA_VALUES = ["social", "juridico", "contabil", "infraestrutura"] as const;
+const roleEnum = z.enum(ROLE_VALUES);
+const areaEnum = z.enum(AREA_VALUES).optional().nullable();
 
 async function assertAdmin(ctx: { supabase: any; userId: string }) {
   const { data, error } = await ctx.supabase
@@ -31,7 +34,8 @@ export const createOperationalUser = createServerFn({ method: "POST" })
       birth_date: z.string().optional().nullable(),
       email: z.string().email(),
       password: z.string().min(8),
-      role: z.enum(["recenseador", "consultor", "admin"]),
+      role: roleEnum,
+      area: areaEnum,
       municipio_referencia: z.string().optional().nullable(),
       identificacao_profissional: z.string().optional().nullable(),
     }),
@@ -69,9 +73,11 @@ export const createOperationalUser = createServerFn({ method: "POST" })
       throw new Error(`Erro ao criar perfil: ${profileErr.message}`);
     }
 
+    const areaValue =
+      data.role === "consultor" || data.role === "coordenador" ? (data.area ?? null) : null;
     const { error: roleErr } = await supabaseAdmin
       .from("user_roles")
-      .insert({ user_id: newUserId, role: data.role });
+      .insert({ user_id: newUserId, role: data.role, area: areaValue });
     if (roleErr) {
       await supabaseAdmin.auth.admin.deleteUser(newUserId);
       throw new Error(`Erro ao atribuir papel: ${roleErr.message}`);
@@ -98,13 +104,21 @@ export const listOperationalUsers = createServerFn({ method: "GET" }).handler(
     if (ids.length > 0) {
       const { data: roles } = await supabaseAdmin
         .from("user_roles")
-        .select("user_id, role")
+        .select("user_id, role, area")
         .in("user_id", ids);
       for (const r of roles ?? []) {
         (roleMap[r.user_id] ??= []).push(r.role);
       }
+      var areaMap: Record<string, string | null> = {};
+      for (const r of roles ?? []) {
+        if ((r as any).area) areaMap[r.user_id] = (r as any).area;
+      }
     }
-    return (profiles ?? []).map((p) => ({ ...p, roles: roleMap[p.user_id] ?? [] }));
+    return (profiles ?? []).map((p) => ({
+      ...p,
+      roles: roleMap[p.user_id] ?? [],
+      area: (typeof areaMap !== "undefined" && areaMap[p.user_id]) || null,
+    }));
   },
 );
 
@@ -116,7 +130,8 @@ export const updateOperationalUser = createServerFn({ method: "POST" })
       email: z.string().email(),
       municipio_referencia: z.string().optional().nullable(),
       identificacao_profissional: z.string().optional().nullable(),
-      role: z.enum(["recenseador", "consultor", "admin"]).optional(),
+      role: roleEnum.optional(),
+      area: areaEnum,
     }),
   )
   .handler(async ({ data, context }) => {
@@ -141,9 +156,11 @@ export const updateOperationalUser = createServerFn({ method: "POST" })
 
     if (data.role) {
       await supabaseAdmin.from("user_roles").delete().eq("user_id", data.user_id);
+      const areaValue =
+        data.role === "consultor" || data.role === "coordenador" ? (data.area ?? null) : null;
       const { error: rErr } = await supabaseAdmin
         .from("user_roles")
-        .insert({ user_id: data.user_id, role: data.role });
+        .insert({ user_id: data.user_id, role: data.role, area: areaValue });
       if (rErr) throw new Error(rErr.message);
     }
     return { ok: true };
@@ -162,9 +179,10 @@ export const getOperationalUser = createServerFn({ method: "GET" })
     if (error) throw new Error(error.message);
     const { data: roles } = await supabaseAdmin
       .from("user_roles")
-      .select("role")
+      .select("role, area")
       .eq("user_id", data.user_id);
-    return { ...(p ?? {}), roles: (roles ?? []).map((r) => r.role) };
+    const area = (roles ?? []).find((r: any) => r.area)?.area ?? null;
+    return { ...(p ?? {}), roles: (roles ?? []).map((r: any) => r.role), area };
   });
 
 export const resetOperationalUserPassword = createServerFn({ method: "POST" })
