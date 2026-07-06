@@ -104,13 +104,21 @@ export const listOperationalUsers = createServerFn({ method: "GET" }).handler(
     if (ids.length > 0) {
       const { data: roles } = await supabaseAdmin
         .from("user_roles")
-        .select("user_id, role")
+        .select("user_id, role, area")
         .in("user_id", ids);
       for (const r of roles ?? []) {
         (roleMap[r.user_id] ??= []).push(r.role);
       }
+      var areaMap: Record<string, string | null> = {};
+      for (const r of roles ?? []) {
+        if ((r as any).area) areaMap[r.user_id] = (r as any).area;
+      }
     }
-    return (profiles ?? []).map((p) => ({ ...p, roles: roleMap[p.user_id] ?? [] }));
+    return (profiles ?? []).map((p) => ({
+      ...p,
+      roles: roleMap[p.user_id] ?? [],
+      area: (typeof areaMap !== "undefined" && areaMap[p.user_id]) || null,
+    }));
   },
 );
 
