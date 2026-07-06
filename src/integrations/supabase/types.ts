@@ -1047,7 +1047,12 @@ export type Database = {
       is_recenseador: { Args: { _user_id: string }; Returns: boolean }
     }
     Enums: {
-      app_role: "admin" | "atendente" | "consultor" | "recenseador"
+      app_role:
+        | "admin"
+        | "atendente"
+        | "consultor"
+        | "recenseador"
+        | "coordenador"
       assessment_module: "social" | "juridico" | "contabil"
       association_document_category:
         | "estatuto"
@@ -1060,6 +1065,7 @@ export type Database = {
       catador_genero: "feminino" | "masculino" | "lgbtqia" | "nao_responder"
       catador_status: "pendente" | "ativo" | "inativo"
       diagnostic_status: "regular" | "parcialmente_regular" | "irregular"
+      operational_area: "social" | "juridico" | "contabil" | "infraestrutura"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -1187,7 +1193,13 @@ export type CompositeTypes<
 export const Constants = {
   public: {
     Enums: {
-      app_role: ["admin", "atendente", "consultor", "recenseador"],
+      app_role: [
+        "admin",
+        "atendente",
+        "consultor",
+        "recenseador",
+        "coordenador",
+      ],
       assessment_module: ["social", "juridico", "contabil"],
       association_document_category: [
         "estatuto",
@@ -1201,6 +1213,7 @@ export const Constants = {
       catador_genero: ["feminino", "masculino", "lgbtqia", "nao_responder"],
       catador_status: ["pendente", "ativo", "inativo"],
       diagnostic_status: ["regular", "parcialmente_regular", "irregular"],
+      operational_area: ["social", "juridico", "contabil", "infraestrutura"],
     },
   },
 } as const
