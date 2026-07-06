@@ -52,7 +52,7 @@ export function AdminShell({ children }: { children: React.ReactNode }) {
           <Link
             to={isAdmin || isRecenseador ? "/admin" : "/admin/associacoes"}
             className="flex items-center gap-2"
-            aria-label="PROCATE — Painel administrativo"
+            aria-label="PROCATE — Painel"
           >
             <img
               src={procateLogo}
@@ -61,10 +61,12 @@ export function AdminShell({ children }: { children: React.ReactNode }) {
             />
             <span className="hidden sm:inline-block text-xs font-medium uppercase tracking-wider text-muted-foreground ml-2 px-2 py-0.5 rounded bg-muted">
               {isAdmin
-                ? "Administrador UCIP"
+                ? "Entidades"
                 : isRecenseador
                   ? "Recenseador"
-                  : "Consultor"}
+                  : isCoordenador
+                    ? `Coordenador${area ? ` — ${AREA_LABEL[area]}` : ""}`
+                    : `Assoc./Coop./Coletivos${area ? ` — ${AREA_LABEL[area]}` : ""}`}
             </span>
           </Link>
           <nav className="flex items-center gap-1">
@@ -76,7 +78,7 @@ export function AdminShell({ children }: { children: React.ReactNode }) {
                 </Button>
               </Link>
             )}
-            {(isAdmin || isConsultant) && (
+            {(isAdmin || isViewer) && (
               <Link to="/admin/associacoes">
                 <Button variant="ghost" size="sm">
                   {isAdmin ? (
@@ -106,7 +108,7 @@ export function AdminShell({ children }: { children: React.ReactNode }) {
                 </Button>
               </Link>
             )}
-            {(isAdmin || isConsultant) && (
+            {(isAdmin || isViewer) && (
               <Link to="/admin/notificacoes" className="relative">
                 <Button variant="ghost" size="sm" title="Notificações">
                   <Bell className="size-4" />
