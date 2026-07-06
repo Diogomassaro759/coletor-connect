@@ -136,7 +136,7 @@ function EditarUsuarioPage() {
                 />
               </div>
               <div>
-                <Label>Tipo de perfil</Label>
+                <Label>Perfil *</Label>
                 <Select
                   value={form.role}
                   onValueChange={(v) => setForm((f) => ({ ...f, role: v as any }))}
@@ -145,22 +145,22 @@ function EditarUsuarioPage() {
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="recenseador">Recenseador</SelectItem>
-                    <SelectItem value="consultor">Consultor (Assoc./Coop./Coletivos)</SelectItem>
+                    <SelectItem value="recenseador">Recenseador (cadastra catadores)</SelectItem>
+                    <SelectItem value="consultor">Consultor</SelectItem>
                     <SelectItem value="coordenador">Coordenador</SelectItem>
-                    <SelectItem value="admin">Administrador (acesso total)</SelectItem>
+                    <SelectItem value="admin">Administrador UCPI (acesso total)</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
               {(form.role === "consultor" || form.role === "coordenador") && (
                 <div>
-                  <Label>Área *</Label>
+                  <Label>Tipo de perfil *</Label>
                   <Select
                     value={form.area}
                     onValueChange={(v) => setForm((f) => ({ ...f, area: v as any }))}
                   >
                     <SelectTrigger>
-                      <SelectValue placeholder="Selecione a área" />
+                      <SelectValue placeholder="Selecione o tipo" />
                     </SelectTrigger>
                     <SelectContent>
                       <SelectItem value="social">Social</SelectItem>
