@@ -64,6 +64,7 @@ function NovoUsuarioPage() {
         ...form,
         cpf: form.cpf.replace(/\D/g, ""),
         birth_date: form.birth_date || null,
+        area: form.area || null,
         municipio_referencia: form.municipio_referencia || null,
         identificacao_profissional: form.identificacao_profissional || null,
       };
