@@ -1255,6 +1255,8 @@ type SocialAssociation = {
   email: string | null;
   numero_associados_inicial: number;
   numero_associados_atual: number;
+  tipo?: string | null;
+  ativa?: boolean | null;
 };
 type SocialFieldsProps = {
   association?: SocialAssociation;
