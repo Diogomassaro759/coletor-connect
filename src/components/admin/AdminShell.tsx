@@ -19,17 +19,24 @@ import { loadNotifications } from "@/lib/notifications";
 export function AdminShell({ children }: { children: React.ReactNode }) {
   const navigate = useNavigate();
   const qc = useQueryClient();
-  const { isAdmin, isConsultant, isRecenseador, user } = useRouteContext({
+  const { isAdmin, isConsultant, isCoordenador, isRecenseador, area, user } = useRouteContext({
     from: "/_authenticated",
-  });
+  }) as any;
+  const isViewer = isConsultant || isCoordenador;
+  const AREA_LABEL: Record<string, string> = {
+    social: "Social",
+    juridico: "Jurídico",
+    contabil: "Contábil",
+    infraestrutura: "Infraestrutura",
+  };
 
   const { data: notifications = [] } = useQuery({
     queryKey: ["notifications", user.id],
-    queryFn: () => loadNotifications({ isAdmin, isConsultant, userId: user.id }),
-    enabled: isAdmin || isConsultant,
+    queryFn: () => loadNotifications({ isAdmin, isConsultant: isViewer, userId: user.id }),
+    enabled: isAdmin || isViewer,
     refetchInterval: 60_000,
   });
-  const unreadCount = notifications.filter((n) => !n.read).length;
+  const unreadCount = notifications.filter((n: any) => !n.read).length;
 
   async function signOut() {
     await qc.cancelQueries();
