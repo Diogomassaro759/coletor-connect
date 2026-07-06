@@ -34,9 +34,19 @@ export const Route = createFileRoute("/_authenticated/admin/associacoes/$id/diag
 function NewAssessment() {
   const { id } = Route.useParams();
   const { modulo } = Route.useSearch();
+  const { area } = Route.useRouteContext() as any;
   const navigate = useNavigate();
   const [saving, setSaving] = useState(false);
-  const [activeModule, setActiveModule] = useState(modulo);
+  const forcedModule =
+    area === "juridico" || area === "contabil" || area === "social"
+      ? (area as "social" | "juridico" | "contabil")
+      : area === "infraestrutura"
+        ? null
+        : modulo;
+  const [activeModule, setActiveModule] = useState<"social" | "juridico" | "contabil">(
+    (forcedModule as "social" | "juridico" | "contabil") ?? "social",
+  );
+  const isInfrastructure = area === "infraestrutura";
   const [materials, setMaterials] = useState<string[]>([]);
   const [choices, setChoices] = useState<Record<string, string>>({});
   const now = new Date();
