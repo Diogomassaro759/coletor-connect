@@ -264,7 +264,7 @@ function AssociationsPage() {
                             <Eye className="size-4 mr-2" /> Ver detalhes
                           </Link>
                         </DropdownMenuItem>
-                        {isAdmin && (
+                        {(isAdmin || isConsultant) && (
                           <DropdownMenuItem asChild>
                             <Link to="/admin/associacoes/$id/editar" params={{ id: item.id }}>
                               <Pencil className="size-4 mr-2" /> Editar
