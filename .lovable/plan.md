@@ -1,55 +1,73 @@
-## Onde paramos
+# Plano — Demandas 03/07/2026
 
-Blocos já entregues: **1 (cadastro complementos)**, **2 (perfil self-service)**, **3 (catadores UX/dados)** e **7 (identidade visual / hero)**.
+Escopo grande e com impacto de banco. Preciso confirmar algumas decisões antes de aplicar.
 
-Próximo da fila: **Bloco 6 — Regularidade institucional (dashboards)**. Depois seguem 4 (importação em massa), 5 (documentos/relatórios de associação) e 8 (notificações).
+## 1. Renomeações de nomenclatura (UI apenas)
 
-## O que vou fazer agora (Bloco 6)
+Trocar rótulos onde aparecem, mantendo os papéis internos (`consultor`, `admin`) intocados no banco:
 
-Reformular a tela `/admin/diagnosticos` para virar um painel real de acompanhamento da regularidade das associações, usando os diagnósticos já cadastrados (`association_assessments`).
+- Onde hoje aparece **"Consultor"** (menu, badges, textos) → mostrar **"Associações / Cooperativas / Coletivos"**.
+- Onde aparece **"Administrador"** → mostrar **"Entidades"**.
 
-### Cards de resumo no topo
-- **Índice médio de regularidade** (média de `regularity_index` dos diagnósticos validados).
-- **Total de diagnósticos** no período filtrado.
-- **Evidências pendentes** (`evidence_validated = false`).
-- **Associações sem diagnóstico nos últimos 90 dias**.
+Arquivos afetados: `AdminShell.tsx`, telas de usuários (`admin.usuarios.*`), `auth.tsx`, `route.tsx` (labels), `admin.perfil.tsx`, `admin.index.tsx`.
 
-### Categorias de regularidade
-Derivadas do `regularity_index` do diagnóstico mais recente de cada associação:
-- **Regulares** — índice ≥ 80
-- **Atenção parcial** — índice 50–79
-- **Ação prioritária** — índice < 50
-- **Sem diagnóstico** — associação sem registro
+> Observação: rótulos longos como "Associações / Cooperativas / Coletivos" ficam ruins em badges/menu. Sugiro usar esse texto na descrição do papel e manter um rótulo curto tipo **"Consultor de campo"** no chip. **Confirma?**
 
-Cada categoria vira um card clicável que filtra a lista abaixo.
+## 2. Tela principal do Consultor (pag. 3 do desenho)
 
-### Gráficos (Recharts)
-- **Distribuição por categoria** (donut/pizza): Regulares / Atenção / Prioritária / Sem diagnóstico.
-- **Evolução do índice médio** (linha) por mês nos últimos 12 meses.
-- **Top municípios** (barras horizontais) com pior índice médio — para orientar visita técnica.
+Substituir o painel atual do consultor por uma **lista tabular** de associações/cooperativas com colunas. Como não tenho o desenho anexado neste chat, **preciso que você confirme as colunas**. Minha proposta:
 
-### Filtros
-- **Município** (select com municípios distintos das associações).
-- **Período** (últimos 30 / 90 / 180 / 365 dias / tudo).
-- **Status do diagnóstico** (regular / parcialmente_regular / irregular).
+| Nome | Tipo (Assoc./Coop./Coletivo) | Município | Situação | Último cadastro | Status | Ações |
 
-### Lista detalhada
-Tabela com: associação, município, índice mais recente, categoria (badge colorido), data do último diagnóstico, evidências validadas (sim/não), ação (abrir diagnóstico). Mantém a busca por nome.
+Se você tiver a imagem, cole aqui — implemento fiel ao desenho.
 
-### Acesso por papel
-- **Admin** e **Consultor**: veem tudo.
-- **Recenseador**: não tem acesso à tela (já bloqueado pelo guard atual, mantemos).
+## 3. Subtipos de Consultor e Coordenador
 
-## Detalhes técnicos
+Novos subtipos por área: **Social | Jurídico | Contábil | Infraestrutura**.
 
-- Tudo client-side com queries Supabase já existentes; nada de schema novo.
-- Cálculo da categoria por associação usa a linha mais recente de `association_assessments` (por `association_id`, `created_at desc`).
-- Recharts já está no projeto (`src/components/ui/chart.tsx`); reusar `ChartContainer` para manter tema.
-- Cores das categorias via tokens semânticos já definidos em `src/styles.css` (success / warning / destructive / muted) — nada hard-coded.
-- Arquivo principal: `src/routes/_authenticated/admin.diagnosticos.tsx` (refatoração completa).
-- Sem mudanças de banco; sem novas migrations; sem novos buckets.
+Mudanças de banco necessárias:
 
-## Fora do escopo deste bloco
-Importação em massa (Bloco 4), documentos/relatório PDF da associação (Bloco 5) e notificações (Bloco 8) — entrego em rodadas seguintes.
+- Novo enum `app_role`: adicionar `coordenador`.
+- Nova coluna `user_roles.area` (`social | juridico | contabil | infraestrutura | null`).
+- Função `has_area(_user_id, _area)` para RLS.
+- Ajustar `is_field_consultant` para considerar apenas consultores; criar `is_coordenador`.
 
-Sigo por aqui?
+Regras:
+
+- **Consultor + área X** → vê apenas o formulário/dados da área X.
+- **Coordenador + área X** → vê todos os cadastros feitos por qualquer consultor da mesma área X.
+- Cadastro de usuário (`admin.usuarios.novo` / `editar`) ganha campo "Área" quando papel = consultor ou coordenador.
+
+## 4. Fichas por perfil (elimina tela de seleção)
+
+Hoje o consultor entra numa tela com 3 cards (Social/Jurídico/Contábil) antes do formulário. Passará a:
+
+- Ir **direto** ao formulário da área dele.
+- Se for **Infraestrutura**, precisamos definir os campos — **hoje não existe formulário de Infraestrutura**. **Você quer que eu crie um esqueleto agora ou deixamos "em breve"?**
+- Coordenador vê a lista de cadastros da área (nova aba/rota).
+
+Remover a seção "Escolha um dos 3 tipos de cadastro" em `admin.associacoes.$id.index.tsx` para consultor (mantida só se admin).
+
+## 5. Novos campos no Cadastro Social
+
+Após "Nome completo da associação e CNPJ", acrescentar:
+
+- **TIPO**: `Associação | Cooperativa | Coletivo` (substitui o atual `formal | informal` da tabela `associations.tipo`).
+- **SITUAÇÃO**: **precisamos definir as opções**. Exemplos comuns: `Ativa | Inativa | Em regularização | Suspensa`. **Me confirma as opções.**
+
+Impacto de banco:
+
+- Alterar enum `association_type` (ou coluna) para os 3 novos valores. Como já existem registros com `formal/informal`, faço migração de dados:
+  - `formal` → `Cooperativa` (default) — **você precisa confirmar o mapeamento, ou prefere marcar tudo como "Associação" e revisar manualmente?**
+- Adicionar coluna `associations.situacao` (enum novo `association_situation`).
+
+## Perguntas que preciso responder antes de implementar
+
+1. **Desenho da tela do consultor (pag. 3)**: quais colunas exatas?
+2. **Rótulo curto** para o papel "Associações/Cooperativas/Coletivos" em badges/menu? (sugestão: "Consultor de campo")
+3. **Formulário Infraestrutura**: criar esqueleto agora ou "em breve"?
+4. **Opções de SITUAÇÃO**?
+5. **Migração formal→Cooperativa vs Associação**?
+6. Coordenador deve **poder editar** cadastros da área ou **só visualizar**?
+
+Confirma esses 6 pontos que eu já saio implementando na sequência (1→5→3→4→2).
