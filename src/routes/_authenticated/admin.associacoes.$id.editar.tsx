@@ -48,7 +48,7 @@ function EditAssociationPage() {
 
   useEffect(() => {
     if (data) {
-      setTipo((data.tipo as "formal" | "informal") ?? "formal");
+      setTipo(data.tipo ?? "associacao");
       setAtiva(!!data.ativa);
     }
   }, [data]);
