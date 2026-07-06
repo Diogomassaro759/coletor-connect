@@ -218,7 +218,7 @@ function NovoUsuarioPage() {
                   <SelectItem value="recenseador">Recenseador (cadastra catadores)</SelectItem>
                   <SelectItem value="consultor">Consultor (Assoc./Coop./Coletivos)</SelectItem>
                   <SelectItem value="coordenador">Coordenador</SelectItem>
-                  <SelectItem value="admin">Entidades (acesso total)</SelectItem>
+                  <SelectItem value="admin">Administrador (acesso total)</SelectItem>
                 </SelectContent>
               </Select>
             </div>
