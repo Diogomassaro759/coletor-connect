@@ -61,7 +61,7 @@ export function AdminShell({ children }: { children: React.ReactNode }) {
             />
             <span className="hidden sm:inline-block text-xs font-medium uppercase tracking-wider text-muted-foreground ml-2 px-2 py-0.5 rounded bg-muted">
               {isAdmin
-                ? "Entidades"
+                ? "Administrador UCPI"
                 : isRecenseador
                   ? "Recenseador"
                   : isCoordenador
