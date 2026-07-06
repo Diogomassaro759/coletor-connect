@@ -109,13 +109,14 @@ function EditAssociationPage() {
               <Input name="nome" defaultValue={data.nome} required minLength={2} maxLength={200} />
             </Field>
             <Field label="Tipo">
-              <Select value={tipo} onValueChange={(v) => setTipo(v as "formal" | "informal")}>
+              <Select value={tipo} onValueChange={(v) => setTipo(v)}>
                 <SelectTrigger>
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="formal">Formal</SelectItem>
-                  <SelectItem value="informal">Informal</SelectItem>
+                  <SelectItem value="associacao">Associação</SelectItem>
+                  <SelectItem value="cooperativa">Cooperativa</SelectItem>
+                  <SelectItem value="coletivo">Coletivo</SelectItem>
                 </SelectContent>
               </Select>
             </Field>
