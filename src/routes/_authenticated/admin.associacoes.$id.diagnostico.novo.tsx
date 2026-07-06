@@ -255,6 +255,8 @@ function NewAssessment() {
           nome: String(values.get("association_nome") ?? "").trim(),
           cnpj: text(values, "association_cnpj"),
           municipio: String(values.get("association_municipio") ?? "").trim(),
+          tipo: String(values.get("association_tipo") ?? "associacao"),
+          ativa: String(values.get("association_situacao") ?? "ativa") === "ativa",
           inscricao_municipal: text(values, "association_inscricao_municipal"),
           inscricao_estadual: text(values, "association_inscricao_estadual"),
           endereco_sede: text(values, "association_endereco_sede") ?? "",
