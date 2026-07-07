@@ -429,11 +429,18 @@ function NewAssessment() {
             </Field>
           </div>
           {isInfrastructure && (
-            <div className="mt-6 rounded-xl border border-dashed border-border bg-muted/30 p-8 text-center">
-              <h2 className="text-lg font-semibold">Formulário de Infraestrutura</h2>
-              <p className="mt-2 text-sm text-muted-foreground">
-                Em breve. O formulário desta área ainda está em definição.
-              </p>
+            <div className="mt-6 space-y-5">
+              <InfrastructureFields
+                association={association}
+                choice={choice}
+                setChoice={setChoice}
+              />
+              <div className="flex justify-end">
+                <Button type="submit" size="lg" disabled={saving}>
+                  {saving && <Loader2 className="mr-2 size-4 animate-spin" />}
+                  Salvar diagnóstico de infraestrutura
+                </Button>
+              </div>
             </div>
           )}
           <Tabs
