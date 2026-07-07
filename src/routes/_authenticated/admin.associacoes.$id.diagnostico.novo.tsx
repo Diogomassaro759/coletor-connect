@@ -111,11 +111,45 @@ function NewAssessment() {
   async function submit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     const values = new FormData(event.currentTarget);
+    const { data: auth } = await supabase.auth.getUser();
+    if (!auth.user) return toast.error("Sua sessão expirou.");
+
+    if (isInfrastructure) {
+      setSaving(true);
+      const payload: Record<string, unknown> = {};
+      for (const [k, v] of values.entries()) {
+        if (k.startsWith("infra_")) payload[k.slice(6)] = v;
+      }
+      for (const [k, v] of Object.entries(choices)) {
+        if (k.startsWith("infra_")) payload[k.slice(6)] = v;
+      }
+      const { error: infraError } = await supabase.from("infrastructure_assessments").insert({
+        association_id: id,
+        consultant_id: auth.user.id,
+        consultant_name: String(values.get("consultant_name") ?? "").trim(),
+        data_visita: String(values.get("data_visita") ?? ""),
+        horario_visita: String(values.get("horario_visita") ?? ""),
+        entrevistador: text(values, "infra_entrevistador"),
+        organizacao_nome: text(values, "infra_organizacao_nome"),
+        cidade: text(values, "infra_cidade"),
+        endereco_sede: text(values, "infra_endereco_sede"),
+        regime_ocupacao: choice("infra_regime_ocupacao", "PRÓPRIA"),
+        pessoas_total: numberOrNull(values, "infra_pessoas_total"),
+        pessoas_homens: numberOrNull(values, "infra_pessoas_homens"),
+        pessoas_mulheres: numberOrNull(values, "infra_pessoas_mulheres"),
+        pessoas_especifique: text(values, "infra_pessoas_especifique"),
+        payload,
+      });
+      setSaving(false);
+      if (infraError) return toast.error("Erro ao salvar diagnóstico de infraestrutura", { description: infraError.message });
+      toast.success("Diagnóstico de infraestrutura salvo.");
+      navigate({ to: "/admin/associacoes/$id", params: { id } });
+      return;
+    }
+
     if (!values.has("consentimento_dados") || !values.has("declaracao_veracidade")) {
       return toast.error("Confirme o consentimento e a veracidade das informações.");
     }
-    const { data: auth } = await supabase.auth.getUser();
-    if (!auth.user) return toast.error("Sua sessão expirou.");
     setSaving(true);
     const { data: assessment, error } = await supabase
       .from("association_assessments")
