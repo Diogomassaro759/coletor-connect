@@ -25,7 +25,12 @@ export const Route = createFileRoute("/_authenticated/admin/associacoes/$id/diag
     if (!context.isConsultant) throw redirect({ to: "/admin/associacoes" });
   },
   validateSearch: (search: Record<string, unknown>) => ({
-    modulo: search.modulo === "juridico" || search.modulo === "contabil" ? search.modulo : "social",
+    modulo:
+      search.modulo === "juridico" ||
+      search.modulo === "contabil" ||
+      search.modulo === "infraestrutura"
+        ? (search.modulo as "juridico" | "contabil" | "infraestrutura")
+        : "social",
   }),
   head: () => ({ meta: [{ title: "Novo diagnóstico — PROCATE" }] }),
   component: NewAssessment,
