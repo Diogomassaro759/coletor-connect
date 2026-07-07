@@ -138,7 +138,7 @@ function NewAssessment() {
         pessoas_homens: numberOrNull(values, "infra_pessoas_homens"),
         pessoas_mulheres: numberOrNull(values, "infra_pessoas_mulheres"),
         pessoas_especifique: text(values, "infra_pessoas_especifique"),
-        payload,
+        payload: payload as any,
       });
       setSaving(false);
       if (infraError) return toast.error("Erro ao salvar diagnóstico de infraestrutura", { description: infraError.message });
