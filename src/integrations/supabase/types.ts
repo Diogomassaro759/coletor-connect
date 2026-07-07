@@ -906,6 +906,77 @@ export type Database = {
           },
         ]
       }
+      infrastructure_assessments: {
+        Row: {
+          association_id: string
+          cidade: string | null
+          consultant_id: string
+          consultant_name: string
+          created_at: string
+          data_visita: string
+          endereco_sede: string | null
+          entrevistador: string | null
+          horario_visita: string
+          id: string
+          organizacao_nome: string | null
+          payload: Json
+          pessoas_especifique: string | null
+          pessoas_homens: number | null
+          pessoas_mulheres: number | null
+          pessoas_total: number | null
+          regime_ocupacao: string | null
+          updated_at: string
+        }
+        Insert: {
+          association_id: string
+          cidade?: string | null
+          consultant_id: string
+          consultant_name: string
+          created_at?: string
+          data_visita: string
+          endereco_sede?: string | null
+          entrevistador?: string | null
+          horario_visita: string
+          id?: string
+          organizacao_nome?: string | null
+          payload?: Json
+          pessoas_especifique?: string | null
+          pessoas_homens?: number | null
+          pessoas_mulheres?: number | null
+          pessoas_total?: number | null
+          regime_ocupacao?: string | null
+          updated_at?: string
+        }
+        Update: {
+          association_id?: string
+          cidade?: string | null
+          consultant_id?: string
+          consultant_name?: string
+          created_at?: string
+          data_visita?: string
+          endereco_sede?: string | null
+          entrevistador?: string | null
+          horario_visita?: string
+          id?: string
+          organizacao_nome?: string | null
+          payload?: Json
+          pessoas_especifique?: string | null
+          pessoas_homens?: number | null
+          pessoas_mulheres?: number | null
+          pessoas_total?: number | null
+          regime_ocupacao?: string | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "infrastructure_assessments_association_id_fkey"
+            columns: ["association_id"]
+            isOneToOne: false
+            referencedRelation: "associations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       material_prices: {
         Row: {
           assessment_id: string

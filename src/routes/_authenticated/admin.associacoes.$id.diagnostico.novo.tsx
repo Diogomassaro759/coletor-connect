@@ -25,7 +25,12 @@ export const Route = createFileRoute("/_authenticated/admin/associacoes/$id/diag
     if (!context.isConsultant) throw redirect({ to: "/admin/associacoes" });
   },
   validateSearch: (search: Record<string, unknown>) => ({
-    modulo: search.modulo === "juridico" || search.modulo === "contabil" ? search.modulo : "social",
+    modulo:
+      search.modulo === "juridico" ||
+      search.modulo === "contabil" ||
+      search.modulo === "infraestrutura"
+        ? (search.modulo as "juridico" | "contabil" | "infraestrutura")
+        : "social",
   }),
   head: () => ({ meta: [{ title: "Novo diagnóstico — PROCATE" }] }),
   component: NewAssessment,
@@ -106,11 +111,45 @@ function NewAssessment() {
   async function submit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     const values = new FormData(event.currentTarget);
+    const { data: auth } = await supabase.auth.getUser();
+    if (!auth.user) return toast.error("Sua sessão expirou.");
+
+    if (isInfrastructure) {
+      setSaving(true);
+      const payload: Record<string, unknown> = {};
+      for (const [k, v] of values.entries()) {
+        if (k.startsWith("infra_")) payload[k.slice(6)] = v;
+      }
+      for (const [k, v] of Object.entries(choices)) {
+        if (k.startsWith("infra_")) payload[k.slice(6)] = v;
+      }
+      const { error: infraError } = await supabase.from("infrastructure_assessments").insert({
+        association_id: id,
+        consultant_id: auth.user.id,
+        consultant_name: String(values.get("consultant_name") ?? "").trim(),
+        data_visita: String(values.get("data_visita") ?? ""),
+        horario_visita: String(values.get("horario_visita") ?? ""),
+        entrevistador: text(values, "infra_entrevistador"),
+        organizacao_nome: text(values, "infra_organizacao_nome"),
+        cidade: text(values, "infra_cidade"),
+        endereco_sede: text(values, "infra_endereco_sede"),
+        regime_ocupacao: choice("infra_regime_ocupacao", "PRÓPRIA"),
+        pessoas_total: numberOrNull(values, "infra_pessoas_total"),
+        pessoas_homens: numberOrNull(values, "infra_pessoas_homens"),
+        pessoas_mulheres: numberOrNull(values, "infra_pessoas_mulheres"),
+        pessoas_especifique: text(values, "infra_pessoas_especifique"),
+        payload: payload as any,
+      });
+      setSaving(false);
+      if (infraError) return toast.error("Erro ao salvar diagnóstico de infraestrutura", { description: infraError.message });
+      toast.success("Diagnóstico de infraestrutura salvo.");
+      navigate({ to: "/admin/associacoes/$id", params: { id } });
+      return;
+    }
+
     if (!values.has("consentimento_dados") || !values.has("declaracao_veracidade")) {
       return toast.error("Confirme o consentimento e a veracidade das informações.");
     }
-    const { data: auth } = await supabase.auth.getUser();
-    if (!auth.user) return toast.error("Sua sessão expirou.");
     setSaving(true);
     const { data: assessment, error } = await supabase
       .from("association_assessments")
@@ -390,11 +429,18 @@ function NewAssessment() {
             </Field>
           </div>
           {isInfrastructure && (
-            <div className="mt-6 rounded-xl border border-dashed border-border bg-muted/30 p-8 text-center">
-              <h2 className="text-lg font-semibold">Formulário de Infraestrutura</h2>
-              <p className="mt-2 text-sm text-muted-foreground">
-                Em breve. O formulário desta área ainda está em definição.
-              </p>
+            <div className="mt-6 space-y-5">
+              <InfrastructureFields
+                association={association}
+                choice={choice}
+                setChoice={setChoice}
+              />
+              <div className="flex justify-end">
+                <Button type="submit" size="lg" disabled={saving}>
+                  {saving && <Loader2 className="mr-2 size-4 animate-spin" />}
+                  Salvar diagnóstico de infraestrutura
+                </Button>
+              </div>
             </div>
           )}
           <Tabs
@@ -2475,5 +2521,501 @@ function Choice({
         </SelectContent>
       </Select>
     </Field>
+  );
+}
+
+const INFRA_ESTADO = ["BOM", "REGULAR", "RUIM", "CRÍTICO", "Outro"];
+const INFRA_FREQ = ["FREQUENTEMENTE", "MUITAS VEZES", "ALGUMAS VEZES", "POUCAS VEZES"];
+
+function InfraSection({ title, children }: { title: string; children: ReactNode }) {
+  return (
+    <section className="rounded-xl border border-primary/30 bg-card p-5 shadow-card md:p-7">
+      <h2 className="mb-5 text-lg font-bold uppercase tracking-tight text-primary">{title}</h2>
+      <div className="grid gap-5 md:grid-cols-2">{children}</div>
+    </section>
+  );
+}
+
+function InfrastructureFields({
+  association,
+  choice,
+  setChoice,
+}: {
+  association: any;
+  choice: (name: string, fallback?: string) => string;
+  setChoice: (name: string, value: string) => void;
+}) {
+  const orgName = association?.nome ?? "";
+  return (
+    <>
+      <div className="rounded-xl border border-primary/40 bg-primary/5 p-5">
+        <h1 className="text-xl font-bold">
+          INFRAESTRUTURA, FORMULÁRIO DE DIAGNÓSTICO
+          {orgName ? ` — ${orgName.toUpperCase()}` : ""}
+        </h1>
+      </div>
+
+      <InfraSection title="1. Identificação inicial">
+        <Field label="Quem fará as entrevistas?" wide>
+          <Input name="infra_entrevistador" maxLength={300} />
+        </Field>
+      </InfraSection>
+
+      <InfraSection title="2. Informações da organização">
+        <Field label="Nome da organização">
+          <Input name="infra_organizacao_nome" defaultValue={orgName} maxLength={300} />
+        </Field>
+        <Field label="Cidade">
+          <Input name="infra_cidade" defaultValue={association?.municipio ?? ""} maxLength={150} />
+        </Field>
+        <Field label="Endereço da sede / galpão" wide>
+          <Input
+            name="infra_endereco_sede"
+            defaultValue={association?.endereco_sede ?? ""}
+            maxLength={300}
+          />
+        </Field>
+        <Choice
+          name="infra_regime_ocupacao"
+          label="Regime de ocupação"
+          options={["PRÓPRIA", "CEDIDA", "ALUGADA"]}
+          value={choice("infra_regime_ocupacao", "PRÓPRIA")}
+          onChange={setChoice}
+        />
+        <NumberField name="infra_pessoas_total" label="Pessoas — Total" />
+        <NumberField name="infra_pessoas_homens" label="Homens" />
+        <NumberField name="infra_pessoas_mulheres" label="Mulheres" />
+        <Field label="Especifique (outras identidades / observações)" wide>
+          <Input name="infra_pessoas_especifique" maxLength={300} />
+        </Field>
+      </InfraSection>
+
+      <InfraSection title="3. Acesso, mobilidade e serviços públicos">
+        <Choice
+          name="infra_via_acesso"
+          label="Via de acesso"
+          options={[
+            "ASFALTO",
+            "PLACAS CONCRETO",
+            "BLOCOS",
+            "INTERTRAVADO",
+            "SEM PAVIMENTAÇÃO",
+            "Outro",
+          ]}
+          value={choice("infra_via_acesso", "ASFALTO")}
+          onChange={setChoice}
+        />
+        <Choice
+          name="infra_via_estado"
+          label="Estado da via"
+          options={["BOM", "REGULAR", "RUIM", "CRÍTICO", "SEM PAVIMENTAÇÃO", "Outro"]}
+          value={choice("infra_via_estado", "BOM")}
+          onChange={setChoice}
+        />
+        <Choice
+          name="infra_via_pesados"
+          label="Via suporta veículos pesados?"
+          options={YN}
+          value={choice("infra_via_pesados", "Sim")}
+          onChange={setChoice}
+        />
+        <Choice
+          name="infra_transporte_coletivo"
+          label="Transporte coletivo"
+          options={[
+            "NÃO",
+            "ÔNIBUS",
+            "MICRO-ÔNIBUS",
+            "ALTERNATIVO LEGALIZADO",
+            "METRÔ",
+            "Outro",
+          ]}
+          value={choice("infra_transporte_coletivo", "NÃO")}
+          onChange={setChoice}
+        />
+        <Choice
+          name="infra_rotas_ciclaveis"
+          label="Rotas cicláveis"
+          options={["NÃO", "SIM NÃO-SEGREGADO", "SIM SEGREGADO"]}
+          value={choice("infra_rotas_ciclaveis", "NÃO")}
+          onChange={setChoice}
+        />
+        <Choice
+          name="infra_calcadas"
+          label="Possui calçadas?"
+          options={YN}
+          value={choice("infra_calcadas", "Não")}
+          onChange={setChoice}
+        />
+        <Choice
+          name="infra_calcadas_estado"
+          label="Estado das calçadas"
+          options={INFRA_ESTADO}
+          value={choice("infra_calcadas_estado", "BOM")}
+          onChange={setChoice}
+        />
+        <Choice
+          name="infra_sinalizacao"
+          label="Possui sinalização?"
+          options={YN}
+          value={choice("infra_sinalizacao", "Não")}
+          onChange={setChoice}
+        />
+        <Choice
+          name="infra_sinalizacao_estado"
+          label="Estado da sinalização"
+          options={["BOM", "REGULAR", "RUIM", "Outro"]}
+          value={choice("infra_sinalizacao_estado", "BOM")}
+          onChange={setChoice}
+        />
+        <Choice
+          name="infra_iluminacao"
+          label="Iluminação pública?"
+          options={YN}
+          value={choice("infra_iluminacao", "Não")}
+          onChange={setChoice}
+        />
+        <Choice
+          name="infra_iluminacao_estado"
+          label="Funcionamento da iluminação"
+          options={["BOM", "REGULAR", "RUIM", "Outro"]}
+          value={choice("infra_iluminacao_estado", "BOM")}
+          onChange={setChoice}
+        />
+        <Choice
+          name="infra_energia"
+          label="Energia elétrica"
+          options={["CONCESSÃO PÚBLICA", "ALTERNATIVO", "INADEQUADO (gatos)", "SEM ENERGIA"]}
+          value={choice("infra_energia", "CONCESSÃO PÚBLICA")}
+          onChange={setChoice}
+        />
+        <Choice
+          name="infra_agua"
+          label="Água"
+          options={[
+            "SEM ABASTECIMENTO",
+            "CONCESSÃO PÚBLICA",
+            "POÇO ARTESIANO",
+            "CAMINHÃO PIPA",
+            "Outro",
+          ]}
+          value={choice("infra_agua", "CONCESSÃO PÚBLICA")}
+          onChange={setChoice}
+        />
+        <Choice
+          name="infra_esgoto"
+          label="Esgoto"
+          options={[
+            "SANEAMENTO PÚBLICO",
+            "FOSSA SÉPTICA",
+            "SEM DESTINAÇÃO ADEQUADA",
+            "Outro",
+          ]}
+          value={choice("infra_esgoto", "SANEAMENTO PÚBLICO")}
+          onChange={setChoice}
+        />
+        <Choice
+          name="infra_via_alaga"
+          label="Drenagem — a via alaga?"
+          options={YN}
+          value={choice("infra_via_alaga", "Não")}
+          onChange={setChoice}
+        />
+        <Choice
+          name="infra_via_alaga_freq"
+          label="Frequência (via)"
+          options={INFRA_FREQ}
+          value={choice("infra_via_alaga_freq", "POUCAS VEZES")}
+          onChange={setChoice}
+        />
+        <Choice
+          name="infra_espaco_alaga"
+          label="Drenagem — o espaço alaga?"
+          options={YN}
+          value={choice("infra_espaco_alaga", "Não")}
+          onChange={setChoice}
+        />
+        <Choice
+          name="infra_espaco_alaga_freq"
+          label="Frequência (espaço)"
+          options={INFRA_FREQ}
+          value={choice("infra_espaco_alaga_freq", "POUCAS VEZES")}
+          onChange={setChoice}
+        />
+      </InfraSection>
+
+      <InfraSection title="4. Estrutura física — Acesso e estacionamento">
+        <Choice
+          name="infra_piso_suporta_pesados"
+          label="Piso suporta veículos pesados?"
+          options={YN}
+          value={choice("infra_piso_suporta_pesados", "Sim")}
+          onChange={setChoice}
+        />
+        <Choice
+          name="infra_portoes_largura"
+          label="Portões com largura adequada?"
+          options={YN}
+          value={choice("infra_portoes_largura", "Sim")}
+          onChange={setChoice}
+        />
+        <Choice
+          name="infra_espaco_manobra"
+          label="Há espaço de manobra?"
+          options={YN}
+          value={choice("infra_espaco_manobra", "Sim")}
+          onChange={setChoice}
+        />
+        <Choice
+          name="infra_vagas_estacionamento"
+          label="Vagas de estacionamento?"
+          options={YN}
+          value={choice("infra_vagas_estacionamento", "Não")}
+          onChange={setChoice}
+        />
+      </InfraSection>
+
+      <InfraSection title="5. Muros e cercamentos">
+        <Choice
+          name="infra_muros_estado"
+          label="Estado"
+          options={["BOM", "REGULAR", "RUIM"]}
+          value={choice("infra_muros_estado", "BOM")}
+          onChange={setChoice}
+        />
+        <Choice
+          name="infra_muros_patologias"
+          label="Patologias"
+          options={["NENHUMA", "RACHADURAS", "INCLINADO", "FERRUGEM"]}
+          value={choice("infra_muros_patologias", "NENHUMA")}
+          onChange={setChoice}
+        />
+      </InfraSection>
+
+      <InfraSection title="6. Fundações">
+        <Choice
+          name="infra_fundacoes_patologias"
+          label="Patologias"
+          options={["NENHUM", "RECALQUES", "TRINCAS", "EROSÃO", "UMIDADE CAPILARIDADE"]}
+          value={choice("infra_fundacoes_patologias", "NENHUM")}
+          onChange={setChoice}
+        />
+      </InfraSection>
+
+      <InfraSection title="7. Pisos">
+        <Choice
+          name="infra_piso_tipo"
+          label="Tipo"
+          options={[
+            "GRANILITE",
+            "CONCRETO DESEMPENADO",
+            "CONCRETO SIMPLES",
+            "CERÂMICO",
+            "ROCHAS",
+          ]}
+          value={choice("infra_piso_tipo", "CONCRETO SIMPLES")}
+          onChange={setChoice}
+        />
+        <Choice
+          name="infra_piso_estado"
+          label="Estado"
+          options={["BOM", "REGULAR", "RUIM"]}
+          value={choice("infra_piso_estado", "BOM")}
+          onChange={setChoice}
+        />
+        <Choice
+          name="infra_piso_nivelamento"
+          label="Nivelamento adequado?"
+          options={YN}
+          value={choice("infra_piso_nivelamento", "Sim")}
+          onChange={setChoice}
+        />
+        <Choice
+          name="infra_piso_resistencia"
+          label="Resistência adequada?"
+          options={YN}
+          value={choice("infra_piso_resistencia", "Sim")}
+          onChange={setChoice}
+        />
+        <Choice
+          name="infra_piso_riscos"
+          label="Há riscos?"
+          options={YN}
+          value={choice("infra_piso_riscos", "Não")}
+          onChange={setChoice}
+        />
+      </InfraSection>
+
+      <InfraSection title="8. Pilares e vigas">
+        <Choice
+          name="infra_pilares_material"
+          label="Material"
+          options={[
+            "CONCRETADO LOCAL",
+            "PRÉ-FABRICADO",
+            "METÁLICO",
+            "MADEIRA",
+            "MISTO",
+          ]}
+          value={choice("infra_pilares_material", "CONCRETADO LOCAL")}
+          onChange={setChoice}
+        />
+        <Choice
+          name="infra_pilares_estado"
+          label="Estado"
+          options={["BOM", "REGULAR", "RUIM"]}
+          value={choice("infra_pilares_estado", "BOM")}
+          onChange={setChoice}
+        />
+        <Choice
+          name="infra_pilares_patologias"
+          label="Patologias"
+          options={[
+            "NENHUMA",
+            "FISSURAS",
+            "FERRAGENS EXPOSTAS",
+            "CORROSÃO",
+            "FORA DE PRUMO",
+            "UMIDADE",
+            "IMPACTO",
+          ]}
+          value={choice("infra_pilares_patologias", "NENHUMA")}
+          onChange={setChoice}
+        />
+      </InfraSection>
+
+      <InfraSection title="9. Paredes">
+        <Choice
+          name="infra_paredes_tipo"
+          label="Tipo"
+          options={["ESTRUTURAL", "VEDAÇÃO", "MISTO"]}
+          value={choice("infra_paredes_tipo", "VEDAÇÃO")}
+          onChange={setChoice}
+        />
+        <Choice
+          name="infra_paredes_material"
+          label="Material"
+          options={[
+            "BLOCOS CONCRETO",
+            "BLOCOS CERÂMICOS",
+            "TIJOLO MACIÇO",
+            "ECOLÓGICO",
+          ]}
+          value={choice("infra_paredes_material", "BLOCOS CERÂMICOS")}
+          onChange={setChoice}
+        />
+        <Choice
+          name="infra_paredes_estado"
+          label="Estado"
+          options={["BOM", "REGULAR", "RUIM"]}
+          value={choice("infra_paredes_estado", "BOM")}
+          onChange={setChoice}
+        />
+        <Choice
+          name="infra_paredes_patologias"
+          label="Patologias"
+          options={[
+            "NENHUMA",
+            "FISSURAS",
+            "FORA DE PRUMO",
+            "UMIDADE",
+            "MOFO",
+            "REVESTIMENTO SOLTO",
+            "IMPACTO",
+          ]}
+          value={choice("infra_paredes_patologias", "NENHUMA")}
+          onChange={setChoice}
+        />
+      </InfraSection>
+
+      <InfraSection title="10. Cobertura">
+        <Choice
+          name="infra_cobertura_tipo"
+          label="Tipo"
+          options={["TELHA CERÂMICA", "FIBROCIMENTO", "METÁLICA", "FIBRA", "LAJE"]}
+          value={choice("infra_cobertura_tipo", "FIBROCIMENTO")}
+          onChange={setChoice}
+        />
+        <Choice
+          name="infra_cobertura_estrutura"
+          label="Estrutura"
+          options={["MADEIRA", "METÁLICA", "CONCRETO"]}
+          value={choice("infra_cobertura_estrutura", "METÁLICA")}
+          onChange={setChoice}
+        />
+        <Choice
+          name="infra_cobertura_estado"
+          label="Estado"
+          options={["BOM", "REGULAR", "RUIM"]}
+          value={choice("infra_cobertura_estado", "BOM")}
+          onChange={setChoice}
+        />
+        <Choice
+          name="infra_cobertura_patologias"
+          label="Patologias"
+          options={[
+            "NENHUMA",
+            "GOTEIRAS",
+            "TELHAS QUEBRADAS",
+            "ESTRUTURA DANIFICADA",
+            "CALHAS ENTUPIDAS",
+          ]}
+          value={choice("infra_cobertura_patologias", "NENHUMA")}
+          onChange={setChoice}
+        />
+      </InfraSection>
+
+      <InfraSection title="11. Limpeza e salubridade">
+        <Choice
+          name="infra_espaco_refeicao_descanso"
+          label="Espaço de refeição / descanso"
+          options={["Não", "Sim ambos", "Sim parcial"]}
+          value={choice("infra_espaco_refeicao_descanso", "Não")}
+          onChange={setChoice}
+        />
+        <Choice
+          name="infra_agua_potavel"
+          label="Água potável disponível?"
+          options={YN}
+          value={choice("infra_agua_potavel", "Sim")}
+          onChange={setChoice}
+        />
+        <Choice
+          name="infra_banheiros_vestiarios"
+          label="Banheiros / vestiários?"
+          options={YN}
+          value={choice("infra_banheiros_vestiarios", "Sim")}
+          onChange={setChoice}
+        />
+        <Choice
+          name="infra_mofo_bolor"
+          label="Presença de mofo / bolor?"
+          options={YN}
+          value={choice("infra_mofo_bolor", "Não")}
+          onChange={setChoice}
+        />
+        <Choice
+          name="infra_conforto_termico_inadequado"
+          label="Conforto térmico inadequado?"
+          options={YN}
+          value={choice("infra_conforto_termico_inadequado", "Não")}
+          onChange={setChoice}
+        />
+        <Choice
+          name="infra_problemas_externos"
+          label="Problemas externos"
+          options={["Nenhum", "Acúmulo de material", "Vetores", "Mau cheiro"]}
+          value={choice("infra_problemas_externos", "Nenhum")}
+          onChange={setChoice}
+        />
+        <Choice
+          name="infra_pontos_agua_escoamento"
+          label="Pontos de água / escoamento para limpeza?"
+          options={YN}
+          value={choice("infra_pontos_agua_escoamento", "Sim")}
+          onChange={setChoice}
+        />
+      </InfraSection>
+    </>
   );
 }
