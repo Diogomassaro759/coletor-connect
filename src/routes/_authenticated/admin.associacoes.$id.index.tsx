@@ -175,9 +175,15 @@ function AssociationDetails() {
             </p>
           </div>
           {area === "infraestrutura" ? (
-            <p className="text-sm text-muted-foreground">
-              Formulário de Infraestrutura em breve.
-            </p>
+            <Link
+              to="/admin/associacoes/$id/diagnostico/novo"
+              params={{ id }}
+              search={{ modulo: "infraestrutura" as const }}
+            >
+              <Button size="lg">
+                <ClipboardPlus className="size-4" /> Abrir formulário
+              </Button>
+            </Link>
           ) : (
             <Link
               to="/admin/associacoes/$id/diagnostico/novo"
