@@ -210,16 +210,6 @@ function AssociationsPage() {
             {!isLoading && filtered.length === 0 && (
               <TableRow>
                 <TableCell colSpan={7} className="py-16 text-center">
-            {isLoading && (
-              <TableRow>
-                <TableCell colSpan={6} className="py-12 text-center text-muted-foreground">
-                  Carregando entidades...
-                </TableCell>
-              </TableRow>
-            )}
-            {!isLoading && filtered.length === 0 && (
-              <TableRow>
-                <TableCell colSpan={6} className="py-16 text-center">
                   <Building2 className="mx-auto mb-3 size-10 text-muted-foreground" />
                   <p className="text-muted-foreground">Nenhuma entidade encontrada.</p>
                 </TableCell>
@@ -250,18 +240,18 @@ function AssociationsPage() {
                     {item.numero_associados_atual ?? "—"}
                   </TableCell>
                   <TableCell>
-                    <div className="flex flex-col gap-1.5">
-                      {situacao ? (
-                        <Badge variant="outline" className={SITUACAO_TONE[situacao] ?? ""}>
-                          {SITUACAO_LABEL[situacao]}
-                        </Badge>
-                      ) : (
-                        <span className="text-xs text-muted-foreground">Sem diagnóstico</span>
-                      )}
-                      <Badge variant={item.ativa ? "secondary" : "outline"}>
-                        {item.ativa ? "Ativa" : "Inativa"}
+                    {situacao ? (
+                      <Badge variant="outline" className={SITUACAO_TONE[situacao] ?? ""}>
+                        {SITUACAO_LABEL[situacao]}
                       </Badge>
-                    </div>
+                    ) : (
+                      <span className="text-xs text-muted-foreground">Sem diagnóstico</span>
+                    )}
+                  </TableCell>
+                  <TableCell>
+                    <Badge variant={item.ativa ? "secondary" : "outline"}>
+                      {item.ativa ? "Ativa" : "Inativa"}
+                    </Badge>
                   </TableCell>
                   <TableCell className="text-right">
                     <div className="flex items-center justify-end gap-2">
