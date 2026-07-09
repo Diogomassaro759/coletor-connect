@@ -261,7 +261,11 @@ function AssociationsPage() {
                           params={{ id: item.id }}
                           search={{ modulo: areaForForm }}
                         >
-                          <Button size="sm" variant="secondary">
+                          <Button size="sm">
+                            <ClipboardPlus className="size-4 mr-1" />
+                            Abrir formulário
+                          </Button>
+                        </Link>
                             <ClipboardPlus className="size-4 mr-1" />
                             Abrir formulário
                           </Button>
