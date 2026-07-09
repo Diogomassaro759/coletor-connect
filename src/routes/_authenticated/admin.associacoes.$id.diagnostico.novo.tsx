@@ -133,7 +133,7 @@ function NewAssessment() {
         organizacao_nome: text(values, "infra_organizacao_nome"),
         cidade: text(values, "infra_cidade"),
         endereco_sede: text(values, "infra_endereco_sede"),
-        regime_ocupacao: choice("infra_regime_ocupacao", "PRÓPRIA"),
+        regime_ocupacao: choice("infra_regime_ocupacao", ""),
         pessoas_total: numberOrNull(values, "infra_pessoas_total"),
         pessoas_homens: numberOrNull(values, "infra_pessoas_homens"),
         pessoas_mulheres: numberOrNull(values, "infra_pessoas_mulheres"),
@@ -2499,18 +2499,22 @@ function Choice({
   options,
   value,
   onChange,
+  placeholder = "Selecione...",
 }: {
   name: string;
   label: string;
   options: string[];
   value: string;
   onChange: (name: string, value: string) => void;
+  placeholder?: string;
 }) {
+  const hasOutro = options.some((o) => o.toLowerCase() === "outro");
+  const isOutro = value.toLowerCase() === "outro";
   return (
     <Field label={label}>
-      <Select value={value} onValueChange={(next) => onChange(name, next)}>
+      <Select value={value || undefined} onValueChange={(next) => onChange(name, next)}>
         <SelectTrigger>
-          <SelectValue />
+          <SelectValue placeholder={placeholder} />
         </SelectTrigger>
         <SelectContent>
           {options.map((option) => (
@@ -2520,12 +2524,28 @@ function Choice({
           ))}
         </SelectContent>
       </Select>
+      {hasOutro && isOutro && (
+        <Input
+          name={`${name}_outro`}
+          placeholder="Especifique"
+          maxLength={200}
+          className="mt-2"
+        />
+      )}
     </Field>
   );
 }
 
 const INFRA_ESTADO = ["BOM", "REGULAR", "RUIM", "CRÍTICO", "Outro"];
 const INFRA_FREQ = ["FREQUENTEMENTE", "MUITAS VEZES", "ALGUMAS VEZES", "POUCAS VEZES"];
+
+function SectionDivider({ children }: { children: ReactNode }) {
+  return (
+    <div className="mt-4 rounded-lg border-l-4 border-primary bg-primary/10 px-4 py-3">
+      <h2 className="text-base font-bold uppercase tracking-wide text-primary">{children}</h2>
+    </div>
+  );
+}
 
 function InfraSection({ title, children }: { title: string; children: ReactNode }) {
   return (
@@ -2555,6 +2575,8 @@ function InfrastructureFields({
         </h1>
       </div>
 
+      <SectionDivider>Seção 1 — Identificação inicial</SectionDivider>
+
       <InfraSection title="1. Identificação inicial">
         <Field label="Quem fará as entrevistas?" wide>
           <Input name="infra_entrevistador" maxLength={300} />
@@ -2579,7 +2601,7 @@ function InfrastructureFields({
           name="infra_regime_ocupacao"
           label="Regime de ocupação"
           options={["PRÓPRIA", "CEDIDA", "ALUGADA"]}
-          value={choice("infra_regime_ocupacao", "PRÓPRIA")}
+          value={choice("infra_regime_ocupacao", "")}
           onChange={setChoice}
         />
         <NumberField name="infra_pessoas_total" label="Pessoas — Total" />
@@ -2589,6 +2611,8 @@ function InfrastructureFields({
           <Input name="infra_pessoas_especifique" maxLength={300} />
         </Field>
       </InfraSection>
+
+      <SectionDivider>Seção 2 — Acesso, mobilidade e serviços públicos</SectionDivider>
 
       <InfraSection title="3. Acesso, mobilidade e serviços públicos">
         <Choice
@@ -2602,21 +2626,21 @@ function InfrastructureFields({
             "SEM PAVIMENTAÇÃO",
             "Outro",
           ]}
-          value={choice("infra_via_acesso", "ASFALTO")}
+          value={choice("infra_via_acesso", "")}
           onChange={setChoice}
         />
         <Choice
           name="infra_via_estado"
           label="Estado da via"
           options={["BOM", "REGULAR", "RUIM", "CRÍTICO", "SEM PAVIMENTAÇÃO", "Outro"]}
-          value={choice("infra_via_estado", "BOM")}
+          value={choice("infra_via_estado", "")}
           onChange={setChoice}
         />
         <Choice
           name="infra_via_pesados"
           label="Via suporta veículos pesados?"
           options={YN}
-          value={choice("infra_via_pesados", "Sim")}
+          value={choice("infra_via_pesados", "")}
           onChange={setChoice}
         />
         <Choice
@@ -2630,63 +2654,63 @@ function InfrastructureFields({
             "METRÔ",
             "Outro",
           ]}
-          value={choice("infra_transporte_coletivo", "NÃO")}
+          value={choice("infra_transporte_coletivo", "")}
           onChange={setChoice}
         />
         <Choice
           name="infra_rotas_ciclaveis"
           label="Rotas cicláveis"
           options={["NÃO", "SIM NÃO-SEGREGADO", "SIM SEGREGADO"]}
-          value={choice("infra_rotas_ciclaveis", "NÃO")}
+          value={choice("infra_rotas_ciclaveis", "")}
           onChange={setChoice}
         />
         <Choice
           name="infra_calcadas"
           label="Possui calçadas?"
           options={YN}
-          value={choice("infra_calcadas", "Não")}
+          value={choice("infra_calcadas", "")}
           onChange={setChoice}
         />
         <Choice
           name="infra_calcadas_estado"
           label="Estado das calçadas"
           options={INFRA_ESTADO}
-          value={choice("infra_calcadas_estado", "BOM")}
+          value={choice("infra_calcadas_estado", "")}
           onChange={setChoice}
         />
         <Choice
           name="infra_sinalizacao"
           label="Possui sinalização?"
           options={YN}
-          value={choice("infra_sinalizacao", "Não")}
+          value={choice("infra_sinalizacao", "")}
           onChange={setChoice}
         />
         <Choice
           name="infra_sinalizacao_estado"
           label="Estado da sinalização"
           options={["BOM", "REGULAR", "RUIM", "Outro"]}
-          value={choice("infra_sinalizacao_estado", "BOM")}
+          value={choice("infra_sinalizacao_estado", "")}
           onChange={setChoice}
         />
         <Choice
           name="infra_iluminacao"
           label="Iluminação pública?"
           options={YN}
-          value={choice("infra_iluminacao", "Não")}
+          value={choice("infra_iluminacao", "")}
           onChange={setChoice}
         />
         <Choice
           name="infra_iluminacao_estado"
           label="Funcionamento da iluminação"
           options={["BOM", "REGULAR", "RUIM", "Outro"]}
-          value={choice("infra_iluminacao_estado", "BOM")}
+          value={choice("infra_iluminacao_estado", "")}
           onChange={setChoice}
         />
         <Choice
           name="infra_energia"
           label="Energia elétrica"
           options={["CONCESSÃO PÚBLICA", "ALTERNATIVO", "INADEQUADO (gatos)", "SEM ENERGIA"]}
-          value={choice("infra_energia", "CONCESSÃO PÚBLICA")}
+          value={choice("infra_energia", "")}
           onChange={setChoice}
         />
         <Choice
@@ -2699,7 +2723,7 @@ function InfrastructureFields({
             "CAMINHÃO PIPA",
             "Outro",
           ]}
-          value={choice("infra_agua", "CONCESSÃO PÚBLICA")}
+          value={choice("infra_agua", "")}
           onChange={setChoice}
         />
         <Choice
@@ -2711,66 +2735,68 @@ function InfrastructureFields({
             "SEM DESTINAÇÃO ADEQUADA",
             "Outro",
           ]}
-          value={choice("infra_esgoto", "SANEAMENTO PÚBLICO")}
+          value={choice("infra_esgoto", "")}
           onChange={setChoice}
         />
         <Choice
           name="infra_via_alaga"
           label="Drenagem — a via alaga?"
           options={YN}
-          value={choice("infra_via_alaga", "Não")}
+          value={choice("infra_via_alaga", "")}
           onChange={setChoice}
         />
         <Choice
           name="infra_via_alaga_freq"
           label="Frequência (via)"
           options={INFRA_FREQ}
-          value={choice("infra_via_alaga_freq", "POUCAS VEZES")}
+          value={choice("infra_via_alaga_freq", "")}
           onChange={setChoice}
         />
         <Choice
           name="infra_espaco_alaga"
           label="Drenagem — o espaço alaga?"
           options={YN}
-          value={choice("infra_espaco_alaga", "Não")}
+          value={choice("infra_espaco_alaga", "")}
           onChange={setChoice}
         />
         <Choice
           name="infra_espaco_alaga_freq"
           label="Frequência (espaço)"
           options={INFRA_FREQ}
-          value={choice("infra_espaco_alaga_freq", "POUCAS VEZES")}
+          value={choice("infra_espaco_alaga_freq", "")}
           onChange={setChoice}
         />
       </InfraSection>
+
+      <SectionDivider>Seção 3 — Estrutura física</SectionDivider>
 
       <InfraSection title="4. Estrutura física — Acesso e estacionamento">
         <Choice
           name="infra_piso_suporta_pesados"
           label="Piso suporta veículos pesados?"
           options={YN}
-          value={choice("infra_piso_suporta_pesados", "Sim")}
+          value={choice("infra_piso_suporta_pesados", "")}
           onChange={setChoice}
         />
         <Choice
           name="infra_portoes_largura"
           label="Portões com largura adequada?"
           options={YN}
-          value={choice("infra_portoes_largura", "Sim")}
+          value={choice("infra_portoes_largura", "")}
           onChange={setChoice}
         />
         <Choice
           name="infra_espaco_manobra"
           label="Há espaço de manobra?"
           options={YN}
-          value={choice("infra_espaco_manobra", "Sim")}
+          value={choice("infra_espaco_manobra", "")}
           onChange={setChoice}
         />
         <Choice
           name="infra_vagas_estacionamento"
           label="Vagas de estacionamento?"
           options={YN}
-          value={choice("infra_vagas_estacionamento", "Não")}
+          value={choice("infra_vagas_estacionamento", "")}
           onChange={setChoice}
         />
       </InfraSection>
@@ -2780,14 +2806,14 @@ function InfrastructureFields({
           name="infra_muros_estado"
           label="Estado"
           options={["BOM", "REGULAR", "RUIM"]}
-          value={choice("infra_muros_estado", "BOM")}
+          value={choice("infra_muros_estado", "")}
           onChange={setChoice}
         />
         <Choice
           name="infra_muros_patologias"
           label="Patologias"
           options={["NENHUMA", "RACHADURAS", "INCLINADO", "FERRUGEM"]}
-          value={choice("infra_muros_patologias", "NENHUMA")}
+          value={choice("infra_muros_patologias", "")}
           onChange={setChoice}
         />
       </InfraSection>
@@ -2797,7 +2823,7 @@ function InfrastructureFields({
           name="infra_fundacoes_patologias"
           label="Patologias"
           options={["NENHUM", "RECALQUES", "TRINCAS", "EROSÃO", "UMIDADE CAPILARIDADE"]}
-          value={choice("infra_fundacoes_patologias", "NENHUM")}
+          value={choice("infra_fundacoes_patologias", "")}
           onChange={setChoice}
         />
       </InfraSection>
@@ -2813,35 +2839,35 @@ function InfrastructureFields({
             "CERÂMICO",
             "ROCHAS",
           ]}
-          value={choice("infra_piso_tipo", "CONCRETO SIMPLES")}
+          value={choice("infra_piso_tipo", "")}
           onChange={setChoice}
         />
         <Choice
           name="infra_piso_estado"
           label="Estado"
           options={["BOM", "REGULAR", "RUIM"]}
-          value={choice("infra_piso_estado", "BOM")}
+          value={choice("infra_piso_estado", "")}
           onChange={setChoice}
         />
         <Choice
           name="infra_piso_nivelamento"
           label="Nivelamento adequado?"
           options={YN}
-          value={choice("infra_piso_nivelamento", "Sim")}
+          value={choice("infra_piso_nivelamento", "")}
           onChange={setChoice}
         />
         <Choice
           name="infra_piso_resistencia"
           label="Resistência adequada?"
           options={YN}
-          value={choice("infra_piso_resistencia", "Sim")}
+          value={choice("infra_piso_resistencia", "")}
           onChange={setChoice}
         />
         <Choice
           name="infra_piso_riscos"
           label="Há riscos?"
           options={YN}
-          value={choice("infra_piso_riscos", "Não")}
+          value={choice("infra_piso_riscos", "")}
           onChange={setChoice}
         />
       </InfraSection>
@@ -2857,14 +2883,14 @@ function InfrastructureFields({
             "MADEIRA",
             "MISTO",
           ]}
-          value={choice("infra_pilares_material", "CONCRETADO LOCAL")}
+          value={choice("infra_pilares_material", "")}
           onChange={setChoice}
         />
         <Choice
           name="infra_pilares_estado"
           label="Estado"
           options={["BOM", "REGULAR", "RUIM"]}
-          value={choice("infra_pilares_estado", "BOM")}
+          value={choice("infra_pilares_estado", "")}
           onChange={setChoice}
         />
         <Choice
@@ -2879,7 +2905,7 @@ function InfrastructureFields({
             "UMIDADE",
             "IMPACTO",
           ]}
-          value={choice("infra_pilares_patologias", "NENHUMA")}
+          value={choice("infra_pilares_patologias", "")}
           onChange={setChoice}
         />
       </InfraSection>
@@ -2889,7 +2915,7 @@ function InfrastructureFields({
           name="infra_paredes_tipo"
           label="Tipo"
           options={["ESTRUTURAL", "VEDAÇÃO", "MISTO"]}
-          value={choice("infra_paredes_tipo", "VEDAÇÃO")}
+          value={choice("infra_paredes_tipo", "")}
           onChange={setChoice}
         />
         <Choice
@@ -2901,14 +2927,14 @@ function InfrastructureFields({
             "TIJOLO MACIÇO",
             "ECOLÓGICO",
           ]}
-          value={choice("infra_paredes_material", "BLOCOS CERÂMICOS")}
+          value={choice("infra_paredes_material", "")}
           onChange={setChoice}
         />
         <Choice
           name="infra_paredes_estado"
           label="Estado"
           options={["BOM", "REGULAR", "RUIM"]}
-          value={choice("infra_paredes_estado", "BOM")}
+          value={choice("infra_paredes_estado", "")}
           onChange={setChoice}
         />
         <Choice
@@ -2923,7 +2949,7 @@ function InfrastructureFields({
             "REVESTIMENTO SOLTO",
             "IMPACTO",
           ]}
-          value={choice("infra_paredes_patologias", "NENHUMA")}
+          value={choice("infra_paredes_patologias", "")}
           onChange={setChoice}
         />
       </InfraSection>
@@ -2933,21 +2959,21 @@ function InfrastructureFields({
           name="infra_cobertura_tipo"
           label="Tipo"
           options={["TELHA CERÂMICA", "FIBROCIMENTO", "METÁLICA", "FIBRA", "LAJE"]}
-          value={choice("infra_cobertura_tipo", "FIBROCIMENTO")}
+          value={choice("infra_cobertura_tipo", "")}
           onChange={setChoice}
         />
         <Choice
           name="infra_cobertura_estrutura"
           label="Estrutura"
           options={["MADEIRA", "METÁLICA", "CONCRETO"]}
-          value={choice("infra_cobertura_estrutura", "METÁLICA")}
+          value={choice("infra_cobertura_estrutura", "")}
           onChange={setChoice}
         />
         <Choice
           name="infra_cobertura_estado"
           label="Estado"
           options={["BOM", "REGULAR", "RUIM"]}
-          value={choice("infra_cobertura_estado", "BOM")}
+          value={choice("infra_cobertura_estado", "")}
           onChange={setChoice}
         />
         <Choice
@@ -2960,7 +2986,7 @@ function InfrastructureFields({
             "ESTRUTURA DANIFICADA",
             "CALHAS ENTUPIDAS",
           ]}
-          value={choice("infra_cobertura_patologias", "NENHUMA")}
+          value={choice("infra_cobertura_patologias", "")}
           onChange={setChoice}
         />
       </InfraSection>
@@ -2970,49 +2996,49 @@ function InfrastructureFields({
           name="infra_espaco_refeicao_descanso"
           label="Espaço de refeição / descanso"
           options={["Não", "Sim ambos", "Sim parcial"]}
-          value={choice("infra_espaco_refeicao_descanso", "Não")}
+          value={choice("infra_espaco_refeicao_descanso", "")}
           onChange={setChoice}
         />
         <Choice
           name="infra_agua_potavel"
           label="Água potável disponível?"
           options={YN}
-          value={choice("infra_agua_potavel", "Sim")}
+          value={choice("infra_agua_potavel", "")}
           onChange={setChoice}
         />
         <Choice
           name="infra_banheiros_vestiarios"
           label="Banheiros / vestiários?"
           options={YN}
-          value={choice("infra_banheiros_vestiarios", "Sim")}
+          value={choice("infra_banheiros_vestiarios", "")}
           onChange={setChoice}
         />
         <Choice
           name="infra_mofo_bolor"
           label="Presença de mofo / bolor?"
           options={YN}
-          value={choice("infra_mofo_bolor", "Não")}
+          value={choice("infra_mofo_bolor", "")}
           onChange={setChoice}
         />
         <Choice
           name="infra_conforto_termico_inadequado"
           label="Conforto térmico inadequado?"
           options={YN}
-          value={choice("infra_conforto_termico_inadequado", "Não")}
+          value={choice("infra_conforto_termico_inadequado", "")}
           onChange={setChoice}
         />
         <Choice
           name="infra_problemas_externos"
           label="Problemas externos"
           options={["Nenhum", "Acúmulo de material", "Vetores", "Mau cheiro"]}
-          value={choice("infra_problemas_externos", "Nenhum")}
+          value={choice("infra_problemas_externos", "")}
           onChange={setChoice}
         />
         <Choice
           name="infra_pontos_agua_escoamento"
           label="Pontos de água / escoamento para limpeza?"
           options={YN}
-          value={choice("infra_pontos_agua_escoamento", "Sim")}
+          value={choice("infra_pontos_agua_escoamento", "")}
           onChange={setChoice}
         />
       </InfraSection>

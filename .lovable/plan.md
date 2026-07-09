@@ -1,73 +1,58 @@
-# Plano — Demandas 03/07/2026
+# Plano — Demandas 06/07/2026
 
-Escopo grande e com impacto de banco. Preciso confirmar algumas decisões antes de aplicar.
+## Bloco A — Consultor Social (tela de Associações)
 
-## 1. Renomeações de nomenclatura (UI apenas)
+**A1. Remover "Cadastrar" do dropdown de Ações**
+- Arquivo: `src/routes/_authenticated/admin.associacoes.index.tsx`
+- Estado atual: dropdown já tem só "Ver detalhes" e "Editar" — **verificar e confirmar** que não há resquício de "Cadastrar". Se houver, remover.
 
-Trocar rótulos onde aparecem, mantendo os papéis internos (`consultor`, `admin`) intocados no banco:
+**A2. Botão "Abrir formulário"**
+- Já existe hoje na coluna de ações para consultor. Vou **movê-lo para posição mais visível** (antes do dropdown, com destaque `variant="default"` em vez de `secondary`) e garantir que abre direto o formulário da área do consultor (`?modulo=social` para Consultor Social).
 
-- Onde hoje aparece **"Consultor"** (menu, badges, textos) → mostrar **"Associações / Cooperativas / Coletivos"**.
-- Onde aparece **"Administrador"** → mostrar **"Entidades"**.
+**A3. Separar colunas Status e Situação**
+- Hoje estão **fundidas** em uma única coluna "Situação" (feito na demanda anterior a pedido do usuário).
+- Reverter para **duas colunas distintas**:
+  - `Situação` → resultado do diagnóstico (Regular / Parcialmente regular / Irregular / Sem diagnóstico)
+  - `Status` → Ativa / Inativa
+- Ajustar também o export Excel.
 
-Arquivos afetados: `AdminShell.tsx`, telas de usuários (`admin.usuarios.*`), `auth.tsx`, `route.tsx` (labels), `admin.perfil.tsx`, `admin.index.tsx`.
+**A4. Formato do formulário Social (Página 2 do PDF)**
+- Preciso da imagem/PDF da "Página 2" para reproduzir fiel. **Sem o anexo não implemento este item** — vou pedir na resposta final.
 
-> Observação: rótulos longos como "Associações / Cooperativas / Coletivos" ficam ruins em badges/menu. Sugiro usar esse texto na descrição do papel e manter um rótulo curto tipo **"Consultor de campo"** no chip. **Confirma?**
+---
 
-## 2. Tela principal do Consultor (pag. 3 do desenho)
+## Bloco B — Formulário de Infraestrutura
 
-Substituir o painel atual do consultor por uma **lista tabular** de associações/cooperativas com colunas. Como não tenho o desenho anexado neste chat, **preciso que você confirme as colunas**. Minha proposta:
+**B1. Remover todos os valores pré-preenchidos**
+- Arquivo: `src/routes/_authenticated/admin.associacoes.$id.diagnostico.novo.tsx` (bloco Infraestrutura)
+- Auditar todos os `defaultValues` / `useState('...')` do formulário de infra e trocar por `""` / `undefined` para radios, selects e checkboxes.
+- Manter apenas os campos "cabeçalho" (Consultor, Data, Hora) pré-preenchidos — esses foram pedidos explicitamente antes.
 
-| Nome | Tipo (Assoc./Coop./Coletivo) | Município | Situação | Último cadastro | Status | Ações |
+**B2. Campo texto ao lado de "Outro"**
+- Para cada grupo (radio/checkbox) que tenha opção "Outro", renderizar um `<Input>` condicional quando "Outro" estiver selecionado, salvando o valor livre em `payload.<campo>_outro`.
+- Aplicar em todos os grupos do formulário de infra que tenham "Outro".
 
-Se você tiver a imagem, cole aqui — implemento fiel ao desenho.
+**B3. Reorganizar em 3 seções visuais**
+- Reagrupar os campos existentes em:
+  1. **Identificação Inicial** (nome da entidade, CNPJ auto, consultor, data, hora)
+  2. **Acesso / Mobilidade / Serviços Públicos** (via de acesso, transporte, água, energia, esgoto, coleta, internet)
+  3. **Estrutura Física** (área, cobertura, piso, ventilação, banheiros, refeitório, EPI, etc.)
+- Usar `<Card>` + `<CardHeader>` para cada seção, mantendo o mesmo padrão visual do formulário Social/Jurídico/Contábil.
 
-## 3. Subtipos de Consultor e Coordenador
+**B4. Conferência com o Google Forms de referência**
+- Vou abrir o link do Google Forms para conferir campos existentes vs. faltantes e adicionar os que estiverem faltando.
 
-Novos subtipos por área: **Social | Jurídico | Contábil | Infraestrutura**.
+---
 
-Mudanças de banco necessárias:
+## Ordem de execução
 
-- Novo enum `app_role`: adicionar `coordenador`.
-- Nova coluna `user_roles.area` (`social | juridico | contabil | infraestrutura | null`).
-- Função `has_area(_user_id, _area)` para RLS.
-- Ajustar `is_field_consultant` para considerar apenas consultores; criar `is_coordenador`.
+1. Bloco A1, A2, A3 (rápido, sem dependência externa) → entregar
+2. Bloco B1, B2, B3, B4 (formulário de infra) → entregar
+3. Bloco A4 fica pendente até receber a imagem da Página 2
 
-Regras:
+## O que preciso de você antes de começar
 
-- **Consultor + área X** → vê apenas o formulário/dados da área X.
-- **Coordenador + área X** → vê todos os cadastros feitos por qualquer consultor da mesma área X.
-- Cadastro de usuário (`admin.usuarios.novo` / `editar`) ganha campo "Área" quando papel = consultor ou coordenador.
+- **Anexo da "Página 2"** com o layout do formulário Social (para A4). Sem ele, faço só A1–A3 do Bloco A.
+- Confirmação de que posso seguir com **Bloco B inteiro** com base no Google Forms + reorganização em 3 seções.
 
-## 4. Fichas por perfil (elimina tela de seleção)
-
-Hoje o consultor entra numa tela com 3 cards (Social/Jurídico/Contábil) antes do formulário. Passará a:
-
-- Ir **direto** ao formulário da área dele.
-- Se for **Infraestrutura**, precisamos definir os campos — **hoje não existe formulário de Infraestrutura**. **Você quer que eu crie um esqueleto agora ou deixamos "em breve"?**
-- Coordenador vê a lista de cadastros da área (nova aba/rota).
-
-Remover a seção "Escolha um dos 3 tipos de cadastro" em `admin.associacoes.$id.index.tsx` para consultor (mantida só se admin).
-
-## 5. Novos campos no Cadastro Social
-
-Após "Nome completo da associação e CNPJ", acrescentar:
-
-- **TIPO**: `Associação | Cooperativa | Coletivo` (substitui o atual `formal | informal` da tabela `associations.tipo`).
-- **SITUAÇÃO**: **precisamos definir as opções**. Exemplos comuns: `Ativa | Inativa | Em regularização | Suspensa`. **Me confirma as opções.**
-
-Impacto de banco:
-
-- Alterar enum `association_type` (ou coluna) para os 3 novos valores. Como já existem registros com `formal/informal`, faço migração de dados:
-  - `formal` → `Cooperativa` (default) — **você precisa confirmar o mapeamento, ou prefere marcar tudo como "Associação" e revisar manualmente?**
-- Adicionar coluna `associations.situacao` (enum novo `association_situation`).
-
-## Perguntas que preciso responder antes de implementar
-
-1. **Desenho da tela do consultor (pag. 3)**: quais colunas exatas?
-2. **Rótulo curto** para o papel "Associações/Cooperativas/Coletivos" em badges/menu? (sugestão: "Consultor de campo")
-3. **Formulário Infraestrutura**: criar esqueleto agora ou "em breve"?
-4. **Opções de SITUAÇÃO**?
-5. **Migração formal→Cooperativa vs Associação**?
-6. Coordenador deve **poder editar** cadastros da área ou **só visualizar**?
-
-Confirma esses 6 pontos que eu já saio implementando na sequência (1→5→3→4→2).
+Confirma que sigo com A1–A3 + Bloco B agora, e A4 fica aguardando a imagem?
