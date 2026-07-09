@@ -2768,6 +2768,8 @@ function InfrastructureFields({
         />
       </InfraSection>
 
+      <SectionDivider>Seção 3 — Estrutura física</SectionDivider>
+
       <InfraSection title="4. Estrutura física — Acesso e estacionamento">
         <Choice
           name="infra_piso_suporta_pesados"
