@@ -2499,18 +2499,22 @@ function Choice({
   options,
   value,
   onChange,
+  placeholder = "Selecione...",
 }: {
   name: string;
   label: string;
   options: string[];
   value: string;
   onChange: (name: string, value: string) => void;
+  placeholder?: string;
 }) {
+  const hasOutro = options.some((o) => o.toLowerCase() === "outro");
+  const isOutro = value.toLowerCase() === "outro";
   return (
     <Field label={label}>
-      <Select value={value} onValueChange={(next) => onChange(name, next)}>
+      <Select value={value || undefined} onValueChange={(next) => onChange(name, next)}>
         <SelectTrigger>
-          <SelectValue />
+          <SelectValue placeholder={placeholder} />
         </SelectTrigger>
         <SelectContent>
           {options.map((option) => (
@@ -2520,6 +2524,14 @@ function Choice({
           ))}
         </SelectContent>
       </Select>
+      {hasOutro && isOutro && (
+        <Input
+          name={`${name}_outro`}
+          placeholder="Especifique"
+          maxLength={200}
+          className="mt-2"
+        />
+      )}
     </Field>
   );
 }
