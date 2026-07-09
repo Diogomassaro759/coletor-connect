@@ -2539,6 +2539,14 @@ function Choice({
 const INFRA_ESTADO = ["BOM", "REGULAR", "RUIM", "CRÍTICO", "Outro"];
 const INFRA_FREQ = ["FREQUENTEMENTE", "MUITAS VEZES", "ALGUMAS VEZES", "POUCAS VEZES"];
 
+function SectionDivider({ children }: { children: ReactNode }) {
+  return (
+    <div className="mt-4 rounded-lg border-l-4 border-primary bg-primary/10 px-4 py-3">
+      <h2 className="text-base font-bold uppercase tracking-wide text-primary">{children}</h2>
+    </div>
+  );
+}
+
 function InfraSection({ title, children }: { title: string; children: ReactNode }) {
   return (
     <section className="rounded-xl border border-primary/30 bg-card p-5 shadow-card md:p-7">
