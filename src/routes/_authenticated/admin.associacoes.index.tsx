@@ -195,10 +195,21 @@ function AssociationsPage() {
               <TableHead>Município</TableHead>
               <TableHead className="hidden sm:table-cell">Associados</TableHead>
               <TableHead>Situação</TableHead>
+              <TableHead>Status</TableHead>
               <TableHead className="w-24 text-right">Ações</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
+            {isLoading && (
+              <TableRow>
+                <TableCell colSpan={7} className="py-12 text-center text-muted-foreground">
+                  Carregando entidades...
+                </TableCell>
+              </TableRow>
+            )}
+            {!isLoading && filtered.length === 0 && (
+              <TableRow>
+                <TableCell colSpan={7} className="py-16 text-center">
             {isLoading && (
               <TableRow>
                 <TableCell colSpan={6} className="py-12 text-center text-muted-foreground">
