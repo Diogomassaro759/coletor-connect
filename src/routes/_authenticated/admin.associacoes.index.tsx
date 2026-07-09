@@ -148,9 +148,16 @@ function AssociationsPage() {
 
   const areaForForm = (area ?? "social") as "social" | "juridico" | "contabil" | "infraestrutura";
 
+  const moduloLabel: Record<string, string> = {
+    social: "Cadastro Social",
+    juridico: "Cadastro Jurídico",
+    contabil: "Cadastro Contábil",
+    infraestrutura: "Cadastro de Infraestrutura",
+  };
+
   return (
     <AdminShell>
-      <div className="mb-8 flex flex-wrap items-end justify-between gap-4">
+      <div className="mb-6 grid gap-4 lg:grid-cols-[1fr_auto] lg:items-start">
         <div>
           <h1 className="text-3xl font-bold tracking-tight">
             {isViewer ? "Associações / Cooperativas / Coletivos" : "Associações e cooperativas"}
@@ -162,7 +169,7 @@ function AssociationsPage() {
           </p>
         </div>
         {isAdmin && (
-          <div className="flex gap-2">
+          <div className="flex flex-wrap gap-2">
             <Button variant="outline" size="lg" onClick={exportAssociations}>
               <Download className="size-4" /> Exportar Excel
             </Button>
@@ -171,6 +178,31 @@ function AssociationsPage() {
                 <Plus className="size-4" /> Nova entidade
               </Button>
             </Link>
+          </div>
+        )}
+        {isConsultant && (
+          <div className="rounded-xl border border-primary/30 bg-primary/5 p-4 shadow-card lg:min-w-[280px]">
+            <p className="text-xs font-semibold uppercase tracking-wide text-primary">
+              Formulário de campo
+            </p>
+            <p className="mt-1 text-lg font-semibold text-foreground">
+              {moduloLabel[areaForForm] ?? "Cadastro"}
+            </p>
+            <p className="mt-1 text-xs text-muted-foreground">
+              Abra diretamente o formulário da sua área de atuação.
+            </p>
+            <Button
+              size="sm"
+              className="mt-3 w-full"
+              onClick={() => {
+                document
+                  .getElementById("entidades-table")
+                  ?.scrollIntoView({ behavior: "smooth", block: "start" });
+                toast.info("Selecione uma entidade na lista para abrir o formulário.");
+              }}
+            >
+              <ClipboardPlus className="size-4 mr-1" /> Abrir formulário
+            </Button>
           </div>
         )}
       </div>
@@ -188,7 +220,10 @@ function AssociationsPage() {
         <Badge variant="secondary">{filtered.length} entidades</Badge>
       </div>
 
-      <div className="rounded-xl border border-border bg-card shadow-card overflow-hidden">
+      <div
+        id="entidades-table"
+        className="rounded-xl border border-border bg-card shadow-card overflow-hidden"
+      >
         <Table>
           <TableHeader>
             <TableRow>
@@ -263,7 +298,7 @@ function AssociationsPage() {
                           params={{ id: item.id }}
                           search={{ modulo: areaForForm }}
                         >
-                          <Button size="sm">
+                          <Button size="sm" variant="secondary">
                             <ClipboardPlus className="size-4 mr-1" />
                             Abrir formulário
                           </Button>
@@ -288,6 +323,7 @@ function AssociationsPage() {
                           )}
                         </DropdownMenuContent>
                       </DropdownMenu>
+
                     </div>
                   </TableCell>
                 </TableRow>
