@@ -2612,6 +2612,8 @@ function InfrastructureFields({
         </Field>
       </InfraSection>
 
+      <SectionDivider>Seção 2 — Acesso, mobilidade e serviços públicos</SectionDivider>
+
       <InfraSection title="3. Acesso, mobilidade e serviços públicos">
         <Choice
           name="infra_via_acesso"
