@@ -105,6 +105,7 @@ function AssociationsPage() {
       { header: "Município", key: "municipio" },
       { header: "Associados", key: "atuais" },
       { header: "Situação", key: "situacao" },
+      { header: "Status", key: "status" },
     ];
     filtered.forEach((item) => {
       const latest = latestByAssoc.get(item.id);
@@ -116,7 +117,8 @@ function AssociationsPage() {
         cnpj: item.cnpj ?? "",
         municipio: item.municipio,
         atuais: item.numero_associados_atual,
-        situacao: `${situacao} / ${status}`,
+        situacao,
+        status,
       });
     });
     sheet.getRow(1).eachCell((cell) => {
