@@ -266,10 +266,6 @@ function AssociationsPage() {
                             Abrir formulário
                           </Button>
                         </Link>
-                            <ClipboardPlus className="size-4 mr-1" />
-                            Abrir formulário
-                          </Button>
-                        </Link>
                       )}
                       <DropdownMenu>
                         <DropdownMenuTrigger asChild>
