@@ -2567,6 +2567,8 @@ function InfrastructureFields({
         </h1>
       </div>
 
+      <SectionDivider>Seção 1 — Identificação inicial</SectionDivider>
+
       <InfraSection title="1. Identificação inicial">
         <Field label="Quem fará as entrevistas?" wide>
           <Input name="infra_entrevistador" maxLength={300} />
