@@ -198,8 +198,21 @@ function AssociationsPage() {
         )}
       </div>
 
-      {isConsultant && (
-        <section className="mb-6 rounded-xl border border-primary/30 bg-primary/5 p-5 shadow-card">
+      <div className="mb-4 flex items-center gap-3">
+        <div className="relative w-full max-w-xl">
+          <Search className="absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
+          <Input
+            value={search}
+            onChange={(event) => setSearch(event.target.value)}
+            placeholder="Buscar por nome, município ou CNPJ"
+            className="pl-9"
+          />
+        </div>
+        <Badge variant="secondary">{filtered.length} entidades</Badge>
+      </div>
+
+      {isViewer && (
+        <section className="mb-4 rounded-xl border border-primary/30 bg-primary/5 p-5 shadow-card">
           <div className="flex flex-wrap items-center justify-between gap-4">
             <div>
               <p className="text-xs font-semibold uppercase tracking-wide text-primary">
@@ -226,19 +239,6 @@ function AssociationsPage() {
           </div>
         </section>
       )}
-
-      <div className="mb-4 flex items-center gap-3">
-        <div className="relative w-full max-w-xl">
-          <Search className="absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
-          <Input
-            value={search}
-            onChange={(event) => setSearch(event.target.value)}
-            placeholder="Buscar por nome, município ou CNPJ"
-            className="pl-9"
-          />
-        </div>
-        <Badge variant="secondary">{filtered.length} entidades</Badge>
-      </div>
 
       <div
         id="entidades-table"
