@@ -98,7 +98,7 @@ function NewAssessment() {
   const currentMeta = moduleMeta[activeModule];
 
 
-  function choice(name: string, fallback = "Não") {
+  function choice(name: string, fallback = "") {
     return choices[name] ?? fallback;
   }
   function setChoice(name: string, value: string) {
@@ -539,7 +539,7 @@ function NewAssessment() {
                       name="faixa_etaria_predominante"
                       label="Faixa etária predominante"
                       options={["Até 25 anos", "26 a 40 anos", "41 a 60 anos", "Acima de 60 anos"]}
-                      value={choice("faixa_etaria_predominante", "Até 25 anos")}
+                      value={choice("faixa_etaria_predominante", "")}
                       onChange={setChoice}
                     />
                     <Choice
@@ -552,7 +552,7 @@ function NewAssessment() {
                         "Ensino médio",
                         "Ensino superior",
                       ]}
-                      value={choice("escolaridade_predominante", "Não alfabetizado")}
+                      value={choice("escolaridade_predominante", "")}
                       onChange={setChoice}
                     />
                     <NumberField name="media_moradores_casa" label="Média de moradores por casa" />
@@ -608,7 +608,7 @@ function NewAssessment() {
                       name="media_horas_trabalhadas"
                       label="Média de horas trabalhadas por dia"
                       options={["Até 4h", "6h", "8h", "Mais de 8h"]}
-                      value={choice("media_horas_trabalhadas", "8h")}
+                      value={choice("media_horas_trabalhadas", "")}
                       onChange={setChoice}
                     />
                     <Choice
@@ -684,7 +684,7 @@ function NewAssessment() {
                       name="tipo_coleta"
                       label="Tipo de coleta"
                       options={["Ruas", "Domicílios", "Mista", "Outro"]}
-                      value={choice("tipo_coleta", "Mista")}
+                      value={choice("tipo_coleta", "")}
                       onChange={setChoice}
                     />
                     <Choice
@@ -739,14 +739,14 @@ function NewAssessment() {
                       name="destino_venda"
                       label="Destino da venda"
                       options={["Indústria", "Intermediários/Atravessadores", "Outro"]}
-                      value={choice("destino_venda", "Indústria")}
+                      value={choice("destino_venda", "")}
                       onChange={setChoice}
                     />
                     <Choice
                       name="tipo_galpao"
                       label="Situação do galpão"
                       options={["Próprio", "Alugado", "Cedido", "Não possui", "Outro"]}
-                      value={choice("tipo_galpao", "Não possui")}
+                      value={choice("tipo_galpao", "")}
                       onChange={setChoice}
                     />
                     <Choice
@@ -971,7 +971,7 @@ function NewAssessment() {
                         "Outro",
                         "Não se aplica",
                       ]}
-                      value={choice("contrato_tipo", "Não se aplica")}
+                      value={choice("contrato_tipo", "")}
                       onChange={setChoice}
                     />
                     <Field label="Detalhes do contrato" wide>
@@ -998,7 +998,7 @@ function NewAssessment() {
                       name="classificacao_juridica"
                       label="Classificação final jurídica"
                       options={["Regular", "Parcialmente regular", "Irregular"]}
-                      value={choice("classificacao_juridica", "Irregular")}
+                      value={choice("classificacao_juridica", "")}
                       onChange={setChoice}
                     />
                     <div className="space-y-4 md:col-span-2">
@@ -1070,7 +1070,7 @@ function NewAssessment() {
                       name="licenca_ambiental_status"
                       label="Licença ambiental"
                       options={["Licença", "Dispensa", "Nenhum", "Não sabe informar"]}
-                      value={choice("licenca_ambiental_status", "Nenhum")}
+                      value={choice("licenca_ambiental_status", "")}
                       onChange={setChoice}
                     />
                     <Choice
@@ -1145,7 +1145,7 @@ function NewAssessment() {
                       name="controle_frequencia_tipo"
                       label="Tipo de controle de frequência"
                       options={["Livro/ficha", "Sistema eletrônico", "Outro", "Não se aplica"]}
-                      value={choice("controle_frequencia_tipo", "Não se aplica")}
+                      value={choice("controle_frequencia_tipo", "")}
                       onChange={setChoice}
                     />
                     <Choice
@@ -1166,7 +1166,7 @@ function NewAssessment() {
                         "Não tem contador",
                         "Outro",
                       ]}
-                      value={choice("contador_tipo", "Não tem contador")}
+                      value={choice("contador_tipo", "")}
                       onChange={setChoice}
                     />
                     <Field label="Nome do contador">
@@ -1249,7 +1249,7 @@ function NewAssessment() {
                       name="classificacao_contabil"
                       label="Classificação final contábil"
                       options={["Regular", "Parcialmente regular", "Irregular"]}
-                      value={choice("classificacao_contabil", "Irregular")}
+                      value={choice("classificacao_contabil", "")}
                       onChange={setChoice}
                     />
                     <div className="space-y-3 md:col-span-2">
@@ -1542,7 +1542,7 @@ function LegalFields({
               "Sim, instituição privada",
               "Não",
             ]}
-            value={choice("contrato_tipo", "Não")}
+            value={choice("contrato_tipo", "")}
             onChange={(name, value) => {
               setChoice(name, value);
               setChoice("contrato_remunerado", value === "Não" ? "Não" : "Sim");
@@ -1580,7 +1580,7 @@ function LegalFields({
             name="classificacao_juridica"
             label="Situação da cooperativa"
             options={["Regular", "Parcialmente regular", "Irregular"]}
-            value={choice("classificacao_juridica", "Irregular")}
+            value={choice("classificacao_juridica", "")}
             onChange={setChoice}
           />
           <Field label="Principais pendências identificadas" wide>
@@ -1649,7 +1649,7 @@ function AccountingFields({
             name="licenca_ambiental_status"
             label="Possui licença ambiental ou certificado de dispensa?"
             options={["Licença ambiental", "Certificado de Dispensa", "Nenhum"]}
-            value={choice("licenca_ambiental_status", "Nenhum")}
+            value={choice("licenca_ambiental_status", "")}
             onChange={setChoice}
           />
           <Choice
@@ -1768,7 +1768,7 @@ function AccountingFields({
             name="controle_frequencia_tipo"
             label="Se sim, qual tipo?"
             options={["Livro/ficha", "Eletrônico", "Outro", "Não se aplica"]}
-            value={choice("controle_frequencia_tipo", "Não se aplica")}
+            value={choice("controle_frequencia_tipo", "")}
             onChange={setChoice}
           />
         </Grid>
@@ -1793,7 +1793,7 @@ function AccountingFields({
               "Outro tipo",
               "Não tem contador",
             ]}
-            value={choice("contador_tipo", "Não tem contador")}
+            value={choice("contador_tipo", "")}
             onChange={setChoice}
           />
           <Field label="Nome do contador">
@@ -1885,7 +1885,7 @@ function AccountingFields({
             name="classificacao_contabil"
             label="Situação da cooperativa"
             options={["Regular", "Parcialmente regular", "Irregular"]}
-            value={choice("classificacao_contabil", "Irregular")}
+            value={choice("classificacao_contabil", "")}
             onChange={setChoice}
           />
           <Field label="Principais pendências identificadas" wide>
@@ -2130,7 +2130,7 @@ function SocialFields({
             name="faixa_etaria_predominante"
             label="Qual a faixa etária predominante dos catadores?"
             options={["Até 25 anos", "26 a 40 anos", "41 a 60 anos", "Acima de 60 anos"]}
-            value={choice("faixa_etaria_predominante", "Até 25 anos")}
+            value={choice("faixa_etaria_predominante", "")}
             onChange={setChoice}
           />
           <Choice
@@ -2143,7 +2143,7 @@ function SocialFields({
               "Ensino médio",
               "Ensino superior",
             ]}
-            value={choice("escolaridade_predominante", "Não alfabetizado")}
+            value={choice("escolaridade_predominante", "")}
             onChange={setChoice}
           />
           <NumberField
@@ -2206,7 +2206,7 @@ function SocialFields({
             name="media_horas_trabalhadas"
             label="Quantas horas por dia, em média, trabalham?"
             options={["Menos de 6 horas", "6 horas", "8 horas", "Mais de 8 horas"]}
-            value={choice("media_horas_trabalhadas", "8 horas")}
+            value={choice("media_horas_trabalhadas", "")}
             onChange={setChoice}
           />
           <Choice
@@ -2284,7 +2284,7 @@ function SocialFields({
             name="tipo_coleta"
             label="A cooperativa faz coleta nas ruas ou em domicílios?"
             options={["Sim", "Não", "Faz coleta mista"]}
-            value={choice("tipo_coleta", "Faz coleta mista")}
+            value={choice("tipo_coleta", "")}
             onChange={setChoice}
           />
           <Field label="Qual o tipo de material coletado?" wide>
@@ -2344,7 +2344,7 @@ function SocialFields({
               "Intermediários / atravessadores",
               "Outro",
             ]}
-            value={choice("destino_venda", "Diretamente para a indústria recicladora")}
+            value={choice("destino_venda", "")}
             onChange={setChoice}
           />
         </Grid>
@@ -2376,7 +2376,7 @@ function SocialFields({
             name="tipo_galpao"
             label="A associação/cooperativa possui galpão"
             options={["Próprio", "Alugado", "Cedido pela prefeitura", "Não possui galpão"]}
-            value={choice("tipo_galpao", "Não possui galpão")}
+            value={choice("tipo_galpao", "")}
             onChange={setChoice}
           />
           <Choice

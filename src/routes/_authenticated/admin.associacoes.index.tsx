@@ -278,13 +278,7 @@ function AssociationsPage() {
               return (
                 <TableRow key={item.id} className="hover:bg-muted/40">
                   <TableCell>
-                    <Link
-                      to="/admin/associacoes/$id"
-                      params={{ id: item.id }}
-                      className="font-medium hover:underline"
-                    >
-                      {item.nome}
-                    </Link>
+                    <span className="font-medium">{item.nome}</span>
                     <div className="text-xs text-muted-foreground">
                       {TIPO_LABEL[item.tipo] ?? item.tipo}
                     </div>
