@@ -98,7 +98,7 @@ function NewAssessment() {
   const currentMeta = moduleMeta[activeModule];
 
 
-  function choice(name: string, fallback = "Não") {
+  function choice(name: string, fallback = "") {
     return choices[name] ?? fallback;
   }
   function setChoice(name: string, value: string) {
