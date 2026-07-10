@@ -155,13 +155,29 @@ function AssociationsPage() {
     infraestrutura: "Cadastro de Infraestrutura",
   };
 
+  const areaSuffix: Record<string, string> = {
+    social: "SOCIAL",
+    juridico: "JURÍDICO",
+    contabil: "CONTÁBIL",
+    infraestrutura: "INFRAESTRUTURA",
+  };
+
+  const profileSuffix = isAdmin
+    ? "ADMINISTRADOR"
+    : isViewer
+      ? (areaSuffix[areaForForm] ?? "SOCIAL")
+      : "RECENSEADOR";
+
+  const pageTitle = `ASSOC./COOP./COLETIVOS – ${profileSuffix}`;
+
   return (
     <AdminShell>
       <div className="mb-6 grid gap-4 lg:grid-cols-[1fr_auto] lg:items-start">
         <div>
-          <h1 className="text-3xl font-bold tracking-tight">
-            {isViewer ? "Associações / Cooperativas / Coletivos" : "Associações e cooperativas"}
-          </h1>
+          <p className="text-xs font-semibold uppercase tracking-[0.16em] text-primary">
+            {profileSuffix}
+          </p>
+          <h1 className="mt-1 text-3xl font-bold tracking-tight">{pageTitle}</h1>
           <p className="mt-1 text-muted-foreground">
             {isAdmin
               ? "Base oficial de entidades vinculadas ao PROCATE."
@@ -180,20 +196,24 @@ function AssociationsPage() {
             </Link>
           </div>
         )}
-        {isConsultant && (
-          <div className="rounded-xl border border-primary/30 bg-primary/5 p-4 shadow-card lg:min-w-[280px]">
-            <p className="text-xs font-semibold uppercase tracking-wide text-primary">
-              Formulário de campo
-            </p>
-            <p className="mt-1 text-lg font-semibold text-foreground">
-              {moduloLabel[areaForForm] ?? "Cadastro"}
-            </p>
-            <p className="mt-1 text-xs text-muted-foreground">
-              Abra diretamente o formulário da sua área de atuação.
-            </p>
+      </div>
+
+      {isConsultant && (
+        <section className="mb-6 rounded-xl border border-primary/30 bg-primary/5 p-5 shadow-card">
+          <div className="flex flex-wrap items-center justify-between gap-4">
+            <div>
+              <p className="text-xs font-semibold uppercase tracking-wide text-primary">
+                Formulário de campo
+              </p>
+              <p className="mt-1 text-lg font-semibold text-foreground">
+                {moduloLabel[areaForForm] ?? "Cadastro"}
+              </p>
+              <p className="mt-1 text-sm text-muted-foreground">
+                Selecione uma entidade na lista abaixo para abrir o formulário da sua área.
+              </p>
+            </div>
             <Button
-              size="sm"
-              className="mt-3 w-full"
+              size="lg"
               onClick={() => {
                 document
                   .getElementById("entidades-table")
@@ -204,8 +224,8 @@ function AssociationsPage() {
               <ClipboardPlus className="size-4 mr-1" /> Abrir formulário
             </Button>
           </div>
-        )}
-      </div>
+        </section>
+      )}
 
       <div className="mb-4 flex items-center gap-3">
         <div className="relative w-full max-w-xl">
@@ -291,40 +311,25 @@ function AssociationsPage() {
                     </Badge>
                   </TableCell>
                   <TableCell className="text-right">
-                    <div className="flex items-center justify-end gap-2">
-                      {isConsultant && (
-                        <Link
-                          to="/admin/associacoes/$id/diagnostico/novo"
-                          params={{ id: item.id }}
-                          search={{ modulo: areaForForm }}
-                        >
-                          <Button size="sm" variant="secondary">
-                            <ClipboardPlus className="size-4 mr-1" />
-                            Abrir formulário
-                          </Button>
-                        </Link>
-                      )}
-                      <DropdownMenu>
-                        <DropdownMenuTrigger asChild>
-                          <Button variant="ghost" size="sm">Ações</Button>
-                        </DropdownMenuTrigger>
-                        <DropdownMenuContent align="end">
+                    <DropdownMenu>
+                      <DropdownMenuTrigger asChild>
+                        <Button variant="ghost" size="sm">Ações</Button>
+                      </DropdownMenuTrigger>
+                      <DropdownMenuContent align="end">
+                        <DropdownMenuItem asChild>
+                          <Link to="/admin/associacoes/$id" params={{ id: item.id }}>
+                            <Eye className="size-4 mr-2" /> Ver detalhes
+                          </Link>
+                        </DropdownMenuItem>
+                        {(isAdmin || isConsultant) && (
                           <DropdownMenuItem asChild>
-                            <Link to="/admin/associacoes/$id" params={{ id: item.id }}>
-                              <Eye className="size-4 mr-2" /> Ver detalhes
+                            <Link to="/admin/associacoes/$id/editar" params={{ id: item.id }}>
+                              <Pencil className="size-4 mr-2" /> Editar
                             </Link>
                           </DropdownMenuItem>
-                          {(isAdmin || isConsultant) && (
-                            <DropdownMenuItem asChild>
-                              <Link to="/admin/associacoes/$id/editar" params={{ id: item.id }}>
-                                <Pencil className="size-4 mr-2" /> Editar
-                              </Link>
-                            </DropdownMenuItem>
-                          )}
-                        </DropdownMenuContent>
-                      </DropdownMenu>
-
-                    </div>
+                        )}
+                      </DropdownMenuContent>
+                    </DropdownMenu>
                   </TableCell>
                 </TableRow>
               );
