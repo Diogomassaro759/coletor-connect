@@ -113,7 +113,20 @@ function AdminDashboard() {
     },
   });
 
+  const { data: assocStats } = useQuery({
+    queryKey: ["assoc-stats"],
+    queryFn: async () => {
+      const { data, error } = await supabase.from("associations").select("id,ativa");
+      if (error) throw error;
+      const total = data.length;
+      const ativos = data.filter((a: any) => a.ativa).length;
+      return { total, ativos, pendentes: total - ativos };
+    },
+    enabled: isAdmin,
+  });
+
   const RENDA_THRESHOLD = RENDA_REFERENCIA; // salário mínimo de referência
+
 
   const filtered = useMemo(() => {
     if (!catadores) return [];
