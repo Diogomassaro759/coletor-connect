@@ -211,42 +211,62 @@ function AssociationsPage() {
 
   return (
     <AdminShell>
-      <div className="mb-6 grid gap-4 lg:grid-cols-[1fr_auto] lg:items-start">
-        <div>
-          {!isAdminLike && (
-            <p className="text-xs font-semibold uppercase tracking-[0.16em] text-primary">
-              {profileSuffix}
-            </p>
-          )}
-          <h1 className="mt-1 text-3xl font-bold tracking-tight">{pageTitle}</h1>
-          <p className="mt-1 text-muted-foreground">
-            {isAdminLike
-              ? "Base oficial de entidades vinculadas ao PROCATE."
-              : "Selecione uma entidade ou Coletivo para iniciar o cadastro assistido em campo."}
-          </p>
-        </div>
-        {isAdmin && (
-          <div className="flex flex-wrap gap-2">
-            <Button variant="outline" size="lg" onClick={exportAssociations}>
-              <Download className="size-4" /> Exportar planilha
-            </Button>
-            <Link to="/admin/associacoes/nova">
-              <Button size="lg">
-                <Plus className="size-4" /> Nova entidade
-              </Button>
-            </Link>
-          </div>
-        )}
-        {isCoordenador && (
-          <div className="flex flex-wrap gap-2">
-            <Button variant="outline" size="lg" onClick={exportAssociations}>
-              <Download className="size-4" /> Exportar planilha
+      {!isAdminLike && (
+        <section className="mb-5 rounded-xl border border-primary/30 bg-primary/5 p-5 shadow-card">
+          <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+            <div>
+              <p className="text-xs font-bold uppercase tracking-[0.16em] text-primary">
+                Formulário de campo
+              </p>
+              <h1 className="mt-1 text-2xl font-bold">{moduloLabel[areaForForm]}</h1>
+              <p className="mt-1 text-sm text-muted-foreground">
+                Selecione uma entidade na lista abaixo para abrir o formulário da sua área.
+              </p>
+            </div>
+            <Button
+              size="lg"
+              onClick={() => {
+                setSelectedEntity("");
+                setPendingModulo(areaForForm);
+              }}
+            >
+              <ClipboardPlus className="size-4 mr-1" /> Abrir formulário
             </Button>
           </div>
-        )}
-      </div>
+        </section>
+      )}
 
-      <div className="mb-4 flex items-center gap-3">
+      {isAdminLike && (
+        <div className="mb-6 grid gap-4 lg:grid-cols-[1fr_auto] lg:items-start">
+          <div>
+            <h1 className="mt-1 text-3xl font-bold tracking-tight">{pageTitle}</h1>
+            <p className="mt-1 text-muted-foreground">
+              Base oficial de entidades vinculadas ao PROCATE.
+            </p>
+          </div>
+          {isAdmin && (
+            <div className="flex flex-wrap gap-2">
+              <Button variant="outline" size="lg" onClick={exportAssociations}>
+                <Download className="size-4" /> Exportar planilha
+              </Button>
+              <Link to="/admin/associacoes/nova">
+                <Button size="lg">
+                  <Plus className="size-4" /> Nova entidade
+                </Button>
+              </Link>
+            </div>
+          )}
+          {isCoordenador && (
+            <div className="flex flex-wrap gap-2">
+              <Button variant="outline" size="lg" onClick={exportAssociations}>
+                <Download className="size-4" /> Exportar planilha
+              </Button>
+            </div>
+          )}
+        </div>
+      )}
+
+      <div className="mb-3 flex items-center gap-3">
         <div className="relative w-full max-w-xl">
           <Search className="absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
           <Input
@@ -258,6 +278,46 @@ function AssociationsPage() {
         </div>
         <Badge variant="secondary">{filtered.length} entidades</Badge>
       </div>
+
+      <div className="mb-4 flex flex-wrap items-center gap-2">
+        {([
+          { key: "todas", label: "TODAS" },
+          { key: "cooperativa", label: "COOPERATIVA" },
+          { key: "associacao", label: "ASSOCIAÇÃO" },
+          { key: "coletivo", label: "COLETIVO" },
+        ] as const).map((c) => {
+          const active = tipoFilter === c.key;
+          return (
+            <button
+              key={c.key}
+              type="button"
+              onClick={() => setTipoFilter(c.key)}
+              className={
+                "rounded-full border px-4 py-1.5 text-xs font-bold tracking-wide transition-colors " +
+                (active
+                  ? "border-primary bg-primary text-primary-foreground"
+                  : "border-border bg-card text-foreground hover:bg-muted")
+              }
+            >
+              {c.label}
+            </button>
+          );
+        })}
+        <Select value={municipioFilter} onValueChange={setMunicipioFilter}>
+          <SelectTrigger className="h-8 w-[220px] rounded-full border-primary/40 text-xs font-bold uppercase tracking-wide text-primary">
+            <SelectValue placeholder="SELECIONE O MUNICÍPIO" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="todos">Todos os municípios</SelectItem>
+            {municipios.map((m) => (
+              <SelectItem key={m} value={m}>
+                {m}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+      </div>
+
 
       {isAdminLike && (
         <section className="mb-6 rounded-xl border border-primary/30 bg-primary/5 p-5 shadow-card">
