@@ -466,26 +466,34 @@ function AdminDashboard() {
                   <StatusBadge status={c.status} />
                 </TableCell>
                 <TableCell>
-                  <DropdownMenu>
-                    <DropdownMenuTrigger asChild>
-                      <Button variant="ghost" size="icon">
-                        <MoreHorizontal className="size-4" />
-                      </Button>
-                    </DropdownMenuTrigger>
-                    <DropdownMenuContent align="end">
-                      <DropdownMenuLabel>Ações</DropdownMenuLabel>
-                      <Link to="/admin/$id" params={{ id: c.id }}>
-                        <DropdownMenuItem>
-                          <Eye className="size-4" /> Ver detalhes
-                        </DropdownMenuItem>
+                  <div className="flex items-center justify-end gap-1">
+                    {((isRecenseador && c.created_by === user.id) || isCoordenadorRecenseador || isAdmin) && (
+                      <Link to="/admin/$id/editar" params={{ id: c.id }}>
+                        <Button variant="ghost" size="icon" title="Editar cadastro">
+                          <Pencil className="size-4" />
+                        </Button>
                       </Link>
-                      {isRecenseador && c.created_by === user.id && (
-                        <Link to="/admin/$id/editar" params={{ id: c.id }}>
+                    )}
+                    <DropdownMenu>
+                      <DropdownMenuTrigger asChild>
+                        <Button variant="ghost" size="icon">
+                          <MoreHorizontal className="size-4" />
+                        </Button>
+                      </DropdownMenuTrigger>
+                      <DropdownMenuContent align="end">
+                        <DropdownMenuLabel>Ações</DropdownMenuLabel>
+                        <Link to="/admin/$id" params={{ id: c.id }}>
                           <DropdownMenuItem>
-                            <Pencil className="size-4" /> Editar
+                            <Eye className="size-4" /> Ver detalhes
                           </DropdownMenuItem>
                         </Link>
-                      )}
+                        {((isRecenseador && c.created_by === user.id) || isCoordenadorRecenseador || isAdmin) && (
+                          <Link to="/admin/$id/editar" params={{ id: c.id }}>
+                            <DropdownMenuItem>
+                              <Pencil className="size-4" /> Editar
+                            </DropdownMenuItem>
+                          </Link>
+                        )}
                       {isAdmin && (
                         <>
                           <DropdownMenuSeparator />
