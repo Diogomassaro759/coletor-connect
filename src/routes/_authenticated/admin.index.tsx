@@ -639,6 +639,7 @@ function AdminDashboard() {
             ))}
           </TableBody>
         </Table>
+        </div>
       </div>
       </div>
       )}
