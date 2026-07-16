@@ -2673,10 +2673,16 @@ function InfrastructureFields({
   association,
   choice,
   setChoice,
+  entidades,
+  entityId,
+  onEntityChange,
 }: {
   association: any;
   choice: (name: string, fallback?: string) => string;
   setChoice: (name: string, value: string) => void;
+  entidades?: EntityOption[];
+  entityId?: string;
+  onEntityChange?: (id: string) => void;
 }) {
   const orgName = association?.nome ?? "";
   return (
@@ -2697,9 +2703,16 @@ function InfrastructureFields({
       </InfraSection>
 
       <InfraSection title="2. Informações da organização">
-        <Field label="Nome da organização">
-          <Input name="infra_organizacao_nome" defaultValue={orgName} maxLength={300} />
+        <Field label="Escolha entidade">
+          <EntitySelectField
+            name="infra_organizacao_nome"
+            entidades={entidades}
+            entityId={entityId}
+            onEntityChange={onEntityChange}
+            fallbackName={orgName}
+          />
         </Field>
+
         <Field label="Cidade">
           <Input name="infra_cidade" defaultValue={association?.municipio ?? ""} maxLength={150} />
         </Field>
