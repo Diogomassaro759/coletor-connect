@@ -44,14 +44,14 @@ function NewAssessment() {
   const [saving, setSaving] = useState(false);
   const forcedModule =
     area === "juridico" || area === "contabil" || area === "social"
-      ? (area as "social" | "juridico" | "contabil")
+      ? (area as "social" | "juridico" | "contabil" | "infraestrutura")
       : area === "infraestrutura"
-        ? null
-        : modulo;
-  const [activeModule, setActiveModule] = useState<"social" | "juridico" | "contabil">(
-    (forcedModule as "social" | "juridico" | "contabil") ?? "social",
-  );
-  const isInfrastructure = area === "infraestrutura";
+        ? ("infraestrutura" as const)
+        : (modulo as "social" | "juridico" | "contabil" | "infraestrutura" | undefined);
+  const [activeModule, setActiveModule] = useState<
+    "social" | "juridico" | "contabil" | "infraestrutura"
+  >(forcedModule ?? "social");
+  const isInfrastructure = activeModule === "infraestrutura";
   const [materials, setMaterials] = useState<string[]>([]);
   const [choices, setChoices] = useState<Record<string, string>>({});
   const now = new Date();
@@ -113,6 +113,11 @@ function NewAssessment() {
       title: "Cadastro Contábil",
       description:
         "Documentos, contador, livros, controles, balanços e pendências contábeis.",
+    },
+    infraestrutura: {
+      title: "Cadastro de Infraestrutura",
+      description:
+        "Sede, equipamentos, veículos, EPIs e condições operacionais do galpão.",
     },
   };
   const currentMeta = moduleMeta[activeModule];
