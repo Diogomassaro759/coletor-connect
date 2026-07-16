@@ -46,9 +46,8 @@ function NovoUsuarioPage() {
     email: "",
     password: genPassword(),
     role: "recenseador" as "recenseador" | "consultor" | "coordenador" | "coordenador_recenseador" | "admin",
-    area: "" as "" | "social" | "juridico" | "contabil" | "infraestrutura",
+    area: "" as "" | "social" | "juridico" | "contabil" | "infraestrutura" | "recenseador",
     municipio_referencia: "",
-    identificacao_profissional: "",
   }));
 
   // Guarda a senha e email exatos que foram efetivamente enviados/salvos.
@@ -59,16 +58,17 @@ function NovoUsuarioPage() {
 
   const mut = useMutation({
     mutationFn: async () => {
-      // Snapshot no exato momento do envio.
+      // Perfil=Coordenador + Tipo=Recenseador → papel coordenador_recenseador (sem área).
+      const isCoordRec = form.role === "coordenador" && form.area === "recenseador";
       const snapshot = {
         ...form,
         cpf: form.cpf.replace(/\D/g, ""),
         birth_date: form.birth_date || null,
-        area: form.area || null,
+        role: isCoordRec ? "coordenador_recenseador" : form.role,
+        area: isCoordRec ? null : (form.area || null),
         municipio_referencia: form.municipio_referencia || null,
-        identificacao_profissional: form.identificacao_profissional || null,
       };
-      const res = await create({ data: snapshot });
+      const res = await create({ data: snapshot as any });
       return { res, sent: snapshot };
     },
     onSuccess: ({ sent }) => {
