@@ -322,6 +322,16 @@ function AssociationsPage() {
                             </Link>
                           </DropdownMenuItem>
                         )}
+                        {isViewer && (
+                          <DropdownMenuItem asChild>
+                            <Link
+                              to="/admin/associacoes/$id/diagnostico/novo"
+                              params={{ id: item.id }}
+                            >
+                              <ClipboardPlus className="size-4 mr-2" /> Abrir formulário
+                            </Link>
+                          </DropdownMenuItem>
+                        )}
                       </DropdownMenuContent>
                     </DropdownMenu>
                   </TableCell>
