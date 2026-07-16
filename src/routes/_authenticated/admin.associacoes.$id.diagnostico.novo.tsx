@@ -2145,13 +2145,11 @@ function SocialFields({
         subtitle="Preencher logo no início da entrevista"
       >
         <Grid>
-          <Field label="Escolha entidade">
-            <EntitySelectField
+          <Field label="Nome completo da associação">
+            <Input
               name="association_nome"
-              entidades={entidades}
-              entityId={entityId}
-              onEntityChange={onEntityChange}
-              fallbackName={association?.nome}
+              defaultValue={association?.nome ?? ""}
+              required
             />
           </Field>
 
