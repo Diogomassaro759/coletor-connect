@@ -9,7 +9,6 @@ import { toast } from "sonner";
 import procateLogo from "@/assets/procate-logo.png";
 
 export const Route = createFileRoute("/auth")({
-  ssr: false,
   head: () => ({
     meta: [{ title: "Entrar — RecicladoresBR" }],
   }),

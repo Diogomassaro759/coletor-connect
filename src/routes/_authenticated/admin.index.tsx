@@ -1,4 +1,4 @@
-import { createFileRoute, Link, redirect } from "@tanstack/react-router";
+import { createFileRoute, Link, redirect, useNavigate } from "@tanstack/react-router";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useState, useMemo } from "react";
 import { supabase } from "@/integrations/supabase/client";
@@ -70,6 +70,9 @@ export const Route = createFileRoute("/_authenticated/admin/")({
     if (!context.isAdmin && !context.isRecenseador && !context.isCoordenador && !context.isCoordenadorRecenseador)
       throw redirect({ to: "/admin/associacoes" });
   },
+  validateSearch: (search: Record<string, unknown>) => ({
+    view: search.view === "catadores" ? "catadores" : undefined,
+  }),
   head: () => ({ meta: [{ title: "Painel — RecicladoresBR" }] }),
   component: AdminDashboard,
 });
@@ -94,9 +97,11 @@ type Catador = {
 function AdminDashboard() {
   const qc = useQueryClient();
   const { isAdmin, isRecenseador, isCoordenador, isCoordenadorRecenseador, user } = Route.useRouteContext() as any;
+  const navigate = useNavigate();
+  const { view } = Route.useSearch();
   const isAdminLike = isAdmin || isCoordenador;
+  const isCatadoresScreen = !isAdminLike || view === "catadores";
   const [search, setSearch] = useState("");
-  const [showCatadoresTable, setShowCatadoresTable] = useState(false);
   const [statusFilter, setStatusFilter] = useState<string>("todos");
   const [materialFilter, setMaterialFilter] = useState<string>("todos");
   const [rendaFilter, setRendaFilter] = useState<string>("todos");
@@ -328,7 +333,7 @@ function AdminDashboard() {
 
   return (
     <AdminShell>
-      {isAdminLike && (
+      {isAdminLike && view !== "catadores" && (
         <div className="mb-8 space-y-5">
           <LauncherCard
             eyebrow="Painel principal"
@@ -363,12 +368,7 @@ function AdminDashboard() {
             description="Gerencie cadastros, filtre e exporte dados."
             primaryHref={null}
             primaryLabel="ACESSAR"
-            onPrimaryClick={() => {
-              setShowCatadoresTable(true);
-              setTimeout(() => {
-                document.getElementById("catadores-tabela")?.scrollIntoView({ behavior: "smooth" });
-              }, 50);
-            }}
+            onPrimaryClick={() => navigate({ to: "/admin", search: { view: "catadores" } })}
             stats={[
               { icon: Users, label: "Total", value: stats.total, tone: "primary" },
               { icon: UserCheck, label: "Ativos", value: stats.ativos, tone: "success" },
@@ -390,7 +390,7 @@ function AdminDashboard() {
         </div>
       )}
 
-      {!isAdminLike && (
+      {isCatadoresScreen && (
         <>
           <div className="flex flex-wrap items-end justify-between gap-4 mb-8">
             <div>
@@ -398,7 +398,19 @@ function AdminDashboard() {
               <p className="text-muted-foreground">Gerencie cadastros, filtre e exporte dados.</p>
             </div>
             <div className="flex flex-wrap gap-2">
-              {isRecenseador && (
+              {isAdmin && (
+                <>
+                  <Button variant="outline" onClick={exportXLSX}>
+                    <Download className="size-4" /> Exportar planilha
+                  </Button>
+                  <Link to="/admin/importar">
+                    <Button variant="outline">
+                      <Upload className="size-4" /> Importar planilha
+                    </Button>
+                  </Link>
+                </>
+              )}
+              {(isRecenseador || isAdmin) && (
                 <Link to="/admin/novo">
                   <Button>
                     <Plus className="size-4" /> Novo catador
@@ -416,7 +428,7 @@ function AdminDashboard() {
         </>
       )}
 
-      {(!isAdminLike || showCatadoresTable) && (
+      {isCatadoresScreen && (
       <div id="catadores-tabela" className="scroll-mt-20">
 
       {/* Filters */}
