@@ -46,100 +46,130 @@ function UsuariosPage() {
 
   return (
     <AdminShell>
-      <div className="flex items-center justify-between mb-6">
-        <div>
-          <h1 className="text-2xl font-bold flex items-center gap-2">
-            <UserCog className="size-6" /> Usuários operacionais
+      <div className="mb-6 grid grid-cols-[minmax(0,1fr)_auto] items-start gap-3 sm:flex sm:items-center sm:justify-between">
+        <div className="min-w-0">
+          <h1 className="flex items-center gap-2 text-xl font-bold sm:text-2xl">
+            <UserCog className="size-5 shrink-0 sm:size-6" />{" "}
+            <span className="truncate">Usuários operacionais</span>
           </h1>
-          <p className="text-sm text-muted-foreground">
+          <p className="mt-1 text-sm text-muted-foreground">
             Recenseadores cadastram catadores; Consultores de Campo cadastram diagnósticos.
           </p>
         </div>
-        <Link to="/admin/usuarios/novo">
-          <Button>
-            <Plus className="size-4 mr-2" /> Novo usuário
+        <Link to="/admin/usuarios/novo" className="shrink-0">
+          <Button size="sm" className="sm:size-default">
+            <Plus className="size-4 sm:mr-2" />
+            <span className="hidden sm:inline">Novo usuário</span>
           </Button>
         </Link>
       </div>
 
       <Card className="p-0 overflow-hidden">
-        <Table>
-          <TableHeader>
-            <TableRow>
-              <TableHead>Nome</TableHead>
-              <TableHead>E-mail</TableHead>
-              <TableHead>CPF</TableHead>
-              <TableHead>Município</TableHead>
-              <TableHead>Papéis</TableHead>
-              <TableHead className="w-10" />
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {isLoading && (
+        <div className="overflow-x-auto">
+          <Table>
+            <TableHeader>
               <TableRow>
-                <TableCell colSpan={6} className="text-center text-muted-foreground py-8">
-                  Carregando…
-                </TableCell>
+                <TableHead>Nome</TableHead>
+                <TableHead className="hidden md:table-cell">E-mail</TableHead>
+                <TableHead className="hidden lg:table-cell">CPF</TableHead>
+                <TableHead className="hidden lg:table-cell">Município</TableHead>
+                <TableHead className="hidden sm:table-cell">Papéis</TableHead>
+                <TableHead className="w-10" />
               </TableRow>
-            )}
-            {!isLoading && (data?.length ?? 0) === 0 && (
-              <TableRow>
-                <TableCell colSpan={6} className="text-center text-muted-foreground py-8">
-                  Nenhum usuário cadastrado.
-                </TableCell>
-              </TableRow>
-            )}
-            {data?.map((u) => (
-              <TableRow key={u.user_id}>
-                <TableCell className="font-medium">{u.full_name}</TableCell>
-                <TableCell>{u.email}</TableCell>
-                <TableCell className="font-mono text-xs">{u.cpf ?? "—"}</TableCell>
-                <TableCell>{u.municipio_referencia ?? "—"}</TableCell>
-                <TableCell className="space-x-1">
-                  {u.roles.map((r) => {
-                    const label =
-                      r === "admin"
-                        ? "Administrador"
-                        : r === "recenseador"
-                          ? "Recenseador"
-                          : r === "coordenador_recenseador"
-                            ? "Coordenador Recenseador"
-                            : r === "coordenador"
-                              ? "Coordenador"
-                              : r === "consultor"
-                                ? "Consultor"
-                                : r;
-                    return (
-                      <Badge key={r} variant="secondary">
-                        {label}
-                      </Badge>
-                    );
-                  })}
-                </TableCell>
-                <TableCell>
-                  <div className="flex items-center justify-end gap-1">
-                    <Link to="/admin/usuarios/$userId/editar" params={{ userId: u.user_id }}>
-                      <Button variant="ghost" size="icon" title="Editar usuário">
-                        <Pencil className="size-4" />
-                      </Button>
-                    </Link>
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      title="Excluir usuário"
-                      onClick={() => {
-                        if (confirm(`Excluir ${u.full_name}?`)) del.mutate(u.user_id);
-                      }}
-                      disabled={del.isPending}
-                    >
-                      <Trash2 className="size-4 text-destructive" />
-                    </Button>
-                  </div>
-                </TableCell>
-              </TableRow>
-            ))}
-          </TableBody>
-        </Table>
+            </TableHeader>
+            <TableBody>
+              {isLoading && (
+                <TableRow>
+                  <TableCell colSpan={6} className="text-center text-muted-foreground py-8">
+                    Carregando…
+                  </TableCell>
+                </TableRow>
+              )}
+              {!isLoading && (data?.length ?? 0) === 0 && (
+                <TableRow>
+                  <TableCell colSpan={6} className="text-center text-muted-foreground py-8">
+                    Nenhum usuário cadastrado.
+                  </TableCell>
+                </TableRow>
+              )}
+              {data?.map((u) => {
+                const roleLabels = u.roles.map((r) =>
+                  r === "admin"
+                    ? "Administrador"
+                    : r === "recenseador"
+                      ? "Recenseador"
+                      : r === "coordenador_recenseador"
+                        ? "Coordenador Recenseador"
+                        : r === "coordenador"
+                          ? "Coordenador"
+                          : r === "consultor"
+                            ? "Consultor"
+                            : r,
+                );
+                return (
+                  <TableRow key={u.user_id}>
+                    <TableCell className="font-medium">
+                      <div className="min-w-0">
+                        <div className="truncate">{u.full_name}</div>
+                        <div className="mt-0.5 truncate text-xs text-muted-foreground md:hidden">
+                          {u.email}
+                        </div>
+                        <div className="mt-1 flex flex-wrap gap-1 sm:hidden">
+                          {roleLabels.map((label, i) => (
+                            <Badge key={i} variant="secondary" className="text-[10px]">
+                              {label}
+                            </Badge>
+                          ))}
+                        </div>
+                      </div>
+                    </TableCell>
+                    <TableCell className="hidden md:table-cell">
+                      <span className="break-all">{u.email}</span>
+                    </TableCell>
+                    <TableCell className="hidden lg:table-cell font-mono text-xs">
+                      {u.cpf ?? "—"}
+                    </TableCell>
+                    <TableCell className="hidden lg:table-cell">
+                      {u.municipio_referencia ?? "—"}
+                    </TableCell>
+                    <TableCell className="hidden sm:table-cell">
+                      <div className="flex flex-wrap gap-1">
+                        {roleLabels.map((label, i) => (
+                          <Badge key={i} variant="secondary">
+                            {label}
+                          </Badge>
+                        ))}
+                      </div>
+                    </TableCell>
+                    <TableCell>
+                      <div className="flex items-center justify-end gap-1">
+                        <Link
+                          to="/admin/usuarios/$userId/editar"
+                          params={{ userId: u.user_id }}
+                        >
+                          <Button variant="ghost" size="icon" title="Editar usuário">
+                            <Pencil className="size-4" />
+                          </Button>
+                        </Link>
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          title="Excluir usuário"
+                          onClick={() => {
+                            if (confirm(`Excluir ${u.full_name}?`)) del.mutate(u.user_id);
+                          }}
+                          disabled={del.isPending}
+                        >
+                          <Trash2 className="size-4 text-destructive" />
+                        </Button>
+                      </div>
+                    </TableCell>
+                  </TableRow>
+                );
+              })}
+            </TableBody>
+          </Table>
+        </div>
       </Card>
     </AdminShell>
   );
