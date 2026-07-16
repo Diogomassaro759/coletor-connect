@@ -623,6 +623,7 @@ function AdminDashboard() {
         </Table>
       </div>
       </div>
+      )}
     </AdminShell>
   );
 }
