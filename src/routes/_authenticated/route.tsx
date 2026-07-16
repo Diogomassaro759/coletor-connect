@@ -61,6 +61,7 @@ export const Route = createFileRoute("/_authenticated")({
       isAdmin,
       isConsultant,
       isCoordenador,
+      isCoordenadorRecenseador,
       isRecenseador,
       area,
       mustChangePassword,
