@@ -544,8 +544,9 @@ function AdminDashboard() {
                           </AlertDialog>
                         </>
                       )}
-                    </DropdownMenuContent>
-                  </DropdownMenu>
+                      </DropdownMenuContent>
+                    </DropdownMenu>
+                  </div>
                 </TableCell>
               </TableRow>
             ))}
