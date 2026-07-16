@@ -90,6 +90,15 @@ function NewAssessment() {
       return data ?? [];
     },
   });
+  const onEntityChange = (newId: string) => {
+    if (newId && newId !== id) {
+      navigate({
+        to: "/admin/associacoes/$id/diagnostico/novo",
+        params: { id: newId },
+        search: { modulo },
+      });
+    }
+  };
   const moduleMeta: Record<typeof activeModule, { title: string; description: string }> = {
     social: {
       title: "Cadastro Social",
@@ -471,6 +480,9 @@ function NewAssessment() {
                 association={association}
                 choice={choice}
                 setChoice={setChoice}
+                entidades={entidades ?? []}
+                entityId={id}
+                onEntityChange={onEntityChange}
               />
               <div className="flex justify-end">
                 <Button type="submit" size="lg" disabled={saving}>
@@ -523,6 +535,9 @@ function NewAssessment() {
                     setMaterials={setMaterials}
                     choice={choice}
                     setChoice={setChoice}
+                    entidades={entidades ?? []}
+                    entityId={id}
+                    onEntityChange={onEntityChange}
                   />
                   <div className="space-y-4 rounded-xl border border-border bg-card p-5">
                     <label className="flex items-start gap-3 text-sm">
@@ -835,7 +850,14 @@ function NewAssessment() {
                 <p className="mt-5 text-muted-foreground">Carregando dados da entidade...</p>
               ) : (
                 <div className="mt-5 space-y-5">
-                  <LegalFields association={association} choice={choice} setChoice={setChoice} />
+                  <LegalFields
+                    association={association}
+                    choice={choice}
+                    setChoice={setChoice}
+                    entidades={entidades ?? []}
+                    entityId={id}
+                    onEntityChange={onEntityChange}
+                  />
                   <div className="space-y-4 rounded-xl border border-border bg-card p-5">
                     <label className="flex items-start gap-3 text-sm">
                       <Checkbox name="consentimento_dados" required />
@@ -1067,6 +1089,9 @@ function NewAssessment() {
                     association={association}
                     choice={choice}
                     setChoice={setChoice}
+                    entidades={entidades ?? []}
+                    entityId={id}
+                    onEntityChange={onEntityChange}
                   />
                   <div className="space-y-4 rounded-xl border border-border bg-card p-5">
                     <label className="flex items-start gap-3 text-sm">
@@ -1366,26 +1391,82 @@ type SocialAssociation = {
   tipo?: string | null;
   ativa?: boolean | null;
 };
+type EntityOption = { id: string; nome: string; municipio?: string | null };
+
 type SocialFieldsProps = {
   association?: SocialAssociation;
   materials: string[];
   setMaterials: React.Dispatch<React.SetStateAction<string[]>>;
   choice: (name: string, fallback?: string) => string;
   setChoice: (name: string, value: string) => void;
+  entidades?: EntityOption[];
+  entityId?: string;
+  onEntityChange?: (id: string) => void;
 };
+
+function EntitySelectField({
+  name,
+  entidades,
+  entityId,
+  onEntityChange,
+  fallbackName,
+}: {
+  name: string;
+  entidades?: EntityOption[];
+  entityId?: string;
+  onEntityChange?: (id: string) => void;
+  fallbackName?: string;
+}) {
+  const currentName =
+    entidades?.find((e) => e.id === entityId)?.nome ?? fallbackName ?? "";
+  return (
+    <>
+      <input type="hidden" name={name} value={currentName} />
+      <Select
+        value={entityId}
+        onValueChange={(newId) => {
+          if (newId && newId !== entityId) onEntityChange?.(newId);
+        }}
+      >
+        <SelectTrigger>
+          <SelectValue placeholder="Selecione a entidade" />
+        </SelectTrigger>
+        <SelectContent>
+          {(entidades ?? []).map((e) => (
+            <SelectItem key={e.id} value={e.id}>
+              {e.nome}
+              {e.municipio ? ` — ${e.municipio}` : ""}
+            </SelectItem>
+          ))}
+        </SelectContent>
+      </Select>
+    </>
+  );
+}
+
 
 function LegalFields({
   association,
   choice,
   setChoice,
-}: Pick<SocialFieldsProps, "association" | "choice" | "setChoice">) {
+  entidades,
+  entityId,
+  onEntityChange,
+}: Pick<SocialFieldsProps, "association" | "choice" | "setChoice" | "entidades" | "entityId" | "onEntityChange">) {
   return (
     <>
       <LegalSection number="1" title="Identificação inicial da associação/cooperativa">
         <Grid>
-          <Field label="Nome completo da associação/cooperativa">
-            <Input name="legal_association_nome" defaultValue={association?.nome} required />
+          <Field label="Escolha entidade">
+            <EntitySelectField
+              name="legal_association_nome"
+              entidades={entidades}
+              entityId={entityId}
+              onEntityChange={onEntityChange}
+              fallbackName={association?.nome}
+            />
           </Field>
+
           <Field label="CNPJ (se tiver)">
             <Input name="legal_association_cnpj" defaultValue={association?.cnpj ?? ""} />
           </Field>
@@ -1646,14 +1727,24 @@ function AccountingFields({
   association,
   choice,
   setChoice,
-}: Pick<SocialFieldsProps, "association" | "choice" | "setChoice">) {
+  entidades,
+  entityId,
+  onEntityChange,
+}: Pick<SocialFieldsProps, "association" | "choice" | "setChoice" | "entidades" | "entityId" | "onEntityChange">) {
   return (
     <>
       <AccountingSection number="1" title="Identificação inicial da associação/cooperativa">
         <Grid>
-          <Field label="Nome completo da associação/cooperativa">
-            <Input name="accounting_association_nome" defaultValue={association?.nome} required />
+          <Field label="Escolha entidade">
+            <EntitySelectField
+              name="accounting_association_nome"
+              entidades={entidades}
+              entityId={entityId}
+              onEntityChange={onEntityChange}
+              fallbackName={association?.nome}
+            />
           </Field>
+
           <Field label="CNPJ (se tiver)">
             <Input name="accounting_association_cnpj" defaultValue={association?.cnpj ?? ""} />
           </Field>
@@ -2042,6 +2133,9 @@ function SocialFields({
   setMaterials,
   choice,
   setChoice,
+  entidades,
+  entityId,
+  onEntityChange,
 }: SocialFieldsProps) {
   return (
     <>
@@ -2051,9 +2145,16 @@ function SocialFields({
         subtitle="Preencher logo no início da entrevista"
       >
         <Grid>
-          <Field label="Nome completo da associação/cooperativa">
-            <Input name="association_nome" defaultValue={association?.nome} required />
+          <Field label="Escolha entidade">
+            <EntitySelectField
+              name="association_nome"
+              entidades={entidades}
+              entityId={entityId}
+              onEntityChange={onEntityChange}
+              fallbackName={association?.nome}
+            />
           </Field>
+
           <Field label="CNPJ (se tiver)">
             <Input name="association_cnpj" defaultValue={association?.cnpj ?? ""} />
           </Field>
@@ -2597,10 +2698,16 @@ function InfrastructureFields({
   association,
   choice,
   setChoice,
+  entidades,
+  entityId,
+  onEntityChange,
 }: {
   association: any;
   choice: (name: string, fallback?: string) => string;
   setChoice: (name: string, value: string) => void;
+  entidades?: EntityOption[];
+  entityId?: string;
+  onEntityChange?: (id: string) => void;
 }) {
   const orgName = association?.nome ?? "";
   return (
@@ -2621,9 +2728,16 @@ function InfrastructureFields({
       </InfraSection>
 
       <InfraSection title="2. Informações da organização">
-        <Field label="Nome da organização">
-          <Input name="infra_organizacao_nome" defaultValue={orgName} maxLength={300} />
+        <Field label="Escolha entidade">
+          <EntitySelectField
+            name="infra_organizacao_nome"
+            entidades={entidades}
+            entityId={entityId}
+            onEntityChange={onEntityChange}
+            fallbackName={orgName}
+          />
         </Field>
+
         <Field label="Cidade">
           <Input name="infra_cidade" defaultValue={association?.municipio ?? ""} maxLength={150} />
         </Field>
