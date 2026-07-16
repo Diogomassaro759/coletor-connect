@@ -1,27 +1,17 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
-import { Button } from "@/components/ui/button";
-import {
-  Users,
-  BarChart3,
-  ShieldCheck,
-  ArrowRight,
-  LeafyGreen,
-} from "lucide-react";
-import procateLogo from "@/assets/procate-logo.png";
-import heroImage from "@/assets/hero-reciclagem.jpg";
+import { createFileRoute, redirect } from "@tanstack/react-router";
 
 export const Route = createFileRoute("/")({
+  ssr: false,
+  beforeLoad: () => {
+    throw redirect({ to: "/auth" });
+  },
   head: () => ({
     meta: [
-      { title: "RecicladoresBR — Plataforma de Cadastro de Catadores" },
-      {
-        name: "description",
-        content:
-          "Plataforma intuitiva para cadastrar catadores de materiais recicláveis e conectá-los a organizações e empresas comprometidas com a sustentabilidade.",
-      },
+      { title: "PROCATE — Acesso" },
+      { name: "robots", content: "noindex" },
     ],
   }),
-  component: Landing,
+  component: () => null,
 });
 
 function Landing() {
