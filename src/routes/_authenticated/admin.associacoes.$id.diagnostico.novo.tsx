@@ -79,6 +79,17 @@ function NewAssessment() {
       return data;
     },
   });
+  const { data: entidades } = useQuery({
+    queryKey: ["entidades-picker"],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("associations")
+        .select("id, nome, municipio")
+        .order("nome", { ascending: true });
+      if (error) throw error;
+      return data ?? [];
+    },
+  });
   const moduleMeta: Record<typeof activeModule, { title: string; description: string }> = {
     social: {
       title: "Cadastro Social",
