@@ -59,6 +59,8 @@ function AssociationsPage() {
   const { isAdmin, isConsultant, isCoordenador, area } = Route.useRouteContext() as any;
   const isViewer = isConsultant || isCoordenador;
   const [search, setSearch] = useState("");
+  const [selectedEntity, setSelectedEntity] = useState<string>("");
+  const navigate = useNavigate();
 
   const { data: associations = [], isLoading } = useQuery({
     queryKey: ["associations"],
