@@ -1129,6 +1129,10 @@ export type Database = {
         Returns: boolean
       }
       is_coordenador: { Args: { _user_id: string }; Returns: boolean }
+      is_coordenador_recenseador: {
+        Args: { _user_id: string }
+        Returns: boolean
+      }
       is_field_consultant: { Args: { _user_id: string }; Returns: boolean }
       is_recenseador: { Args: { _user_id: string }; Returns: boolean }
     }
@@ -1139,6 +1143,7 @@ export type Database = {
         | "consultor"
         | "recenseador"
         | "coordenador"
+        | "coordenador_recenseador"
       assessment_module: "social" | "juridico" | "contabil"
       association_document_category:
         | "estatuto"
@@ -1285,6 +1290,7 @@ export const Constants = {
         "consultor",
         "recenseador",
         "coordenador",
+        "coordenador_recenseador",
       ],
       assessment_module: ["social", "juridico", "contabil"],
       association_document_category: [

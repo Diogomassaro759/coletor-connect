@@ -55,7 +55,7 @@ function EditarUsuarioPage() {
     email: "",
     municipio_referencia: "",
     identificacao_profissional: "",
-    role: "recenseador" as "recenseador" | "consultor" | "coordenador" | "admin",
+    role: "recenseador" as "recenseador" | "consultor" | "coordenador" | "coordenador_recenseador" | "admin",
     area: "" as "" | "social" | "juridico" | "contabil" | "infraestrutura",
   });
 
@@ -145,10 +145,11 @@ function EditarUsuarioPage() {
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="recenseador">Recenseador (cadastra catadores)</SelectItem>
+                    <SelectItem value="recenseador">Recenseador</SelectItem>
+                    <SelectItem value="coordenador_recenseador">Coordenador Recenseador</SelectItem>
                     <SelectItem value="consultor">Consultor</SelectItem>
                     <SelectItem value="coordenador">Coordenador</SelectItem>
-                    <SelectItem value="admin">Administrador UCPI (acesso total)</SelectItem>
+                    <SelectItem value="admin">Administrador</SelectItem>
                   </SelectContent>
                 </Select>
               </div>

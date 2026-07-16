@@ -19,7 +19,7 @@ import { loadNotifications } from "@/lib/notifications";
 export function AdminShell({ children }: { children: React.ReactNode }) {
   const navigate = useNavigate();
   const qc = useQueryClient();
-  const { isAdmin, isConsultant, isCoordenador, isRecenseador, area, user } = useRouteContext({
+  const { isAdmin, isConsultant, isCoordenador, isCoordenadorRecenseador, isRecenseador, area, user } = useRouteContext({
     from: "/_authenticated",
   }) as any;
   const isViewer = isConsultant || isCoordenador;
@@ -50,7 +50,7 @@ export function AdminShell({ children }: { children: React.ReactNode }) {
       <header className="bg-card/95 backdrop-blur border-b border-border sticky top-0 z-30">
         <div className="container mx-auto flex h-16 items-center justify-between px-4">
           <Link
-            to={isAdmin || isRecenseador ? "/admin" : "/admin/associacoes"}
+            to={isAdmin || isRecenseador || isCoordenadorRecenseador ? "/admin" : "/admin/associacoes"}
             className="flex items-center gap-2"
             aria-label="PROCATE — Painel"
           >
@@ -61,12 +61,14 @@ export function AdminShell({ children }: { children: React.ReactNode }) {
             />
             <span className="hidden sm:inline-block text-xs font-medium uppercase tracking-wider text-muted-foreground ml-2 px-2 py-0.5 rounded bg-muted">
               {isAdmin
-                ? "Administrador UCPI"
+                ? "Administrador"
                 : isRecenseador
                   ? "Recenseador"
-                  : isCoordenador
-                    ? `Coordenador${area ? ` — ${AREA_LABEL[area]}` : ""}`
-                    : `Assoc./Coop./Coletivos${area ? ` — ${AREA_LABEL[area]}` : ""}`}
+                  : isCoordenadorRecenseador
+                    ? "Coordenador Recenseador"
+                    : isCoordenador
+                      ? `Coordenador${area ? ` — ${AREA_LABEL[area]}` : ""}`
+                      : `Assoc./Coop./Coletivos${area ? ` — ${AREA_LABEL[area]}` : ""}`}
             </span>
           </Link>
           <nav className="flex items-center gap-1">

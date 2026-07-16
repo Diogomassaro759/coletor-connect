@@ -95,11 +95,25 @@ function UsuariosPage() {
                 <TableCell className="font-mono text-xs">{u.cpf ?? "—"}</TableCell>
                 <TableCell>{u.municipio_referencia ?? "—"}</TableCell>
                 <TableCell className="space-x-1">
-                  {u.roles.map((r) => (
-                    <Badge key={r} variant="secondary">
-                      {r}
-                    </Badge>
-                  ))}
+                  {u.roles.map((r) => {
+                    const label =
+                      r === "admin"
+                        ? "Administrador"
+                        : r === "recenseador"
+                          ? "Recenseador"
+                          : r === "coordenador_recenseador"
+                            ? "Coordenador Recenseador"
+                            : r === "coordenador"
+                              ? "Coordenador"
+                              : r === "consultor"
+                                ? "Consultor"
+                                : r;
+                    return (
+                      <Badge key={r} variant="secondary">
+                        {label}
+                      </Badge>
+                    );
+                  })}
                 </TableCell>
                 <TableCell>
                   <div className="flex items-center justify-end gap-1">

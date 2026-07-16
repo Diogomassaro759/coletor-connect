@@ -64,7 +64,7 @@ import {
 
 export const Route = createFileRoute("/_authenticated/admin/")({
   beforeLoad: ({ context }) => {
-    if (!context.isAdmin && !context.isRecenseador)
+    if (!context.isAdmin && !context.isRecenseador && !context.isCoordenador && !context.isCoordenadorRecenseador)
       throw redirect({ to: "/admin/associacoes" });
   },
   head: () => ({ meta: [{ title: "Painel — RecicladoresBR" }] }),
@@ -90,7 +90,7 @@ type Catador = {
 
 function AdminDashboard() {
   const qc = useQueryClient();
-  const { isAdmin, isRecenseador, user } = Route.useRouteContext();
+  const { isAdmin, isRecenseador, isCoordenadorRecenseador, user } = Route.useRouteContext() as any;
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState<string>("todos");
   const [materialFilter, setMaterialFilter] = useState<string>("todos");
@@ -318,27 +318,22 @@ function AdminDashboard() {
         <div className="flex flex-wrap gap-2">
           {isAdmin && (
             <Button variant="outline" onClick={exportXLSX}>
-              <Download className="size-4" /> Exportar Excel
+              <Download className="size-4" /> Exportar planilha
             </Button>
           )}
           {isRecenseador && (
             <Link to="/admin/novo">
               <Button>
-                <Plus className="size-4" /> Cadastrar catador
+                <Plus className="size-4" /> Novo catador
               </Button>
             </Link>
           )}
           {isAdmin && (
-            <>
-              <Link to="/admin/importar">
-                <Button variant="outline">
-                  <Download className="size-4 rotate-180" /> Importar planilha
-                </Button>
-              </Link>
-              <Link to="/admin/associacoes">
-                <Button>Escolher entidade</Button>
-              </Link>
-            </>
+            <Link to="/admin/importar">
+              <Button variant="outline">
+                <Download className="size-4 rotate-180" /> Importar planilha
+              </Button>
+            </Link>
           )}
         </div>
       </div>
@@ -427,9 +422,13 @@ function AdminDashboard() {
               <TableRow>
                 <TableCell colSpan={6} className="text-center py-16">
                   <p className="text-muted-foreground">Nenhum catador encontrado.</p>
-                  <Link to="/admin/associacoes" className="inline-block mt-4">
-                    <Button size="sm">Escolher entidade</Button>
-                  </Link>
+                  {isRecenseador && (
+                    <Link to="/admin/novo" className="inline-block mt-4">
+                      <Button size="sm">
+                        <Plus className="size-4" /> Novo catador
+                      </Button>
+                    </Link>
+                  )}
                 </TableCell>
               </TableRow>
             )}
@@ -467,26 +466,34 @@ function AdminDashboard() {
                   <StatusBadge status={c.status} />
                 </TableCell>
                 <TableCell>
-                  <DropdownMenu>
-                    <DropdownMenuTrigger asChild>
-                      <Button variant="ghost" size="icon">
-                        <MoreHorizontal className="size-4" />
-                      </Button>
-                    </DropdownMenuTrigger>
-                    <DropdownMenuContent align="end">
-                      <DropdownMenuLabel>Ações</DropdownMenuLabel>
-                      <Link to="/admin/$id" params={{ id: c.id }}>
-                        <DropdownMenuItem>
-                          <Eye className="size-4" /> Ver detalhes
-                        </DropdownMenuItem>
+                  <div className="flex items-center justify-end gap-1">
+                    {((isRecenseador && c.created_by === user.id) || isCoordenadorRecenseador || isAdmin) && (
+                      <Link to="/admin/$id/editar" params={{ id: c.id }}>
+                        <Button variant="ghost" size="icon" title="Editar cadastro">
+                          <Pencil className="size-4" />
+                        </Button>
                       </Link>
-                      {isRecenseador && c.created_by === user.id && (
-                        <Link to="/admin/$id/editar" params={{ id: c.id }}>
+                    )}
+                    <DropdownMenu>
+                      <DropdownMenuTrigger asChild>
+                        <Button variant="ghost" size="icon">
+                          <MoreHorizontal className="size-4" />
+                        </Button>
+                      </DropdownMenuTrigger>
+                      <DropdownMenuContent align="end">
+                        <DropdownMenuLabel>Ações</DropdownMenuLabel>
+                        <Link to="/admin/$id" params={{ id: c.id }}>
                           <DropdownMenuItem>
-                            <Pencil className="size-4" /> Editar
+                            <Eye className="size-4" /> Ver detalhes
                           </DropdownMenuItem>
                         </Link>
-                      )}
+                        {((isRecenseador && c.created_by === user.id) || isCoordenadorRecenseador || isAdmin) && (
+                          <Link to="/admin/$id/editar" params={{ id: c.id }}>
+                            <DropdownMenuItem>
+                              <Pencil className="size-4" /> Editar
+                            </DropdownMenuItem>
+                          </Link>
+                        )}
                       {isAdmin && (
                         <>
                           <DropdownMenuSeparator />
@@ -537,8 +544,9 @@ function AdminDashboard() {
                           </AlertDialog>
                         </>
                       )}
-                    </DropdownMenuContent>
-                  </DropdownMenu>
+                      </DropdownMenuContent>
+                    </DropdownMenu>
+                  </div>
                 </TableCell>
               </TableRow>
             ))}

@@ -168,7 +168,7 @@ function AssociationsPage() {
       ? (areaSuffix[areaForForm] ?? "SOCIAL")
       : "RECENSEADOR";
 
-  const pageTitle = `ASSOC./COOP./COLETIVOS – ${profileSuffix}`;
+  const pageTitle = isAdmin ? "Entidades" : `ASSOC./COOP./COLETIVOS – ${profileSuffix}`;
 
   return (
     <AdminShell>
@@ -187,7 +187,7 @@ function AssociationsPage() {
         {isAdmin && (
           <div className="flex flex-wrap gap-2">
             <Button variant="outline" size="lg" onClick={exportAssociations}>
-              <Download className="size-4" /> Exportar Excel
+              <Download className="size-4" /> Exportar planilha
             </Button>
             <Link to="/admin/associacoes/nova">
               <Button size="lg">
@@ -319,6 +319,16 @@ function AssociationsPage() {
                           <DropdownMenuItem asChild>
                             <Link to="/admin/associacoes/$id/editar" params={{ id: item.id }}>
                               <Pencil className="size-4 mr-2" /> Editar
+                            </Link>
+                          </DropdownMenuItem>
+                        )}
+                        {isViewer && (
+                          <DropdownMenuItem asChild>
+                            <Link
+                              to="/admin/associacoes/$id/diagnostico/novo"
+                              params={{ id: item.id }}
+                            >
+                              <ClipboardPlus className="size-4 mr-2" /> Abrir formulário
                             </Link>
                           </DropdownMenuItem>
                         )}

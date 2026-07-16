@@ -17,6 +17,9 @@ export const Route = createFileRoute("/_authenticated")({
       (item) => item.role === "consultor" || item.role === "atendente",
     );
     const isCoordenador = !!roles?.some((item) => item.role === "coordenador");
+    const isCoordenadorRecenseador = !!roles?.some(
+      (item) => item.role === "coordenador_recenseador",
+    );
     const isRecenseador = !!roles?.some((item) => item.role === "recenseador");
     const areaRow =
       roles?.find((item: any) => item.area && (item.role === "consultor" || item.role === "coordenador"));
@@ -32,9 +35,11 @@ export const Route = createFileRoute("/_authenticated")({
         ? "consultor"
         : isCoordenador
           ? "coordenador"
-          : isRecenseador
-            ? "recenseador"
-            : null;
+          : isCoordenadorRecenseador
+            ? "coordenador_recenseador"
+            : isRecenseador
+              ? "recenseador"
+              : null;
     if (roleError || !role) {
       await supabase.auth.signOut();
       throw redirect({ to: "/auth" });
@@ -56,6 +61,7 @@ export const Route = createFileRoute("/_authenticated")({
       isAdmin,
       isConsultant,
       isCoordenador,
+      isCoordenadorRecenseador,
       isRecenseador,
       area,
       mustChangePassword,

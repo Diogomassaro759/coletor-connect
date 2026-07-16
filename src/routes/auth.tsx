@@ -33,7 +33,8 @@ function AuthPage() {
     }
     const isAdmin = !!roles?.some((r) => r.role === "admin");
     const isRecenseador = !!roles?.some((r) => r.role === "recenseador");
-    if (isAdmin || isRecenseador) {
+    const isCoordenadorRecenseador = !!roles?.some((r) => r.role === "coordenador_recenseador");
+    if (isAdmin || isRecenseador || isCoordenadorRecenseador) {
       navigate({ to: "/admin" });
     } else {
       navigate({ to: "/admin/associacoes" });
