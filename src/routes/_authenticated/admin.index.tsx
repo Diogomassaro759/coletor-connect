@@ -93,7 +93,8 @@ type Catador = {
 
 function AdminDashboard() {
   const qc = useQueryClient();
-  const { isAdmin, isRecenseador, isCoordenadorRecenseador, user } = Route.useRouteContext() as any;
+  const { isAdmin, isRecenseador, isCoordenador, isCoordenadorRecenseador, user } = Route.useRouteContext() as any;
+  const isAdminLike = isAdmin || isCoordenador;
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState<string>("todos");
   const [materialFilter, setMaterialFilter] = useState<string>("todos");
