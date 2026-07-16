@@ -167,7 +167,7 @@ function AssociationDetails() {
           { key: "contabil", titulo: "Cadastro Contábil", descricao: "Escrituração, tributos e obrigações fiscais." },
           { key: "infraestrutura", titulo: "Cadastro de Infraestrutura", descricao: "Sede, equipamentos e condições operacionais." },
         ];
-        const visiveis = isAdmin
+        const visiveis = isAdminLike
           ? modulos
           : modulos.filter((m) => m.key === (area ?? "social"));
         return (
@@ -180,7 +180,7 @@ function AssociationDetails() {
                 {isAdminLike ? "Cadastros por área" : "Cadastro da sua área"}
               </h2>
               <p className="mt-1 text-sm text-muted-foreground">
-                {isAdmin
+                {isAdminLike
                   ? "Abra o formulário correspondente a cada módulo do diagnóstico."
                   : "Abre diretamente o formulário da sua área de atuação."}
               </p>
