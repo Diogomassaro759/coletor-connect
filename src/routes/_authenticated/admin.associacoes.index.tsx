@@ -385,13 +385,15 @@ function AssociationsPage() {
             </DialogDescription>
           </DialogHeader>
           <Select value={selectedEntity} onValueChange={setSelectedEntity}>
-            <SelectTrigger>
-              <SelectValue placeholder="Escolha entidade" />
+            <SelectTrigger className="w-full">
+              <SelectValue placeholder="Escolha entidade" className="truncate" />
             </SelectTrigger>
-            <SelectContent>
+            <SelectContent className="max-h-72 max-w-[calc(100vw-3rem)]">
               {associations.map((a: any) => (
                 <SelectItem key={a.id} value={a.id}>
-                  {a.nome} — {a.municipio}
+                  <span className="block truncate max-w-[420px]">
+                    {a.nome} — {a.municipio}
+                  </span>
                 </SelectItem>
               ))}
             </SelectContent>
