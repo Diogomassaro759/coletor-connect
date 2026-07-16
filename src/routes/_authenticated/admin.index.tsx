@@ -364,7 +364,10 @@ function AdminDashboard() {
             primaryHref={null}
             primaryLabel="ACESSAR"
             onPrimaryClick={() => {
-              document.getElementById("catadores-tabela")?.scrollIntoView({ behavior: "smooth" });
+              setShowCatadoresTable(true);
+              setTimeout(() => {
+                document.getElementById("catadores-tabela")?.scrollIntoView({ behavior: "smooth" });
+              }, 50);
             }}
             stats={[
               { icon: Users, label: "Total", value: stats.total, tone: "primary" },
