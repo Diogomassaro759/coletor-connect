@@ -39,10 +39,15 @@ import { supabase } from "@/integrations/supabase/client";
 
 export const Route = createFileRoute("/_authenticated/admin/diagnosticos")({
   beforeLoad: ({ context }) => {
-    if (context.role !== "admin" && context.role !== "consultor") {
+    if (
+      context.role !== "admin" &&
+      context.role !== "consultor" &&
+      context.role !== "coordenador"
+    ) {
       throw redirect({ to: "/admin/associacoes" });
     }
   },
+
   head: () => ({ meta: [{ title: "Regularidade institucional — PROCATE" }] }),
   component: DiagnosticsDashboard,
 });
