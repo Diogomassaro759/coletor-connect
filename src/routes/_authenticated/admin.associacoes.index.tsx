@@ -470,6 +470,7 @@ function AssociationsPage() {
             })}
           </TableBody>
         </Table>
+        </div>
       </div>
     </AdminShell>
   );
