@@ -157,7 +157,7 @@ function AssociationDetails() {
         </div>
       </div>
 
-      {isConsultant && (() => {
+      {(isConsultant || isAdmin) && (() => {
         const modulos: Array<{
           key: "social" | "juridico" | "contabil" | "infraestrutura";
           titulo: string;
@@ -168,7 +168,7 @@ function AssociationDetails() {
           { key: "contabil", titulo: "Cadastro Contábil", descricao: "Escrituração, tributos e obrigações fiscais." },
           { key: "infraestrutura", titulo: "Cadastro de Infraestrutura", descricao: "Sede, equipamentos e condições operacionais." },
         ];
-        const visiveis = modulos.filter((m) => m.key === (area ?? "social"));
+        const visiveis = isAdmin ? modulos : modulos.filter((m) => m.key === (area ?? "social"));
         return (
           <section className="mb-8">
             <div className="mb-4">
