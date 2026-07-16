@@ -626,9 +626,73 @@ function AdminDashboard() {
           </TableBody>
         </Table>
       </div>
+      </div>
     </AdminShell>
   );
 }
+
+function LauncherCard({
+  eyebrow,
+  title,
+  description,
+  primaryHref,
+  primaryLabel,
+  onPrimaryClick,
+  stats,
+  actions,
+}: {
+  eyebrow: string;
+  title: string;
+  description: string;
+  primaryHref: string | null;
+  primaryLabel: string;
+  onPrimaryClick?: () => void;
+  stats: Array<{ icon: typeof Users; label: string; value: number; tone: "primary" | "success" | "warning" }>;
+  actions?: React.ReactNode;
+}) {
+  const primary = primaryHref ? (
+    <Link to={primaryHref}>
+      <Button
+        size="lg"
+        className="bg-gradient-to-r from-[hsl(24_95%_53%)] to-[hsl(18_95%_48%)] text-white shadow-md hover:brightness-110 rounded-full px-8 font-bold tracking-wide"
+      >
+        {primaryLabel} <ArrowRight className="size-4" />
+      </Button>
+    </Link>
+  ) : (
+    <Button
+      size="lg"
+      onClick={onPrimaryClick}
+      className="bg-gradient-to-r from-[hsl(24_95%_53%)] to-[hsl(18_95%_48%)] text-white shadow-md hover:brightness-110 rounded-full px-8 font-bold tracking-wide"
+    >
+      {primaryLabel} <ArrowRight className="size-4" />
+    </Button>
+  );
+
+  return (
+    <section className="rounded-2xl border border-border bg-gradient-to-br from-muted/40 to-card p-6 shadow-card">
+      <div className="flex flex-wrap items-center justify-between gap-4">
+        <div className="min-w-0">
+          <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-primary">
+            {eyebrow}
+          </p>
+          <h2 className="mt-1 text-2xl font-bold tracking-tight">{title}</h2>
+          <p className="text-sm text-muted-foreground">{description}</p>
+        </div>
+        <div className="flex flex-wrap items-center gap-2">
+          {primary}
+          {actions}
+        </div>
+      </div>
+      <div className="mt-5 grid gap-3 sm:grid-cols-3">
+        {stats.map((s) => (
+          <StatCard key={s.label} icon={s.icon} label={s.label} value={s.value} tone={s.tone} />
+        ))}
+      </div>
+    </section>
+  );
+}
+
 
 function StatCard({
   icon: Icon,
