@@ -56,25 +56,37 @@ function EditarUsuarioPage() {
     municipio_referencia: "",
     identificacao_profissional: "",
     role: "recenseador" as "recenseador" | "consultor" | "coordenador" | "coordenador_recenseador" | "admin",
-    area: "" as "" | "social" | "juridico" | "contabil" | "infraestrutura",
+    area: "" as "" | "social" | "juridico" | "contabil" | "infraestrutura" | "recenseador",
   });
 
   useEffect(() => {
     if (data) {
+      const rawRole = ((data as any).roles?.[0] ?? "recenseador") as any;
+      // Expor coordenador_recenseador como Perfil=coordenador + Tipo=recenseador
+      const uiRole = rawRole === "coordenador_recenseador" ? "coordenador" : rawRole;
+      const uiArea = rawRole === "coordenador_recenseador" ? "recenseador" : ((data as any).area ?? "");
       setForm({
         full_name: (data as any).full_name ?? "",
         email: (data as any).email ?? "",
         municipio_referencia: (data as any).municipio_referencia ?? "",
         identificacao_profissional: (data as any).identificacao_profissional ?? "",
-        role: ((data as any).roles?.[0] ?? "recenseador") as any,
-        area: ((data as any).area ?? "") as any,
+        role: uiRole,
+        area: uiArea as any,
       });
     }
   }, [data]);
 
   const mut = useMutation({
-    mutationFn: () =>
-      update({ data: { user_id: userId, ...form, area: form.area || null } as any }),
+    mutationFn: () => {
+      // Se Perfil=Coordenador e Tipo=Recenseador → mapeia para role coordenador_recenseador (sem área).
+      const isCoordRec = form.role === "coordenador" && form.area === "recenseador";
+      const payload = {
+        ...form,
+        role: isCoordRec ? "coordenador_recenseador" : form.role,
+        area: isCoordRec ? null : (form.area || null),
+      };
+      return update({ data: { user_id: userId, ...payload } as any });
+    },
     onSuccess: () => {
       toast.success("Usuário atualizado.");
       navigate({ to: "/admin/usuarios" });
