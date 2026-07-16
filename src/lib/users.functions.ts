@@ -4,7 +4,7 @@ import { z } from "zod";
 // All server functions inherit requireSupabaseAuth (see src/start.ts), so
 // context.supabase / context.userId are always present.
 
-const ROLE_VALUES = ["admin", "recenseador", "consultor", "coordenador"] as const;
+const ROLE_VALUES = ["admin", "recenseador", "consultor", "coordenador", "coordenador_recenseador"] as const;
 const AREA_VALUES = ["social", "juridico", "contabil", "infraestrutura"] as const;
 const roleEnum = z.enum(ROLE_VALUES);
 const areaEnum = z.enum(AREA_VALUES).optional().nullable();
