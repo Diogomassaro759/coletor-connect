@@ -411,6 +411,7 @@ function AdminDashboard() {
         </>
       )}
 
+      {!isAdmin && (
       <div id="catadores-tabela" className="scroll-mt-20">
       {/* Filters */}
       <div className="bg-card rounded-xl border border-border p-4 mb-4 flex flex-wrap items-center gap-3 shadow-card">
