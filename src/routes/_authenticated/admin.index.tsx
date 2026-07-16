@@ -67,9 +67,7 @@ import {
 
 export const Route = createFileRoute("/_authenticated/admin/")({
   beforeLoad: ({ context }) => {
-    if (context.isCoordenador && !context.isAdmin)
-      throw redirect({ to: "/admin/associacoes" });
-    if (!context.isAdmin && !context.isRecenseador && !context.isCoordenadorRecenseador)
+    if (!context.isAdmin && !context.isRecenseador && !context.isCoordenador && !context.isCoordenadorRecenseador)
       throw redirect({ to: "/admin/associacoes" });
   },
   head: () => ({ meta: [{ title: "Painel — RecicladoresBR" }] }),
