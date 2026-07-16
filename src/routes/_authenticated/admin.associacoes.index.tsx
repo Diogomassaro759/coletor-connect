@@ -496,52 +496,78 @@ function AssociationsPage() {
                     </Badge>
                   </TableCell>
                   <TableCell className="text-right">
-                    <DropdownMenu>
-                      <DropdownMenuTrigger asChild>
-                        <Button variant="ghost" size="sm">Ações</Button>
-                      </DropdownMenuTrigger>
-                      <DropdownMenuContent align="end">
-                        <DropdownMenuItem asChild>
-                          <Link to="/admin/associacoes/$id" params={{ id: item.id }}>
-                            <Eye className="size-4 mr-2" /> Ver detalhes
-                          </Link>
-                        </DropdownMenuItem>
-                        {(isAdmin || isConsultant) && (
+                    {isConsultant ? (
+                      (() => {
+                        const requiresSocial = areaForForm !== "social";
+                        const hasSocial = latestByAssoc.has(item.id);
+                        const blocked = requiresSocial && !hasSocial;
+                        if (blocked) {
+                          return (
+                            <Button size="sm" variant="outline" disabled>
+                              <Lock className="size-4 mr-1" /> Aguardando Social
+                            </Button>
+                          );
+                        }
+                        return (
+                          <Button
+                            size="sm"
+                            onClick={() =>
+                              navigate({
+                                to: "/admin/associacoes/$id/diagnostico/novo",
+                                params: { id: item.id },
+                                search: { modulo: areaForForm },
+                              })
+                            }
+                          >
+                            <ClipboardPlus className="size-4 mr-1" /> Abrir formulário
+                          </Button>
+                        );
+                      })()
+                    ) : (
+                      <DropdownMenu>
+                        <DropdownMenuTrigger asChild>
+                          <Button variant="ghost" size="sm">Ações</Button>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent align="end">
                           <DropdownMenuItem asChild>
-                            <Link to="/admin/associacoes/$id/editar" params={{ id: item.id }}>
-                              <Pencil className="size-4 mr-2" /> Editar
+                            <Link to="/admin/associacoes/$id" params={{ id: item.id }}>
+                              <Eye className="size-4 mr-2" /> Ver detalhes
                             </Link>
                           </DropdownMenuItem>
-                        )}
-                        {isViewer && (
-                          (() => {
-                            const requiresSocial = areaForForm !== "social";
-                            const hasSocial = latestByAssoc.has(item.id);
-                            const blocked = requiresSocial && !hasSocial;
-                            if (blocked) {
+                          {isAdmin && (
+                            <DropdownMenuItem asChild>
+                              <Link to="/admin/associacoes/$id/editar" params={{ id: item.id }}>
+                                <Pencil className="size-4 mr-2" /> Editar
+                              </Link>
+                            </DropdownMenuItem>
+                          )}
+                          {isCoordenador && (
+                            (() => {
+                              const requiresSocial = areaForForm !== "social";
+                              const hasSocial = latestByAssoc.has(item.id);
+                              const blocked = requiresSocial && !hasSocial;
+                              if (blocked) {
+                                return (
+                                  <DropdownMenuItem disabled onSelect={(e) => e.preventDefault()}>
+                                    <Lock className="size-4 mr-2" /> Aguardando cadastro Social
+                                  </DropdownMenuItem>
+                                );
+                              }
                               return (
-                                <DropdownMenuItem
-                                  disabled
-                                  onSelect={(e) => e.preventDefault()}
-                                >
-                                  <Lock className="size-4 mr-2" /> Aguardando cadastro Social
+                                <DropdownMenuItem asChild>
+                                  <Link
+                                    to="/admin/associacoes/$id/diagnostico/novo"
+                                    params={{ id: item.id }}
+                                  >
+                                    <ClipboardPlus className="size-4 mr-2" /> Abrir formulário
+                                  </Link>
                                 </DropdownMenuItem>
                               );
-                            }
-                            return (
-                              <DropdownMenuItem asChild>
-                                <Link
-                                  to="/admin/associacoes/$id/diagnostico/novo"
-                                  params={{ id: item.id }}
-                                >
-                                  <ClipboardPlus className="size-4 mr-2" /> Abrir formulário
-                                </Link>
-                              </DropdownMenuItem>
-                            );
-                          })()
-                        )}
-                      </DropdownMenuContent>
-                    </DropdownMenu>
+                            })()
+                          )}
+                        </DropdownMenuContent>
+                      </DropdownMenu>
+                    )}
                   </TableCell>
                 </TableRow>
               );
