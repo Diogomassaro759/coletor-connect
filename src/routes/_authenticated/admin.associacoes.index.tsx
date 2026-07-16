@@ -187,7 +187,7 @@ function AssociationsPage() {
         {isAdmin && (
           <div className="flex flex-wrap gap-2">
             <Button variant="outline" size="lg" onClick={exportAssociations}>
-              <Download className="size-4" /> Exportar Excel
+              <Download className="size-4" /> Exportar planilha
             </Button>
             <Link to="/admin/associacoes/nova">
               <Button size="lg">
