@@ -183,9 +183,11 @@ function AssociationsPage() {
     <AdminShell>
       <div className="mb-6 grid gap-4 lg:grid-cols-[1fr_auto] lg:items-start">
         <div>
-          <p className="text-xs font-semibold uppercase tracking-[0.16em] text-primary">
-            {profileSuffix}
-          </p>
+          {!isAdmin && (
+            <p className="text-xs font-semibold uppercase tracking-[0.16em] text-primary">
+              {profileSuffix}
+            </p>
+          )}
           <h1 className="mt-1 text-3xl font-bold tracking-tight">{pageTitle}</h1>
           <p className="mt-1 text-muted-foreground">
             {isAdmin
