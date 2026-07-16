@@ -220,6 +220,67 @@ function AssociationsPage() {
         <Badge variant="secondary">{filtered.length} entidades</Badge>
       </div>
 
+      {isAdmin && (
+        <section className="mb-6 rounded-xl border border-primary/30 bg-primary/5 p-5 shadow-card">
+          <div className="mb-4">
+            <p className="text-xs font-bold uppercase tracking-[0.16em] text-primary">
+              Formulários de campo
+            </p>
+            <h2 className="mt-1 text-xl font-bold">Cadastros por área</h2>
+            <p className="mt-1 text-sm text-muted-foreground">
+              Escolha a entidade e abra o formulário correspondente a cada módulo do diagnóstico.
+            </p>
+            <div className="mt-3 max-w-md">
+              <Select value={selectedEntity} onValueChange={setSelectedEntity}>
+                <SelectTrigger>
+                  <SelectValue placeholder="Escolha entidade" />
+                </SelectTrigger>
+                <SelectContent>
+                  {associations.map((a: any) => (
+                    <SelectItem key={a.id} value={a.id}>
+                      {a.nome} — {a.municipio}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+          </div>
+          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+            {([
+              { key: "social", titulo: "Cadastro Social", descricao: "Perfil socioeconômico e organizacional." },
+              { key: "juridico", titulo: "Cadastro Jurídico", descricao: "Documentação, estatuto e regularidade jurídica." },
+              { key: "contabil", titulo: "Cadastro Contábil", descricao: "Escrituração, tributos e obrigações fiscais." },
+              { key: "infraestrutura", titulo: "Cadastro de Infraestrutura", descricao: "Sede, equipamentos e condições operacionais." },
+            ] as const).map((m) => (
+              <div
+                key={m.key}
+                className="flex flex-col justify-between rounded-2xl border border-border bg-card p-5 shadow-card"
+              >
+                <div>
+                  <h3 className="text-base font-semibold">{m.titulo}</h3>
+                  <p className="mt-1 text-xs text-muted-foreground">{m.descricao}</p>
+                </div>
+                <Button
+                  size="sm"
+                  className="mt-4 w-full"
+                  disabled={!selectedEntity}
+                  onClick={() => {
+                    if (!selectedEntity) return;
+                    navigate({
+                      to: "/admin/associacoes/$id/diagnostico/novo",
+                      params: { id: selectedEntity },
+                      search: { modulo: m.key },
+                    });
+                  }}
+                >
+                  <ClipboardPlus className="size-4 mr-1" /> Abrir formulário
+                </Button>
+              </div>
+            ))}
+          </div>
+        </section>
+      )}
+
       {isViewer && (() => {
         const requiresSocial = areaForForm !== "social";
         const selected = associations.find((a: any) => a.id === selectedEntity);

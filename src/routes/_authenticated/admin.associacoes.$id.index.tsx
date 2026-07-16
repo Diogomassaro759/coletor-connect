@@ -157,7 +157,7 @@ function AssociationDetails() {
         </div>
       </div>
 
-      {(showAllModules || isConsultant) && (() => {
+      {isConsultant && (() => {
         const modulos: Array<{
           key: "social" | "juridico" | "contabil" | "infraestrutura";
           titulo: string;
@@ -168,26 +168,19 @@ function AssociationDetails() {
           { key: "contabil", titulo: "Cadastro Contábil", descricao: "Escrituração, tributos e obrigações fiscais." },
           { key: "infraestrutura", titulo: "Cadastro de Infraestrutura", descricao: "Sede, equipamentos e condições operacionais." },
         ];
-        const visiveis = showAllModules
-          ? modulos
-          : modulos.filter((m) => m.key === (area ?? "social"));
+        const visiveis = modulos.filter((m) => m.key === (area ?? "social"));
         return (
           <section className="mb-8">
             <div className="mb-4">
               <p className="text-xs font-bold uppercase tracking-[0.16em] text-primary">
                 Formulários de campo
               </p>
-              <h2 className="mt-1 text-xl font-bold">
-                {showAllModules ? "Cadastros por área" : "Cadastro da sua área"}
-              </h2>
+              <h2 className="mt-1 text-xl font-bold">Cadastro da sua área</h2>
               <p className="mt-1 text-sm text-muted-foreground">
-                {showAllModules
-                  ? "Abra o formulário correspondente a cada módulo do diagnóstico."
-                  : "Abre diretamente o formulário da sua área de atuação."}
+                Abre diretamente o formulário da sua área de atuação.
               </p>
             </div>
-            <div className={`grid gap-4 ${showAllModules ? "sm:grid-cols-2 lg:grid-cols-4" : ""}`}>
-
+            <div className="grid gap-4">
               {visiveis.map((m) => (
                 <div
                   key={m.key}
