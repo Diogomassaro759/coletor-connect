@@ -114,6 +114,11 @@ function NewAssessment() {
       description:
         "Documentos, contador, livros, controles, balanços e pendências contábeis.",
     },
+    infraestrutura: {
+      title: "Cadastro de Infraestrutura",
+      description:
+        "Sede, equipamentos, veículos, EPIs e condições operacionais do galpão.",
+    },
   };
   const currentMeta = moduleMeta[activeModule];
 
