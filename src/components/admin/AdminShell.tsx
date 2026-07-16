@@ -50,7 +50,7 @@ export function AdminShell({ children }: { children: React.ReactNode }) {
       <header className="bg-card/95 backdrop-blur border-b border-border sticky top-0 z-30">
         <div className="container mx-auto flex h-16 items-center justify-between px-4">
           <Link
-            to={isAdmin || isRecenseador || isCoordenadorRecenseador ? "/admin" : "/admin/associacoes"}
+            to={isAdmin || isCoordenador || isRecenseador || isCoordenadorRecenseador ? "/admin" : "/admin/associacoes"}
             className="flex items-center gap-2"
             aria-label="PROCATE — Painel"
           >
