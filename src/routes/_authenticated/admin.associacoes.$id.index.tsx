@@ -175,12 +175,16 @@ function AssociationDetails() {
               <p className="text-xs font-bold uppercase tracking-[0.16em] text-primary">
                 Formulários de campo
               </p>
-              <h2 className="mt-1 text-xl font-bold">Cadastro da sua área</h2>
+              <h2 className="mt-1 text-xl font-bold">
+                {isAdmin ? "Cadastros por área" : "Cadastro da sua área"}
+              </h2>
               <p className="mt-1 text-sm text-muted-foreground">
-                Abre diretamente o formulário da sua área de atuação.
+                {isAdmin
+                  ? "Abra o formulário de qualquer área desta entidade."
+                  : "Abre diretamente o formulário da sua área de atuação."}
               </p>
             </div>
-            <div className="grid gap-4">
+            <div className={isAdmin ? "grid gap-4 sm:grid-cols-2 lg:grid-cols-4" : "grid gap-4"}>
               {visiveis.map((m) => (
                 <div
                   key={m.key}
