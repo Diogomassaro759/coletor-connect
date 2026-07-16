@@ -318,27 +318,22 @@ function AdminDashboard() {
         <div className="flex flex-wrap gap-2">
           {isAdmin && (
             <Button variant="outline" onClick={exportXLSX}>
-              <Download className="size-4" /> Exportar Excel
+              <Download className="size-4" /> Exportar planilha
             </Button>
           )}
           {isRecenseador && (
             <Link to="/admin/novo">
               <Button>
-                <Plus className="size-4" /> Cadastrar catador
+                <Plus className="size-4" /> Novo catador
               </Button>
             </Link>
           )}
           {isAdmin && (
-            <>
-              <Link to="/admin/importar">
-                <Button variant="outline">
-                  <Download className="size-4 rotate-180" /> Importar planilha
-                </Button>
-              </Link>
-              <Link to="/admin/associacoes">
-                <Button>Escolher entidade</Button>
-              </Link>
-            </>
+            <Link to="/admin/importar">
+              <Button variant="outline">
+                <Download className="size-4 rotate-180" /> Importar planilha
+              </Button>
+            </Link>
           )}
         </div>
       </div>
