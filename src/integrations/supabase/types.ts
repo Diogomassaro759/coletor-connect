@@ -1129,6 +1129,10 @@ export type Database = {
         Returns: boolean
       }
       is_coordenador: { Args: { _user_id: string }; Returns: boolean }
+      is_coordenador_recenseador: {
+        Args: { _user_id: string }
+        Returns: boolean
+      }
       is_field_consultant: { Args: { _user_id: string }; Returns: boolean }
       is_recenseador: { Args: { _user_id: string }; Returns: boolean }
     }
