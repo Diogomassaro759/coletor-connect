@@ -271,6 +271,10 @@ function AssociationsPage() {
                   size="sm"
                   className="mt-4 w-full"
                   onClick={() => {
+                    if (m.key === "social") {
+                      navigate({ to: "/admin/associacoes/nova" });
+                      return;
+                    }
                     setSelectedEntity("");
                     setPendingModulo(m.key);
                   }}
