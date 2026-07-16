@@ -123,7 +123,7 @@ function AdminDashboard() {
       const ativos = data.filter((a: any) => a.ativa).length;
       return { total, ativos, pendentes: total - ativos };
     },
-    enabled: isAdmin,
+    enabled: isAdminLike,
   });
 
   const RENDA_THRESHOLD = RENDA_REFERENCIA; // salário mínimo de referência
@@ -327,7 +327,7 @@ function AdminDashboard() {
 
   return (
     <AdminShell>
-      {isAdmin && (
+      {isAdminLike && (
         <div className="mb-8 space-y-5">
           <LauncherCard
             eyebrow="Painel principal"
@@ -386,7 +386,7 @@ function AdminDashboard() {
         </div>
       )}
 
-      {!isAdmin && (
+      {!isAdminLike && (
         <>
           <div className="flex flex-wrap items-end justify-between gap-4 mb-8">
             <div>
@@ -412,7 +412,7 @@ function AdminDashboard() {
         </>
       )}
 
-      {!isAdmin && (
+      {!isAdminLike && (
       <div id="catadores-tabela" className="scroll-mt-20">
       {/* Filters */}
       <div className="bg-card rounded-xl border border-border p-4 mb-4 flex flex-wrap items-center gap-3 shadow-card">
@@ -564,7 +564,7 @@ function AdminDashboard() {
                             </DropdownMenuItem>
                           </Link>
                         )}
-                      {isAdmin && (
+                      {isAdminLike && (
                         <>
                           <DropdownMenuSeparator />
                           <DropdownMenuLabel className="text-xs font-normal text-muted-foreground">
@@ -581,7 +581,7 @@ function AdminDashboard() {
                           ))}
                         </>
                       )}
-                      {isAdmin && (
+                      {isAdminLike && (
                         <>
                           <DropdownMenuSeparator />
                           <AlertDialog>
