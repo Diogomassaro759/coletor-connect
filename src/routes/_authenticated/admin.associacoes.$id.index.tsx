@@ -157,7 +157,7 @@ function AssociationDetails() {
         </div>
       </div>
 
-      {(isAdminLike || isConsultant) && (() => {
+      {(showAllModules || isConsultant) && (() => {
         const modulos: Array<{
           key: "social" | "juridico" | "contabil" | "infraestrutura";
           titulo: string;
@@ -168,7 +168,7 @@ function AssociationDetails() {
           { key: "contabil", titulo: "Cadastro Contábil", descricao: "Escrituração, tributos e obrigações fiscais." },
           { key: "infraestrutura", titulo: "Cadastro de Infraestrutura", descricao: "Sede, equipamentos e condições operacionais." },
         ];
-        const visiveis = isAdminLike
+        const visiveis = showAllModules
           ? modulos
           : modulos.filter((m) => m.key === (area ?? "social"));
         return (
@@ -178,15 +178,16 @@ function AssociationDetails() {
                 Formulários de campo
               </p>
               <h2 className="mt-1 text-xl font-bold">
-                {isAdminLike ? "Cadastros por área" : "Cadastro da sua área"}
+                {showAllModules ? "Cadastros por área" : "Cadastro da sua área"}
               </h2>
               <p className="mt-1 text-sm text-muted-foreground">
-                {isAdminLike
+                {showAllModules
                   ? "Abra o formulário correspondente a cada módulo do diagnóstico."
                   : "Abre diretamente o formulário da sua área de atuação."}
               </p>
             </div>
-            <div className={`grid gap-4 ${isAdminLike ? "sm:grid-cols-2 lg:grid-cols-4" : ""}`}>
+            <div className={`grid gap-4 ${showAllModules ? "sm:grid-cols-2 lg:grid-cols-4" : ""}`}>
+
               {visiveis.map((m) => (
                 <div
                   key={m.key}
