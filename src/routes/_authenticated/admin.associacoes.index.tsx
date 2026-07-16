@@ -28,6 +28,14 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 import { supabase } from "@/integrations/supabase/client";
 
 export const Route = createFileRoute("/_authenticated/admin/associacoes/")({
@@ -60,6 +68,7 @@ function AssociationsPage() {
   const isViewer = isConsultant || isCoordenador;
   const [search, setSearch] = useState("");
   const [selectedEntity, setSelectedEntity] = useState<string>("");
+  const [pendingModulo, setPendingModulo] = useState<"social" | "juridico" | "contabil" | "infraestrutura" | null>(null);
   const navigate = useNavigate();
 
   const { data: associations = [], isLoading } = useQuery({
@@ -240,22 +249,8 @@ function AssociationsPage() {
             </p>
             <h2 className="mt-1 text-xl font-bold">Cadastros por área</h2>
             <p className="mt-1 text-sm text-muted-foreground">
-              Escolha a entidade e abra o formulário correspondente a cada módulo do diagnóstico.
+              Escolha o módulo do diagnóstico. A entidade será selecionada em seguida.
             </p>
-            <div className="mt-3 max-w-md">
-              <Select value={selectedEntity} onValueChange={setSelectedEntity}>
-                <SelectTrigger>
-                  <SelectValue placeholder="Escolha entidade" />
-                </SelectTrigger>
-                <SelectContent>
-                  {associations.map((a: any) => (
-                    <SelectItem key={a.id} value={a.id}>
-                      {a.nome} — {a.municipio}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
           </div>
           <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
             {([
@@ -275,14 +270,9 @@ function AssociationsPage() {
                 <Button
                   size="sm"
                   className="mt-4 w-full"
-                  disabled={!selectedEntity}
                   onClick={() => {
-                    if (!selectedEntity) return;
-                    navigate({
-                      to: "/admin/associacoes/$id/diagnostico/novo",
-                      params: { id: selectedEntity },
-                      search: { modulo: m.key },
-                    });
+                    setSelectedEntity("");
+                    setPendingModulo(m.key);
                   }}
                 >
                   <ClipboardPlus className="size-4 mr-1" /> Abrir formulário
@@ -292,6 +282,70 @@ function AssociationsPage() {
           </div>
         </section>
       )}
+
+      <Dialog
+        open={!!pendingModulo}
+        onOpenChange={(open) => {
+          if (!open) {
+            setPendingModulo(null);
+            setSelectedEntity("");
+          }
+        }}
+      >
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>
+              Escolha a entidade
+              {pendingModulo ? ` — ${moduloLabel[pendingModulo]}` : ""}
+            </DialogTitle>
+            <DialogDescription>
+              Selecione a entidade para abrir o formulário correspondente.
+            </DialogDescription>
+          </DialogHeader>
+          <Select value={selectedEntity} onValueChange={setSelectedEntity}>
+            <SelectTrigger>
+              <SelectValue placeholder="Escolha entidade" />
+            </SelectTrigger>
+            <SelectContent>
+              {associations.map((a: any) => (
+                <SelectItem key={a.id} value={a.id}>
+                  {a.nome} — {a.municipio}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+          <DialogFooter>
+            <Button
+              variant="outline"
+              onClick={() => {
+                setPendingModulo(null);
+                setSelectedEntity("");
+              }}
+            >
+              Cancelar
+            </Button>
+            <Button
+              disabled={!selectedEntity || !pendingModulo}
+              onClick={() => {
+                if (!selectedEntity || !pendingModulo) return;
+                const modulo = pendingModulo;
+                const id = selectedEntity;
+                setPendingModulo(null);
+                setSelectedEntity("");
+                navigate({
+                  to: "/admin/associacoes/$id/diagnostico/novo",
+                  params: { id },
+                  search: { modulo },
+                });
+              }}
+            >
+              Abrir formulário
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+
 
 
       <div
