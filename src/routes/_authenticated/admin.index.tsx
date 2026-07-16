@@ -96,6 +96,7 @@ function AdminDashboard() {
   const { isAdmin, isRecenseador, isCoordenador, isCoordenadorRecenseador, user } = Route.useRouteContext() as any;
   const isAdminLike = isAdmin || isCoordenador;
   const [search, setSearch] = useState("");
+  const [showCatadoresTable, setShowCatadoresTable] = useState(false);
   const [statusFilter, setStatusFilter] = useState<string>("todos");
   const [materialFilter, setMaterialFilter] = useState<string>("todos");
   const [rendaFilter, setRendaFilter] = useState<string>("todos");
@@ -363,7 +364,10 @@ function AdminDashboard() {
             primaryHref={null}
             primaryLabel="ACESSAR"
             onPrimaryClick={() => {
-              document.getElementById("catadores-tabela")?.scrollIntoView({ behavior: "smooth" });
+              setShowCatadoresTable(true);
+              setTimeout(() => {
+                document.getElementById("catadores-tabela")?.scrollIntoView({ behavior: "smooth" });
+              }, 50);
             }}
             stats={[
               { icon: Users, label: "Total", value: stats.total, tone: "primary" },
@@ -412,8 +416,9 @@ function AdminDashboard() {
         </>
       )}
 
-      {!isAdminLike && (
+      {(!isAdminLike || showCatadoresTable) && (
       <div id="catadores-tabela" className="scroll-mt-20">
+
       {/* Filters */}
       <div className="bg-card rounded-xl border border-border p-4 mb-4 flex flex-wrap items-center gap-3 shadow-card">
 
