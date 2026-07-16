@@ -356,14 +356,31 @@ function AssociationsPage() {
                           </DropdownMenuItem>
                         )}
                         {isViewer && (
-                          <DropdownMenuItem asChild>
-                            <Link
-                              to="/admin/associacoes/$id/diagnostico/novo"
-                              params={{ id: item.id }}
-                            >
-                              <ClipboardPlus className="size-4 mr-2" /> Abrir formulário
-                            </Link>
-                          </DropdownMenuItem>
+                          (() => {
+                            const requiresSocial = areaForForm !== "social";
+                            const hasSocial = latestByAssoc.has(item.id);
+                            const blocked = requiresSocial && !hasSocial;
+                            if (blocked) {
+                              return (
+                                <DropdownMenuItem
+                                  disabled
+                                  onSelect={(e) => e.preventDefault()}
+                                >
+                                  <Lock className="size-4 mr-2" /> Aguardando cadastro Social
+                                </DropdownMenuItem>
+                              );
+                            }
+                            return (
+                              <DropdownMenuItem asChild>
+                                <Link
+                                  to="/admin/associacoes/$id/diagnostico/novo"
+                                  params={{ id: item.id }}
+                                >
+                                  <ClipboardPlus className="size-4 mr-2" /> Abrir formulário
+                                </Link>
+                              </DropdownMenuItem>
+                            );
+                          })()
                         )}
                       </DropdownMenuContent>
                     </DropdownMenu>
