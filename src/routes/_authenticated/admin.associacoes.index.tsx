@@ -356,6 +356,7 @@ function AssociationsPage() {
         id="entidades-table"
         className="rounded-xl border border-border bg-card shadow-card overflow-hidden"
       >
+        <div className="overflow-x-auto">
         <Table>
           <TableHeader>
             <TableRow>
@@ -469,6 +470,7 @@ function AssociationsPage() {
             })}
           </TableBody>
         </Table>
+        </div>
       </div>
     </AdminShell>
   );

@@ -485,6 +485,7 @@ function AdminDashboard() {
 
       {/* Table */}
       <div className="bg-card rounded-xl border border-border shadow-card overflow-hidden">
+        <div className="overflow-x-auto">
         <Table>
           <TableHeader>
             <TableRow>
@@ -638,6 +639,7 @@ function AdminDashboard() {
             ))}
           </TableBody>
         </Table>
+        </div>
       </div>
       </div>
       )}
