@@ -171,26 +171,29 @@ function AssociationsPage() {
     infraestrutura: "INFRAESTRUTURA",
   };
 
+  const isAdminLike = isAdmin || isCoordenador;
   const profileSuffix = isAdmin
     ? "ADMINISTRADOR"
-    : isViewer
-      ? (areaSuffix[areaForForm] ?? "SOCIAL")
-      : "RECENSEADOR";
+    : isCoordenador
+      ? "COORDENADOR"
+      : isConsultant
+        ? (areaSuffix[areaForForm] ?? "SOCIAL")
+        : "RECENSEADOR";
 
-  const pageTitle = isAdmin ? "Entidades" : `ASSOC./COOP./COLETIVOS – ${profileSuffix}`;
+  const pageTitle = isAdminLike ? "Entidades" : `ASSOC./COOP./COLETIVOS – ${profileSuffix}`;
 
   return (
     <AdminShell>
       <div className="mb-6 grid gap-4 lg:grid-cols-[1fr_auto] lg:items-start">
         <div>
-          {!isAdmin && (
+          {!isAdminLike && (
             <p className="text-xs font-semibold uppercase tracking-[0.16em] text-primary">
               {profileSuffix}
             </p>
           )}
           <h1 className="mt-1 text-3xl font-bold tracking-tight">{pageTitle}</h1>
           <p className="mt-1 text-muted-foreground">
-            {isAdmin
+            {isAdminLike
               ? "Base oficial de entidades vinculadas ao PROCATE."
               : "Selecione uma entidade ou Coletivo para iniciar o cadastro assistido em campo."}
           </p>
@@ -205,6 +208,13 @@ function AssociationsPage() {
                 <Plus className="size-4" /> Nova entidade
               </Button>
             </Link>
+          </div>
+        )}
+        {isCoordenador && (
+          <div className="flex flex-wrap gap-2">
+            <Button variant="outline" size="lg" onClick={exportAssociations}>
+              <Download className="size-4" /> Exportar planilha
+            </Button>
           </div>
         )}
       </div>
@@ -222,7 +232,7 @@ function AssociationsPage() {
         <Badge variant="secondary">{filtered.length} entidades</Badge>
       </div>
 
-      {isAdmin && (
+      {isAdminLike && (
         <section className="mb-6 rounded-xl border border-primary/30 bg-primary/5 p-5 shadow-card">
           <div className="mb-4">
             <p className="text-xs font-bold uppercase tracking-[0.16em] text-primary">
