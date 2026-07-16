@@ -158,7 +158,6 @@ function EditarUsuarioPage() {
                   </SelectTrigger>
                   <SelectContent>
                     <SelectItem value="recenseador">Recenseador</SelectItem>
-                    <SelectItem value="coordenador_recenseador">Coordenador Recenseador</SelectItem>
                     <SelectItem value="consultor">Consultor</SelectItem>
                     <SelectItem value="coordenador">Coordenador</SelectItem>
                     <SelectItem value="admin">Administrador</SelectItem>
@@ -180,6 +179,9 @@ function EditarUsuarioPage() {
                       <SelectItem value="juridico">Jurídico</SelectItem>
                       <SelectItem value="contabil">Contábil</SelectItem>
                       <SelectItem value="infraestrutura">Infraestrutura</SelectItem>
+                      {form.role === "coordenador" && (
+                        <SelectItem value="recenseador">Recenseador</SelectItem>
+                      )}
                     </SelectContent>
                   </Select>
                 </div>
