@@ -423,7 +423,7 @@ function NewAssessment() {
           Selecione o tipo de cadastro e preencha o formulário correspondente ao documento de campo.
         </p>
         <form onSubmit={submit} className="mt-7">
-          <div className="mb-6 grid gap-4 rounded-xl border border-border bg-card p-5 shadow-card md:grid-cols-3">
+          <div className="mb-6 grid gap-4 rounded-xl border border-border bg-card p-5 shadow-card md:grid-cols-4">
             <Field label="Nome do consultor">
               <Input
                 name="consultant_name"
@@ -437,6 +437,32 @@ function NewAssessment() {
             </Field>
             <Field label="Horário da visita">
               <Input name="horario_visita" type="time" required defaultValue={defaultTime} />
+            </Field>
+            <Field label="Escolha entidade">
+              <Select
+                value={id}
+                onValueChange={(newId) => {
+                  if (newId && newId !== id) {
+                    navigate({
+                      to: "/admin/associacoes/$id/diagnostico/novo",
+                      params: { id: newId },
+                      search: { modulo },
+                    });
+                  }
+                }}
+              >
+                <SelectTrigger>
+                  <SelectValue placeholder="Selecione a entidade" />
+                </SelectTrigger>
+                <SelectContent>
+                  {(entidades ?? []).map((e) => (
+                    <SelectItem key={e.id} value={e.id}>
+                      {e.nome}
+                      {e.municipio ? ` — ${e.municipio}` : ""}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
             </Field>
           </div>
           {isInfrastructure && (
