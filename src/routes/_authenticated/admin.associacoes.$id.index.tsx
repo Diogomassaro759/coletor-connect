@@ -34,7 +34,8 @@ const STATUS_LABEL = {
 function AssociationDetails() {
   const { id } = Route.useParams();
   const { isAdmin, isConsultant, isCoordenador, isRecenseador, area } = Route.useRouteContext() as any;
-  const isAdminLike = isAdmin || isCoordenador;
+  const isAdminLike = isAdmin || isCoordenador; // for edit/documents buttons
+  const showAllModules = isAdmin; // only Admin sees 4 cards
   const { data: association, isLoading } = useQuery({
     queryKey: ["association", id],
     queryFn: async () => {
