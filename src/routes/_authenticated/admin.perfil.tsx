@@ -236,16 +236,6 @@ function PerfilPage() {
                     }
                   />
                 </div>
-                <div>
-                  <Label>Identificação profissional</Label>
-                  <Input
-                    value={form.identificacao_profissional}
-                    onChange={(e) =>
-                      setForm((f) => ({ ...f, identificacao_profissional: e.target.value }))
-                    }
-                    placeholder="CRESS, OAB, registro etc."
-                  />
-                </div>
               </div>
               <div className="flex justify-end">
                 <Button type="submit" disabled={saveProfile.isPending}>
