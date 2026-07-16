@@ -1,4 +1,4 @@
-import { createFileRoute, Link, redirect, useNavigate } from "@tanstack/react-router";
+import { createFileRoute, Link, redirect } from "@tanstack/react-router";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useState, useMemo } from "react";
 import { supabase } from "@/integrations/supabase/client";
@@ -97,7 +97,6 @@ type Catador = {
 function AdminDashboard() {
   const qc = useQueryClient();
   const { isAdmin, isRecenseador, isCoordenador, isCoordenadorRecenseador, user } = Route.useRouteContext() as any;
-  const navigate = useNavigate();
   const isAdminLike = isAdmin || isCoordenador;
   const [showCatadoresScreen, setShowCatadoresScreen] = useState(false);
   const isCatadoresScreen = !isAdminLike || showCatadoresScreen;
@@ -368,10 +367,7 @@ function AdminDashboard() {
             description="Gerencie cadastros, filtre e exporte dados."
             primaryHref={null}
             primaryLabel="ACESSAR"
-            onPrimaryClick={() => {
-              setShowCatadoresScreen(true);
-              navigate({ to: "/admin", search: { view: "catadores" } });
-            }}
+            onPrimaryClick={() => setShowCatadoresScreen(true)}
             stats={[
               { icon: Users, label: "Total", value: stats.total, tone: "primary" },
               { icon: UserCheck, label: "Ativos", value: stats.ativos, tone: "success" },
