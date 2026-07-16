@@ -422,9 +422,13 @@ function AdminDashboard() {
               <TableRow>
                 <TableCell colSpan={6} className="text-center py-16">
                   <p className="text-muted-foreground">Nenhum catador encontrado.</p>
-                  <Link to="/admin/associacoes" className="inline-block mt-4">
-                    <Button size="sm">Escolher entidade</Button>
-                  </Link>
+                  {isRecenseador && (
+                    <Link to="/admin/novo" className="inline-block mt-4">
+                      <Button size="sm">
+                        <Plus className="size-4" /> Novo catador
+                      </Button>
+                    </Link>
+                  )}
                 </TableCell>
               </TableRow>
             )}
