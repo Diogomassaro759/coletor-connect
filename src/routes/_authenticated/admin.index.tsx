@@ -96,6 +96,7 @@ function AdminDashboard() {
   const { isAdmin, isRecenseador, isCoordenador, isCoordenadorRecenseador, user } = Route.useRouteContext() as any;
   const isAdminLike = isAdmin || isCoordenador;
   const [search, setSearch] = useState("");
+  const [showCatadoresTable, setShowCatadoresTable] = useState(false);
   const [statusFilter, setStatusFilter] = useState<string>("todos");
   const [materialFilter, setMaterialFilter] = useState<string>("todos");
   const [rendaFilter, setRendaFilter] = useState<string>("todos");
