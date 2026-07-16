@@ -69,6 +69,8 @@ function AssociationsPage() {
   const [search, setSearch] = useState("");
   const [selectedEntity, setSelectedEntity] = useState<string>("");
   const [pendingModulo, setPendingModulo] = useState<"social" | "juridico" | "contabil" | "infraestrutura" | null>(null);
+  const [tipoFilter, setTipoFilter] = useState<"todas" | "cooperativa" | "associacao" | "coletivo">("todas");
+  const [municipioFilter, setMunicipioFilter] = useState<string>("todos");
   const navigate = useNavigate();
 
   const { data: associations = [], isLoading } = useQuery({
@@ -101,15 +103,31 @@ function AssociationsPage() {
     return map;
   }, [latestAssessments]);
 
+  const municipios = useMemo(() => {
+    const set = new Set<string>();
+    for (const a of associations as any[]) if (a.municipio) set.add(a.municipio);
+    return Array.from(set).sort((a, b) => a.localeCompare(b, "pt-BR"));
+  }, [associations]);
+
+  const tipoMatches = (item: any, f: string) => {
+    if (f === "todas") return true;
+    if (f === "cooperativa") return item.tipo === "cooperativa";
+    if (f === "associacao") return item.tipo === "associacao" || item.tipo === "formal";
+    if (f === "coletivo") return item.tipo === "coletivo" || item.tipo === "informal";
+    return true;
+  };
+
   const filtered = useMemo(() => {
     const term = search.trim().toLocaleLowerCase("pt-BR");
-    if (!term) return associations;
-    return associations.filter((item) =>
-      `${item.nome} ${item.municipio} ${item.cnpj ?? ""}`
+    return (associations as any[]).filter((item) => {
+      if (!tipoMatches(item, tipoFilter)) return false;
+      if (municipioFilter !== "todos" && item.municipio !== municipioFilter) return false;
+      if (!term) return true;
+      return `${item.nome} ${item.municipio} ${item.cnpj ?? ""}`
         .toLocaleLowerCase("pt-BR")
-        .includes(term),
-    );
-  }, [associations, search]);
+        .includes(term);
+    });
+  }, [associations, search, tipoFilter, municipioFilter]);
 
   async function exportAssociations() {
     if (!filtered.length) return toast.info("Nenhuma entidade para exportar.");
