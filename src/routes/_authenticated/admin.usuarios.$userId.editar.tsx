@@ -55,7 +55,7 @@ function EditarUsuarioPage() {
     email: "",
     municipio_referencia: "",
     identificacao_profissional: "",
-    role: "recenseador" as "recenseador" | "consultor" | "coordenador" | "admin",
+    role: "recenseador" as "recenseador" | "consultor" | "coordenador" | "coordenador_recenseador" | "admin",
     area: "" as "" | "social" | "juridico" | "contabil" | "infraestrutura",
   });
 
