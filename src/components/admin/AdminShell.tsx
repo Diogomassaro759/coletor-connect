@@ -67,8 +67,8 @@ export function AdminShell({ children }: { children: React.ReactNode }) {
                   : isCoordenadorRecenseador
                     ? "Coordenador Recenseador"
                     : isCoordenador
-                      ? `Coordenador${area ? ` — ${AREA_LABEL[area]}` : ""}`
-                      : `Assoc./Coop./Coletivos${area ? ` — ${AREA_LABEL[area]}` : ""}`}
+                      ? "Coordenador"
+                      : "Consultor"}
             </span>
           </Link>
           <nav className="flex items-center gap-1">
