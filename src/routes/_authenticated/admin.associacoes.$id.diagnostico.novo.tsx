@@ -850,7 +850,14 @@ function NewAssessment() {
                 <p className="mt-5 text-muted-foreground">Carregando dados da entidade...</p>
               ) : (
                 <div className="mt-5 space-y-5">
-                  <LegalFields association={association} choice={choice} setChoice={setChoice} />
+                  <LegalFields
+                    association={association}
+                    choice={choice}
+                    setChoice={setChoice}
+                    entidades={entidades ?? []}
+                    entityId={id}
+                    onEntityChange={onEntityChange}
+                  />
                   <div className="space-y-4 rounded-xl border border-border bg-card p-5">
                     <label className="flex items-start gap-3 text-sm">
                       <Checkbox name="consentimento_dados" required />
