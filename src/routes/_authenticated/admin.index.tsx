@@ -416,7 +416,7 @@ function AdminDashboard() {
         </>
       )}
 
-      {(!isAdminLike || (isAdmin && showCatadoresTable)) && (
+      {(!isAdminLike || showCatadoresTable) && (
       <div id="catadores-tabela" className="scroll-mt-20">
 
       {/* Filters */}
