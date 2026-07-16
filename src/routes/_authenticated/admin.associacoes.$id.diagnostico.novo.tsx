@@ -90,6 +90,15 @@ function NewAssessment() {
       return data ?? [];
     },
   });
+  const onEntityChange = (newId: string) => {
+    if (newId && newId !== id) {
+      navigate({
+        to: "/admin/associacoes/$id/diagnostico/novo",
+        params: { id: newId },
+        search: { modulo },
+      });
+    }
+  };
   const moduleMeta: Record<typeof activeModule, { title: string; description: string }> = {
     social: {
       title: "Cadastro Social",
