@@ -281,58 +281,6 @@ function AssociationsPage() {
         </section>
       )}
 
-      {isViewer && (() => {
-        const requiresSocial = areaForForm !== "social";
-        const selected = associations.find((a: any) => a.id === selectedEntity);
-        const hasSocial = selected ? latestByAssoc.has(selected.id) : false;
-        const blocked = requiresSocial && !!selected && !hasSocial;
-        return (
-          <section className="mb-4 rounded-xl border border-primary/30 bg-primary/5 p-5 shadow-card">
-            <div className="flex flex-wrap items-end justify-between gap-4">
-              <div className="flex-1 min-w-[260px]">
-                <p className="text-xs font-semibold uppercase tracking-wide text-primary">
-                  Formulário de campo
-                </p>
-                <p className="mt-1 text-lg font-semibold text-foreground">
-                  {moduloLabel[areaForForm] ?? "Cadastro"}
-                </p>
-                <div className="mt-3 max-w-md">
-                  <Select value={selectedEntity} onValueChange={setSelectedEntity}>
-                    <SelectTrigger>
-                      <SelectValue placeholder="Escolha entidade" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {associations.map((a: any) => (
-                        <SelectItem key={a.id} value={a.id}>
-                          {a.nome} — {a.municipio}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </div>
-                {blocked && (
-                  <p className="mt-2 flex items-center gap-1 text-xs text-destructive">
-                    <Lock className="size-3" /> Aguardando cadastro Social desta entidade.
-                  </p>
-                )}
-              </div>
-              <Button
-                size="lg"
-                disabled={!selected || blocked}
-                onClick={() => {
-                  if (!selected) return;
-                  navigate({
-                    to: "/admin/associacoes/$id/diagnostico/novo",
-                    params: { id: selected.id },
-                  });
-                }}
-              >
-                <ClipboardPlus className="size-4 mr-1" /> Abrir formulário
-              </Button>
-            </div>
-          </section>
-        );
-      })()}
 
       <div
         id="entidades-table"
