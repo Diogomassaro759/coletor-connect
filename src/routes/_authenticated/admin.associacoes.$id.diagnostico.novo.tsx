@@ -1366,13 +1366,59 @@ type SocialAssociation = {
   tipo?: string | null;
   ativa?: boolean | null;
 };
+type EntityOption = { id: string; nome: string; municipio?: string | null };
+
 type SocialFieldsProps = {
   association?: SocialAssociation;
   materials: string[];
   setMaterials: React.Dispatch<React.SetStateAction<string[]>>;
   choice: (name: string, fallback?: string) => string;
   setChoice: (name: string, value: string) => void;
+  entidades?: EntityOption[];
+  entityId?: string;
+  onEntityChange?: (id: string) => void;
 };
+
+function EntitySelectField({
+  name,
+  entidades,
+  entityId,
+  onEntityChange,
+  fallbackName,
+}: {
+  name: string;
+  entidades?: EntityOption[];
+  entityId?: string;
+  onEntityChange?: (id: string) => void;
+  fallbackName?: string;
+}) {
+  const currentName =
+    entidades?.find((e) => e.id === entityId)?.nome ?? fallbackName ?? "";
+  return (
+    <>
+      <input type="hidden" name={name} value={currentName} />
+      <Select
+        value={entityId}
+        onValueChange={(newId) => {
+          if (newId && newId !== entityId) onEntityChange?.(newId);
+        }}
+      >
+        <SelectTrigger>
+          <SelectValue placeholder="Selecione a entidade" />
+        </SelectTrigger>
+        <SelectContent>
+          {(entidades ?? []).map((e) => (
+            <SelectItem key={e.id} value={e.id}>
+              {e.nome}
+              {e.municipio ? ` — ${e.municipio}` : ""}
+            </SelectItem>
+          ))}
+        </SelectContent>
+      </Select>
+    </>
+  );
+}
+
 
 function LegalFields({
   association,
