@@ -168,7 +168,7 @@ function AssociationsPage() {
       ? (areaSuffix[areaForForm] ?? "SOCIAL")
       : "RECENSEADOR";
 
-  const pageTitle = `ASSOC./COOP./COLETIVOS – ${profileSuffix}`;
+  const pageTitle = isAdmin ? "Entidades" : `ASSOC./COOP./COLETIVOS – ${profileSuffix}`;
 
   return (
     <AdminShell>
