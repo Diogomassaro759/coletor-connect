@@ -46,9 +46,8 @@ function NovoUsuarioPage() {
     email: "",
     password: genPassword(),
     role: "recenseador" as "recenseador" | "consultor" | "coordenador" | "coordenador_recenseador" | "admin",
-    area: "" as "" | "social" | "juridico" | "contabil" | "infraestrutura",
+    area: "" as "" | "social" | "juridico" | "contabil" | "infraestrutura" | "recenseador",
     municipio_referencia: "",
-    identificacao_profissional: "",
   }));
 
   // Guarda a senha e email exatos que foram efetivamente enviados/salvos.
@@ -59,16 +58,17 @@ function NovoUsuarioPage() {
 
   const mut = useMutation({
     mutationFn: async () => {
-      // Snapshot no exato momento do envio.
+      // Perfil=Coordenador + Tipo=Recenseador → papel coordenador_recenseador (sem área).
+      const isCoordRec = form.role === "coordenador" && form.area === "recenseador";
       const snapshot = {
         ...form,
         cpf: form.cpf.replace(/\D/g, ""),
         birth_date: form.birth_date || null,
-        area: form.area || null,
+        role: isCoordRec ? "coordenador_recenseador" : form.role,
+        area: isCoordRec ? null : (form.area || null),
         municipio_referencia: form.municipio_referencia || null,
-        identificacao_profissional: form.identificacao_profissional || null,
       };
-      const res = await create({ data: snapshot });
+      const res = await create({ data: snapshot as any });
       return { res, sent: snapshot };
     },
     onSuccess: ({ sent }) => {
@@ -216,7 +216,6 @@ function NovoUsuarioPage() {
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="recenseador">Recenseador</SelectItem>
-                  <SelectItem value="coordenador_recenseador">Coordenador Recenseador</SelectItem>
                   <SelectItem value="consultor">Consultor</SelectItem>
                   <SelectItem value="coordenador">Coordenador</SelectItem>
                   <SelectItem value="admin">Administrador</SelectItem>
@@ -238,12 +237,17 @@ function NovoUsuarioPage() {
                     <SelectItem value="juridico">Jurídico</SelectItem>
                     <SelectItem value="contabil">Contábil</SelectItem>
                     <SelectItem value="infraestrutura">Infraestrutura</SelectItem>
+                    {form.role === "coordenador" && (
+                      <SelectItem value="recenseador">Recenseador</SelectItem>
+                    )}
                   </SelectContent>
                 </Select>
                 <p className="text-xs text-muted-foreground mt-1">
                   {form.role === "consultor"
                     ? "O consultor verá apenas o formulário do tipo selecionado."
-                    : "O coordenador verá todos os cadastros dos consultores do mesmo tipo."}
+                    : form.area === "recenseador"
+                      ? "O coordenador poderá editar cadastros de qualquer catador (não exclui)."
+                      : "O coordenador verá todos os cadastros dos consultores do mesmo tipo."}
                 </p>
               </div>
             )}
@@ -252,14 +256,6 @@ function NovoUsuarioPage() {
               <Input
                 value={form.municipio_referencia}
                 onChange={(e) => set("municipio_referencia", e.target.value)}
-              />
-            </div>
-            <div>
-              <Label>Identificação profissional</Label>
-              <Input
-                value={form.identificacao_profissional}
-                onChange={(e) => set("identificacao_profissional", e.target.value)}
-                placeholder="CRESS, OAB, registro etc."
               />
             </div>
             <div className="md:col-span-2">

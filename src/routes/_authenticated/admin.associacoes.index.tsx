@@ -1,6 +1,6 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
-import { Building2, ClipboardPlus, Download, Eye, Pencil, Plus, Search } from "lucide-react";
+import { Building2, ClipboardPlus, Download, Eye, Lock, Pencil, Plus, Search } from "lucide-react";
 import { useMemo, useState } from "react";
 import { toast } from "sonner";
 import { AdminShell } from "@/components/admin/AdminShell";
@@ -21,6 +21,13 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { supabase } from "@/integrations/supabase/client";
 
 export const Route = createFileRoute("/_authenticated/admin/associacoes/")({
@@ -52,6 +59,8 @@ function AssociationsPage() {
   const { isAdmin, isConsultant, isCoordenador, area } = Route.useRouteContext() as any;
   const isViewer = isConsultant || isCoordenador;
   const [search, setSearch] = useState("");
+  const [selectedEntity, setSelectedEntity] = useState<string>("");
+  const navigate = useNavigate();
 
   const { data: associations = [], isLoading } = useQuery({
     queryKey: ["associations"],
@@ -211,34 +220,58 @@ function AssociationsPage() {
         <Badge variant="secondary">{filtered.length} entidades</Badge>
       </div>
 
-      {isViewer && (
-        <section className="mb-4 rounded-xl border border-primary/30 bg-primary/5 p-5 shadow-card">
-          <div className="flex flex-wrap items-center justify-between gap-4">
-            <div>
-              <p className="text-xs font-semibold uppercase tracking-wide text-primary">
-                Formulário de campo
-              </p>
-              <p className="mt-1 text-lg font-semibold text-foreground">
-                {moduloLabel[areaForForm] ?? "Cadastro"}
-              </p>
-              <p className="mt-1 text-sm text-muted-foreground">
-                Selecione uma entidade na lista abaixo para abrir o formulário da sua área.
-              </p>
+      {isViewer && (() => {
+        const requiresSocial = areaForForm !== "social";
+        const selected = associations.find((a: any) => a.id === selectedEntity);
+        const hasSocial = selected ? latestByAssoc.has(selected.id) : false;
+        const blocked = requiresSocial && !!selected && !hasSocial;
+        return (
+          <section className="mb-4 rounded-xl border border-primary/30 bg-primary/5 p-5 shadow-card">
+            <div className="flex flex-wrap items-end justify-between gap-4">
+              <div className="flex-1 min-w-[260px]">
+                <p className="text-xs font-semibold uppercase tracking-wide text-primary">
+                  Formulário de campo
+                </p>
+                <p className="mt-1 text-lg font-semibold text-foreground">
+                  {moduloLabel[areaForForm] ?? "Cadastro"}
+                </p>
+                <div className="mt-3 max-w-md">
+                  <Select value={selectedEntity} onValueChange={setSelectedEntity}>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Escolha entidade" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {associations.map((a: any) => (
+                        <SelectItem key={a.id} value={a.id}>
+                          {a.nome} — {a.municipio}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+                {blocked && (
+                  <p className="mt-2 flex items-center gap-1 text-xs text-destructive">
+                    <Lock className="size-3" /> Aguardando cadastro Social desta entidade.
+                  </p>
+                )}
+              </div>
+              <Button
+                size="lg"
+                disabled={!selected || blocked}
+                onClick={() => {
+                  if (!selected) return;
+                  navigate({
+                    to: "/admin/associacoes/$id/diagnostico/novo",
+                    params: { id: selected.id },
+                  });
+                }}
+              >
+                <ClipboardPlus className="size-4 mr-1" /> Abrir formulário
+              </Button>
             </div>
-            <Button
-              size="lg"
-              onClick={() => {
-                document
-                  .getElementById("entidades-table")
-                  ?.scrollIntoView({ behavior: "smooth", block: "start" });
-                toast.info("Selecione uma entidade na lista para abrir o formulário.");
-              }}
-            >
-              <ClipboardPlus className="size-4 mr-1" /> Abrir formulário
-            </Button>
-          </div>
-        </section>
-      )}
+          </section>
+        );
+      })()}
 
       <div
         id="entidades-table"
@@ -323,14 +356,31 @@ function AssociationsPage() {
                           </DropdownMenuItem>
                         )}
                         {isViewer && (
-                          <DropdownMenuItem asChild>
-                            <Link
-                              to="/admin/associacoes/$id/diagnostico/novo"
-                              params={{ id: item.id }}
-                            >
-                              <ClipboardPlus className="size-4 mr-2" /> Abrir formulário
-                            </Link>
-                          </DropdownMenuItem>
+                          (() => {
+                            const requiresSocial = areaForForm !== "social";
+                            const hasSocial = latestByAssoc.has(item.id);
+                            const blocked = requiresSocial && !hasSocial;
+                            if (blocked) {
+                              return (
+                                <DropdownMenuItem
+                                  disabled
+                                  onSelect={(e) => e.preventDefault()}
+                                >
+                                  <Lock className="size-4 mr-2" /> Aguardando cadastro Social
+                                </DropdownMenuItem>
+                              );
+                            }
+                            return (
+                              <DropdownMenuItem asChild>
+                                <Link
+                                  to="/admin/associacoes/$id/diagnostico/novo"
+                                  params={{ id: item.id }}
+                                >
+                                  <ClipboardPlus className="size-4 mr-2" /> Abrir formulário
+                                </Link>
+                              </DropdownMenuItem>
+                            );
+                          })()
                         )}
                       </DropdownMenuContent>
                     </DropdownMenu>
