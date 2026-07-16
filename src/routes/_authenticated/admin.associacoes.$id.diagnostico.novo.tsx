@@ -1702,14 +1702,24 @@ function AccountingFields({
   association,
   choice,
   setChoice,
-}: Pick<SocialFieldsProps, "association" | "choice" | "setChoice">) {
+  entidades,
+  entityId,
+  onEntityChange,
+}: Pick<SocialFieldsProps, "association" | "choice" | "setChoice" | "entidades" | "entityId" | "onEntityChange">) {
   return (
     <>
       <AccountingSection number="1" title="Identificação inicial da associação/cooperativa">
         <Grid>
-          <Field label="Nome completo da associação/cooperativa">
-            <Input name="accounting_association_nome" defaultValue={association?.nome} required />
+          <Field label="Escolha entidade">
+            <EntitySelectField
+              name="accounting_association_nome"
+              entidades={entidades}
+              entityId={entityId}
+              onEntityChange={onEntityChange}
+              fallbackName={association?.nome}
+            />
           </Field>
+
           <Field label="CNPJ (se tiver)">
             <Input name="accounting_association_cnpj" defaultValue={association?.cnpj ?? ""} />
           </Field>
