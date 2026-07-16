@@ -181,15 +181,6 @@ function EditarUsuarioPage() {
                   }
                 />
               </div>
-              <div className="md:col-span-2">
-                <Label>Identificação profissional</Label>
-                <Input
-                  value={form.identificacao_profissional}
-                  onChange={(e) =>
-                    setForm((f) => ({ ...f, identificacao_profissional: e.target.value }))
-                  }
-                />
-              </div>
             </div>
             <div className="flex justify-end gap-2 pt-4">
               <Button type="button" variant="outline" onClick={() => navigate({ to: "/admin/usuarios" })}>
