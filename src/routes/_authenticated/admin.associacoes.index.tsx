@@ -68,6 +68,7 @@ function AssociationsPage() {
   const isViewer = isConsultant || isCoordenador;
   const [search, setSearch] = useState("");
   const [selectedEntity, setSelectedEntity] = useState<string>("");
+  const [pendingModulo, setPendingModulo] = useState<"social" | "juridico" | "contabil" | "infraestrutura" | null>(null);
   const navigate = useNavigate();
 
   const { data: associations = [], isLoading } = useQuery({
