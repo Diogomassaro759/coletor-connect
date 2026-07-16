@@ -19,8 +19,9 @@ import { listOperationalUsers, deleteOperationalUser } from "@/lib/users.functio
 
 export const Route = createFileRoute("/_authenticated/admin/usuarios/")({
   beforeLoad: ({ context }) => {
-    if (!context.isAdmin) throw redirect({ to: "/admin" });
+    if (!context.isAdmin && !context.isCoordenador) throw redirect({ to: "/admin" });
   },
+
   component: UsuariosPage,
 });
 

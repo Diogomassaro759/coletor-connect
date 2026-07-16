@@ -50,7 +50,7 @@ export function AdminShell({ children }: { children: React.ReactNode }) {
       <header className="bg-card/95 backdrop-blur border-b border-border sticky top-0 z-30">
         <div className="container mx-auto flex h-16 items-center justify-between px-4">
           <Link
-            to={isAdmin || isRecenseador || isCoordenadorRecenseador ? "/admin" : "/admin/associacoes"}
+            to={isAdmin || isCoordenador || isRecenseador || isCoordenadorRecenseador ? "/admin" : "/admin/associacoes"}
             className="flex items-center gap-2"
             aria-label="PROCATE — Painel"
           >
@@ -72,7 +72,7 @@ export function AdminShell({ children }: { children: React.ReactNode }) {
             </span>
           </Link>
           <nav className="flex items-center gap-1">
-            {isAdmin && (
+            {(isAdmin || isCoordenador) && (
               <Link to="/admin">
                 <Button variant="ghost" size="sm">
                   <LayoutDashboard className="size-4" />{" "}
@@ -83,18 +83,18 @@ export function AdminShell({ children }: { children: React.ReactNode }) {
             {(isAdmin || isViewer) && (
               <Link to="/admin/associacoes">
                 <Button variant="ghost" size="sm">
-                  {isAdmin ? (
+                  {isAdmin || isCoordenador ? (
                     <Building2 className="size-4" />
                   ) : (
                     <ClipboardPenLine className="size-4" />
                   )}{" "}
                   <span className="hidden md:inline">
-                    {isAdmin ? "Entidades" : "Cadastros de campo"}
+                    {isAdmin || isCoordenador ? "Entidades" : "Cadastros de campo"}
                   </span>
                 </Button>
               </Link>
             )}
-            {isAdmin && (
+            {(isAdmin || isCoordenador) && (
               <Link to="/admin/diagnosticos">
                 <Button variant="ghost" size="sm">
                   <BarChart3 className="size-4" />{" "}
@@ -102,7 +102,7 @@ export function AdminShell({ children }: { children: React.ReactNode }) {
                 </Button>
               </Link>
             )}
-            {isAdmin && (
+            {(isAdmin || isCoordenador) && (
               <Link to="/admin/usuarios">
                 <Button variant="ghost" size="sm">
                   <UserCog className="size-4" />{" "}
@@ -125,6 +125,7 @@ export function AdminShell({ children }: { children: React.ReactNode }) {
                 </Button>
               </Link>
             )}
+
             <Link to="/admin/perfil">
               <Button variant="ghost" size="sm" title="Meu perfil">
                 <UserCircle2 className="size-4" />
