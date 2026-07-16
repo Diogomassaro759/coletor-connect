@@ -52,6 +52,9 @@ import {
   Trash2,
   Filter,
   Plus,
+  Building2,
+  ArrowRight,
+  Upload,
 } from "lucide-react";
 import { toast } from "sonner";
 import {
@@ -110,7 +113,20 @@ function AdminDashboard() {
     },
   });
 
+  const { data: assocStats } = useQuery({
+    queryKey: ["assoc-stats"],
+    queryFn: async () => {
+      const { data, error } = await supabase.from("associations").select("id,ativa");
+      if (error) throw error;
+      const total = data.length;
+      const ativos = data.filter((a: any) => a.ativa).length;
+      return { total, ativos, pendentes: total - ativos };
+    },
+    enabled: isAdmin,
+  });
+
   const RENDA_THRESHOLD = RENDA_REFERENCIA; // salário mínimo de referência
+
 
   const filtered = useMemo(() => {
     if (!catadores) return [];
@@ -310,43 +326,100 @@ function AdminDashboard() {
 
   return (
     <AdminShell>
-      <div className="flex flex-wrap items-end justify-between gap-4 mb-8">
-        <div>
-          <h1 className="text-3xl font-bold tracking-tight">Catadores</h1>
-          <p className="text-muted-foreground">Gerencie cadastros, filtre e exporte dados.</p>
-        </div>
-        <div className="flex flex-wrap gap-2">
-          {isAdmin && (
-            <Button variant="outline" onClick={exportXLSX}>
-              <Download className="size-4" /> Exportar planilha
-            </Button>
-          )}
-          {isRecenseador && (
-            <Link to="/admin/novo">
-              <Button>
-                <Plus className="size-4" /> Novo catador
-              </Button>
-            </Link>
-          )}
-          {isAdmin && (
-            <Link to="/admin/importar">
-              <Button variant="outline">
-                <Download className="size-4 rotate-180" /> Importar planilha
-              </Button>
-            </Link>
-          )}
-        </div>
-      </div>
+      {isAdmin && (
+        <div className="mb-8 space-y-5">
+          <LauncherCard
+            eyebrow="Painel principal"
+            title="Entidades"
+            description="Gerencie cadastros, filtre e exporte dados."
+            primaryHref="/admin/associacoes"
+            primaryLabel="ACESSAR"
+            stats={[
+              { icon: Users, label: "Total", value: assocStats?.total ?? 0, tone: "primary" },
+              { icon: UserCheck, label: "Ativas", value: assocStats?.ativos ?? 0, tone: "success" },
+              { icon: UserCog, label: "Pendentes", value: assocStats?.pendentes ?? 0, tone: "warning" },
+            ]}
+            actions={
+              <>
+                <Link to="/admin/associacoes">
+                  <Button variant="outline" size="sm">
+                    <Download className="size-4" /> Exportar planilha
+                  </Button>
+                </Link>
+                <Link to="/admin/associacoes">
+                  <Button variant="outline" size="sm">
+                    <Upload className="size-4" /> Importar planilha
+                  </Button>
+                </Link>
+                <Link to="/admin/associacoes">
+                  <Button size="sm">
+                    <Building2 className="size-4" /> Escolher entidade
+                  </Button>
+                </Link>
+              </>
+            }
+          />
 
-      {/* Stats */}
-      <div className="grid gap-4 sm:grid-cols-3 mb-6">
-        <StatCard icon={Users} label="Total" value={stats.total} tone="primary" />
-        <StatCard icon={UserCheck} label="Ativos" value={stats.ativos} tone="success" />
-        <StatCard icon={UserCog} label="Pendentes" value={stats.pendentes} tone="warning" />
-      </div>
+          <LauncherCard
+            eyebrow="Painel principal"
+            title="Catadores"
+            description="Gerencie cadastros, filtre e exporte dados."
+            primaryHref={null}
+            primaryLabel="ACESSAR"
+            onPrimaryClick={() => {
+              document.getElementById("catadores-tabela")?.scrollIntoView({ behavior: "smooth" });
+            }}
+            stats={[
+              { icon: Users, label: "Total", value: stats.total, tone: "primary" },
+              { icon: UserCheck, label: "Ativos", value: stats.ativos, tone: "success" },
+              { icon: UserCog, label: "Pendentes", value: stats.pendentes, tone: "warning" },
+            ]}
+            actions={
+              <>
+                <Button variant="outline" size="sm" onClick={exportXLSX}>
+                  <Download className="size-4" /> Exportar planilha
+                </Button>
+                <Link to="/admin/importar">
+                  <Button variant="outline" size="sm">
+                    <Upload className="size-4" /> Importar planilha
+                  </Button>
+                </Link>
+              </>
+            }
+          />
+        </div>
+      )}
 
+      {!isAdmin && (
+        <>
+          <div className="flex flex-wrap items-end justify-between gap-4 mb-8">
+            <div>
+              <h1 className="text-3xl font-bold tracking-tight">Catadores</h1>
+              <p className="text-muted-foreground">Gerencie cadastros, filtre e exporte dados.</p>
+            </div>
+            <div className="flex flex-wrap gap-2">
+              {isRecenseador && (
+                <Link to="/admin/novo">
+                  <Button>
+                    <Plus className="size-4" /> Novo catador
+                  </Button>
+                </Link>
+              )}
+            </div>
+          </div>
+
+          <div className="grid gap-4 sm:grid-cols-3 mb-6">
+            <StatCard icon={Users} label="Total" value={stats.total} tone="primary" />
+            <StatCard icon={UserCheck} label="Ativos" value={stats.ativos} tone="success" />
+            <StatCard icon={UserCog} label="Pendentes" value={stats.pendentes} tone="warning" />
+          </div>
+        </>
+      )}
+
+      <div id="catadores-tabela" className="scroll-mt-20">
       {/* Filters */}
       <div className="bg-card rounded-xl border border-border p-4 mb-4 flex flex-wrap items-center gap-3 shadow-card">
+
         <div className="relative flex-1 min-w-[220px]">
           <Search className="size-4 absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
           <Input
@@ -553,9 +626,73 @@ function AdminDashboard() {
           </TableBody>
         </Table>
       </div>
+      </div>
     </AdminShell>
   );
 }
+
+function LauncherCard({
+  eyebrow,
+  title,
+  description,
+  primaryHref,
+  primaryLabel,
+  onPrimaryClick,
+  stats,
+  actions,
+}: {
+  eyebrow: string;
+  title: string;
+  description: string;
+  primaryHref: string | null;
+  primaryLabel: string;
+  onPrimaryClick?: () => void;
+  stats: Array<{ icon: typeof Users; label: string; value: number; tone: "primary" | "success" | "warning" }>;
+  actions?: React.ReactNode;
+}) {
+  const primary = primaryHref ? (
+    <Link to={primaryHref}>
+      <Button
+        size="lg"
+        className="bg-gradient-to-r from-[hsl(24_95%_53%)] to-[hsl(18_95%_48%)] text-white shadow-md hover:brightness-110 rounded-full px-8 font-bold tracking-wide"
+      >
+        {primaryLabel} <ArrowRight className="size-4" />
+      </Button>
+    </Link>
+  ) : (
+    <Button
+      size="lg"
+      onClick={onPrimaryClick}
+      className="bg-gradient-to-r from-[hsl(24_95%_53%)] to-[hsl(18_95%_48%)] text-white shadow-md hover:brightness-110 rounded-full px-8 font-bold tracking-wide"
+    >
+      {primaryLabel} <ArrowRight className="size-4" />
+    </Button>
+  );
+
+  return (
+    <section className="rounded-2xl border border-border bg-gradient-to-br from-muted/40 to-card p-6 shadow-card">
+      <div className="flex flex-wrap items-center justify-between gap-4">
+        <div className="min-w-0">
+          <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-primary">
+            {eyebrow}
+          </p>
+          <h2 className="mt-1 text-2xl font-bold tracking-tight">{title}</h2>
+          <p className="text-sm text-muted-foreground">{description}</p>
+        </div>
+        <div className="flex flex-wrap items-center gap-2">
+          {primary}
+          {actions}
+        </div>
+      </div>
+      <div className="mt-5 grid gap-3 sm:grid-cols-3">
+        {stats.map((s) => (
+          <StatCard key={s.label} icon={s.icon} label={s.label} value={s.value} tone={s.tone} />
+        ))}
+      </div>
+    </section>
+  );
+}
+
 
 function StatCard({
   icon: Icon,
