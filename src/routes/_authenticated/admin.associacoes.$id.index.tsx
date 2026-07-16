@@ -94,7 +94,7 @@ function AssociationDetails() {
           </p>
         </div>
         <div className="flex flex-wrap gap-2">
-          {(isAdmin || isConsultant) && (
+          {(isAdminLike || isConsultant) && (
             <>
               <Link to="/admin/associacoes/$id/documentos" params={{ id }}>
                 <Button size="lg" variant="outline">
@@ -128,7 +128,7 @@ function AssociationDetails() {
               </Button>
             </>
           )}
-          {isAdmin && (
+          {isAdminLike && (
             <Link to="/admin/associacoes/$id/editar" params={{ id }}>
               <Button size="lg" variant="outline">
                 <Pencil className="size-4" /> Editar entidade
@@ -156,7 +156,7 @@ function AssociationDetails() {
         </div>
       </div>
 
-      {(isAdmin || isConsultant) && (() => {
+      {(isAdminLike || isConsultant) && (() => {
         const modulos: Array<{
           key: "social" | "juridico" | "contabil" | "infraestrutura";
           titulo: string;
@@ -177,7 +177,7 @@ function AssociationDetails() {
                 Formulários de campo
               </p>
               <h2 className="mt-1 text-xl font-bold">
-                {isAdmin ? "Cadastros por área" : "Cadastro da sua área"}
+                {isAdminLike ? "Cadastros por área" : "Cadastro da sua área"}
               </h2>
               <p className="mt-1 text-sm text-muted-foreground">
                 {isAdmin
@@ -185,7 +185,7 @@ function AssociationDetails() {
                   : "Abre diretamente o formulário da sua área de atuação."}
               </p>
             </div>
-            <div className={`grid gap-4 ${isAdmin ? "sm:grid-cols-2 lg:grid-cols-4" : ""}`}>
+            <div className={`grid gap-4 ${isAdminLike ? "sm:grid-cols-2 lg:grid-cols-4" : ""}`}>
               {visiveis.map((m) => (
                 <div
                   key={m.key}
