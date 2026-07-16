@@ -2108,6 +2108,9 @@ function SocialFields({
   setMaterials,
   choice,
   setChoice,
+  entidades,
+  entityId,
+  onEntityChange,
 }: SocialFieldsProps) {
   return (
     <>
@@ -2117,9 +2120,16 @@ function SocialFields({
         subtitle="Preencher logo no início da entrevista"
       >
         <Grid>
-          <Field label="Nome completo da associação/cooperativa">
-            <Input name="association_nome" defaultValue={association?.nome} required />
+          <Field label="Escolha entidade">
+            <EntitySelectField
+              name="association_nome"
+              entidades={entidades}
+              entityId={entityId}
+              onEntityChange={onEntityChange}
+              fallbackName={association?.nome}
+            />
           </Field>
+
           <Field label="CNPJ (se tiver)">
             <Input name="association_cnpj" defaultValue={association?.cnpj ?? ""} />
           </Field>
