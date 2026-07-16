@@ -1,4 +1,4 @@
-import { createFileRoute, Link, redirect, useNavigate } from "@tanstack/react-router";
+import { createFileRoute, Link, redirect, useNavigate, useRouterState } from "@tanstack/react-router";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useState, useMemo } from "react";
 import { supabase } from "@/integrations/supabase/client";
@@ -98,7 +98,7 @@ function AdminDashboard() {
   const qc = useQueryClient();
   const { isAdmin, isRecenseador, isCoordenador, isCoordenadorRecenseador, user } = Route.useRouteContext() as any;
   const navigate = useNavigate();
-  const { view } = Route.useSearch();
+  const view = useRouterState({ select: (state) => (state.location.search as any).view });
   const isAdminLike = isAdmin || isCoordenador;
   const isCatadoresScreen = !isAdminLike || view === "catadores";
   const [search, setSearch] = useState("");
