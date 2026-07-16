@@ -98,7 +98,8 @@ function AdminDashboard() {
   const qc = useQueryClient();
   const { isAdmin, isRecenseador, isCoordenador, isCoordenadorRecenseador, user } = Route.useRouteContext() as any;
   const navigate = useNavigate();
-  const view = useRouterState({ select: (state) => (state.location.search as any).view });
+  const routerState = useRouterState();
+  const view = (routerState.location.search as any).view;
   const isAdminLike = isAdmin || isCoordenador;
   const isCatadoresScreen = !isAdminLike || view === "catadores";
   const [search, setSearch] = useState("");
