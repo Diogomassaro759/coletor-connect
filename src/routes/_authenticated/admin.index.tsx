@@ -351,11 +351,6 @@ function AdminDashboard() {
                     <Upload className="size-4" /> Importar planilha
                   </Button>
                 </Link>
-                <Link to="/admin/associacoes">
-                  <Button size="sm">
-                    <Building2 className="size-4" /> Escolher entidade
-                  </Button>
-                </Link>
               </>
             }
           />
