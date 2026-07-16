@@ -1,58 +1,55 @@
-# Plano — Demandas 06/07/2026
 
-## Bloco A — Consultor Social (tela de Associações)
+# Atualizações de Perfis — 16/07/2026
 
-**A1. Remover "Cadastrar" do dropdown de Ações**
-- Arquivo: `src/routes/_authenticated/admin.associacoes.index.tsx`
-- Estado atual: dropdown já tem só "Ver detalhes" e "Editar" — **verificar e confirmar** que não há resquício de "Cadastrar". Se houver, remover.
+Plano de implementação organizado por tela/perfil. Confirme antes que eu execute.
 
-**A2. Botão "Abrir formulário"**
-- Já existe hoje na coluna de ações para consultor. Vou **movê-lo para posição mais visível** (antes do dropdown, com destaque `variant="default"` em vez de `secondary`) e garantir que abre direto o formulário da área do consultor (`?modulo=social` para Consultor Social).
+## 1. Login (`src/routes/index.tsx` e `src/routes/auth.tsx`)
+- Fazer a rota `/` redirecionar direto para `/auth` (ou tornar `/auth` a home) para eliminar a tela intermediária pós-login/landing.
+- Confirmar que após login o usuário vai direto para o dashboard sem passo intermediário.
 
-**A3. Separar colunas Status e Situação**
-- Hoje estão **fundidas** em uma única coluna "Situação" (feito na demanda anterior a pedido do usuário).
-- Reverter para **duas colunas distintas**:
-  - `Situação` → resultado do diagnóstico (Regular / Parcialmente regular / Irregular / Sem diagnóstico)
-  - `Status` → Ativa / Inativa
-- Ajustar também o export Excel.
+## 2. Perfil Administrador
+- `admin.index.tsx`: remover o card/campo "IDENTIFICAÇÃO PROFISSIONAL" do dashboard.
+- Renomear labels de papéis em toda a UI (badges, seletores, listagens):
+  - "Recenseador (cadastra catadores)" → "Recenseador"
+  - "Administrador UCPI (acesso total)" → "Administrador"
+- `admin.associacoes.index.tsx`: quando `isAdmin`, título passa a ser "Entidades" (em vez de "ASSOC./COOP./COLETIVOS – ADMINISTRADOR").
+- Trocar "Exportar Excel" → "Exportar planilha" (botão e labels correlatos).
 
-**A4. Formato do formulário Social (Página 2 do PDF)**
-- Preciso da imagem/PDF da "Página 2" para reproduzir fiel. **Sem o anexo não implemento este item** — vou pedir na resposta final.
+## 3. Perfis Consultores (Social, Jurídico, Contábil, Infraestrutura)
+- Em `admin.associacoes.index.tsx`, adicionar item **"Abrir formulário"** no menu de Ações de cada linha (para consultores).
+- Ao clicar, navegar direto para o formulário da área do consultor na entidade selecionada.
+- Adicionar seletor/placeholder "Escolha entidade" no card de destaque superior; ao selecionar, habilita botão que abre o formulário da área.
+- Regras de bloqueio (server + UI):
+  - Consultor Social pode iniciar cadastro em qualquer entidade.
+  - Jurídico/Contábil/Infraestrutura: bloquear abertura do formulário se não existir `association_assessments` (Social) para a entidade. Mostrar mensagem "Aguardando cadastro Social".
 
----
+## 4. Perfil Coordenador
+- Dashboard: reaproveitar layout do Administrador (mesmas seções/estatísticas).
+- Permissões (UI + policies):
+  - Pode **editar** (não excluir) formulários da própria `area`.
+  - Não pode editar formulários de outras áreas — botão "Editar" oculto quando `area` do registro ≠ `area` do coordenador.
+  - Nenhum botão de exclusão exposto.
 
-## Bloco B — Formulário de Infraestrutura
+## 5. Perfil Recenseador
+- `admin.index.tsx` (visão recenseador): remover botão "Escolhe entidade".
+- Renomear botão "+ Cadastrar" → "+ Novo catador".
+- Adicionar botão/ícone **"Editar"** ao lado de cada catador na listagem, apontando para `admin/$id/editar`.
 
-**B1. Remover todos os valores pré-preenchidos**
-- Arquivo: `src/routes/_authenticated/admin.associacoes.$id.diagnostico.novo.tsx` (bloco Infraestrutura)
-- Auditar todos os `defaultValues` / `useState('...')` do formulário de infra e trocar por `""` / `undefined` para radios, selects e checkboxes.
-- Manter apenas os campos "cabeçalho" (Consultor, Data, Hora) pré-preenchidos — esses foram pedidos explicitamente antes.
+## 6. Novo Perfil — Coordenador Recenseador
+- Adicionar novo valor de enum `app_role`: `coordenador_recenseador`.
+- Migration: enum + função helper `is_coordenador_recenseador(_user_id)` + policies em `catadores` permitindo UPDATE (não DELETE) independentemente de `created_by`.
+- Atualizar `_authenticated/route.tsx` para reconhecer o novo papel e expor `isCoordenadorRecenseador` no contexto.
+- Formulários de criação/edição de usuário: incluir opção "Coordenador Recenseador" no seletor de tipo.
+- UI: dashboard igual ao recenseador, com edição habilitada em qualquer catador.
 
-**B2. Campo texto ao lado de "Outro"**
-- Para cada grupo (radio/checkbox) que tenha opção "Outro", renderizar um `<Input>` condicional quando "Outro" estiver selecionado, salvando o valor livre em `payload.<campo>_outro`.
-- Aplicar em todos os grupos do formulário de infra que tenham "Outro".
+## Detalhes técnicos
+- Enum: `ALTER TYPE public.app_role ADD VALUE IF NOT EXISTS 'coordenador_recenseador';` (migration isolada, pois Postgres exige commit antes do uso).
+- Policies novas para `association_assessments`, `infrastructure_assessments`, `catadores` conforme itens 4 e 6 (UPDATE via `has_area` + role check; nunca DELETE).
+- Router context: adicionar flags `isCoordenadorRecenseador` e continuar expondo `area` para gating.
+- Sem alterações em Stripe/pagamentos.
 
-**B3. Reorganizar em 3 seções visuais**
-- Reagrupar os campos existentes em:
-  1. **Identificação Inicial** (nome da entidade, CNPJ auto, consultor, data, hora)
-  2. **Acesso / Mobilidade / Serviços Públicos** (via de acesso, transporte, água, energia, esgoto, coleta, internet)
-  3. **Estrutura Física** (área, cobertura, piso, ventilação, banheiros, refeitório, EPI, etc.)
-- Usar `<Card>` + `<CardHeader>` para cada seção, mantendo o mesmo padrão visual do formulário Social/Jurídico/Contábil.
+## Fora de escopo (confirmar se quer incluir)
+- Reescrita de dashboards separados por área do coordenador (assumindo: reaproveitar o do Administrador em modo somente-leitura das áreas alheias).
+- Ajustes visuais adicionais nos formulários de campo.
 
-**B4. Conferência com o Google Forms de referência**
-- Vou abrir o link do Google Forms para conferir campos existentes vs. faltantes e adicionar os que estiverem faltando.
-
----
-
-## Ordem de execução
-
-1. Bloco A1, A2, A3 (rápido, sem dependência externa) → entregar
-2. Bloco B1, B2, B3, B4 (formulário de infra) → entregar
-3. Bloco A4 fica pendente até receber a imagem da Página 2
-
-## O que preciso de você antes de começar
-
-- **Anexo da "Página 2"** com o layout do formulário Social (para A4). Sem ele, faço só A1–A3 do Bloco A.
-- Confirmação de que posso seguir com **Bloco B inteiro** com base no Google Forms + reorganização em 3 seções.
-
-Confirma que sigo com A1–A3 + Bloco B agora, e A4 fica aguardando a imagem?
+Se aprovar, começo pela migration (enum + policies) e depois avanço nas telas.
