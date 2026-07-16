@@ -480,6 +480,9 @@ function NewAssessment() {
                 association={association}
                 choice={choice}
                 setChoice={setChoice}
+                entidades={entidades ?? []}
+                entityId={id}
+                onEntityChange={onEntityChange}
               />
               <div className="flex justify-end">
                 <Button type="submit" size="lg" disabled={saving}>
