@@ -145,10 +145,11 @@ function EditarUsuarioPage() {
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="recenseador">Recenseador (cadastra catadores)</SelectItem>
+                    <SelectItem value="recenseador">Recenseador</SelectItem>
+                    <SelectItem value="coordenador_recenseador">Coordenador Recenseador</SelectItem>
                     <SelectItem value="consultor">Consultor</SelectItem>
                     <SelectItem value="coordenador">Coordenador</SelectItem>
-                    <SelectItem value="admin">Administrador UCPI (acesso total)</SelectItem>
+                    <SelectItem value="admin">Administrador</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
