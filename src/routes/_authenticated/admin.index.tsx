@@ -1,4 +1,4 @@
-import { createFileRoute, Link, redirect, useNavigate, useRouterState } from "@tanstack/react-router";
+import { createFileRoute, Link, redirect, useNavigate } from "@tanstack/react-router";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useState, useMemo } from "react";
 import { supabase } from "@/integrations/supabase/client";
@@ -98,10 +98,9 @@ function AdminDashboard() {
   const qc = useQueryClient();
   const { isAdmin, isRecenseador, isCoordenador, isCoordenadorRecenseador, user } = Route.useRouteContext() as any;
   const navigate = useNavigate();
-  const routerState = useRouterState();
-  const view = (routerState.location.search as any).view;
   const isAdminLike = isAdmin || isCoordenador;
-  const isCatadoresScreen = !isAdminLike || view === "catadores";
+  const [showCatadoresScreen, setShowCatadoresScreen] = useState(false);
+  const isCatadoresScreen = !isAdminLike || showCatadoresScreen;
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState<string>("todos");
   const [materialFilter, setMaterialFilter] = useState<string>("todos");
@@ -334,7 +333,7 @@ function AdminDashboard() {
 
   return (
     <AdminShell>
-      {isAdminLike && view !== "catadores" && (
+      {isAdminLike && !showCatadoresScreen && (
         <div className="mb-8 space-y-5">
           <LauncherCard
             eyebrow="Painel principal"
@@ -369,7 +368,10 @@ function AdminDashboard() {
             description="Gerencie cadastros, filtre e exporte dados."
             primaryHref={null}
             primaryLabel="ACESSAR"
-            onPrimaryClick={() => navigate({ to: "/admin", search: { view: "catadores" } })}
+            onPrimaryClick={() => {
+              setShowCatadoresScreen(true);
+              navigate({ to: "/admin", search: { view: "catadores" } });
+            }}
             stats={[
               { icon: Users, label: "Total", value: stats.total, tone: "primary" },
               { icon: UserCheck, label: "Ativos", value: stats.ativos, tone: "success" },
