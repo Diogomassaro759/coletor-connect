@@ -155,48 +155,61 @@ function AssociationDetails() {
         </div>
       </div>
 
-      {isConsultant && (
-        <section className="mb-8 rounded-3xl border border-border bg-card p-6 shadow-card">
-          <div className="mb-5">
-            <p className="text-xs font-bold uppercase tracking-[0.16em] text-primary">
-              Formulário de campo
-            </p>
-            <h2 className="mt-1 text-xl font-bold">
-              {area === "juridico"
-                ? "Cadastro Jurídico"
-                : area === "contabil"
-                  ? "Cadastro Contábil"
-                  : area === "infraestrutura"
-                    ? "Cadastro de Infraestrutura"
-                    : "Cadastro Social"}
-            </h2>
-            <p className="mt-1 text-sm text-muted-foreground">
-              Abre diretamente o formulário da sua área de atuação.
-            </p>
-          </div>
-          {area === "infraestrutura" ? (
-            <Link
-              to="/admin/associacoes/$id/diagnostico/novo"
-              params={{ id }}
-              search={{ modulo: "infraestrutura" as const }}
-            >
-              <Button size="lg">
-                <ClipboardPlus className="size-4" /> Abrir formulário
-              </Button>
-            </Link>
-          ) : (
-            <Link
-              to="/admin/associacoes/$id/diagnostico/novo"
-              params={{ id }}
-              search={{ modulo: (area ?? "social") as "social" | "juridico" | "contabil" }}
-            >
-              <Button size="lg">
-                <ClipboardPlus className="size-4" /> Abrir formulário
-              </Button>
-            </Link>
-          )}
-        </section>
-      )}
+      {(isAdmin || isConsultant) && (() => {
+        const modulos: Array<{
+          key: "social" | "juridico" | "contabil" | "infraestrutura";
+          titulo: string;
+          descricao: string;
+        }> = [
+          { key: "social", titulo: "Cadastro Social", descricao: "Perfil socioeconômico e organizacional." },
+          { key: "juridico", titulo: "Cadastro Jurídico", descricao: "Documentação, estatuto e regularidade jurídica." },
+          { key: "contabil", titulo: "Cadastro Contábil", descricao: "Escrituração, tributos e obrigações fiscais." },
+          { key: "infraestrutura", titulo: "Cadastro de Infraestrutura", descricao: "Sede, equipamentos e condições operacionais." },
+        ];
+        const visiveis = isAdmin
+          ? modulos
+          : modulos.filter((m) => m.key === (area ?? "social"));
+        return (
+          <section className="mb-8">
+            <div className="mb-4">
+              <p className="text-xs font-bold uppercase tracking-[0.16em] text-primary">
+                Formulários de campo
+              </p>
+              <h2 className="mt-1 text-xl font-bold">
+                {isAdmin ? "Cadastros por área" : "Cadastro da sua área"}
+              </h2>
+              <p className="mt-1 text-sm text-muted-foreground">
+                {isAdmin
+                  ? "Abra o formulário correspondente a cada módulo do diagnóstico."
+                  : "Abre diretamente o formulário da sua área de atuação."}
+              </p>
+            </div>
+            <div className={`grid gap-4 ${isAdmin ? "sm:grid-cols-2 lg:grid-cols-4" : ""}`}>
+              {visiveis.map((m) => (
+                <div
+                  key={m.key}
+                  className="flex flex-col justify-between rounded-2xl border border-border bg-card p-5 shadow-card"
+                >
+                  <div>
+                    <h3 className="text-base font-semibold">{m.titulo}</h3>
+                    <p className="mt-1 text-xs text-muted-foreground">{m.descricao}</p>
+                  </div>
+                  <Link
+                    to="/admin/associacoes/$id/diagnostico/novo"
+                    params={{ id }}
+                    search={{ modulo: m.key }}
+                    className="mt-4"
+                  >
+                    <Button size="sm" className="w-full">
+                      <ClipboardPlus className="size-4" /> Abrir formulário
+                    </Button>
+                  </Link>
+                </div>
+              ))}
+            </div>
+          </section>
+        );
+      })()}
 
       <div className="mb-10 grid gap-4 sm:grid-cols-3">
         <Info
