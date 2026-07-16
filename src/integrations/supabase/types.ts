@@ -1139,6 +1139,7 @@ export type Database = {
         | "consultor"
         | "recenseador"
         | "coordenador"
+        | "coordenador_recenseador"
       assessment_module: "social" | "juridico" | "contabil"
       association_document_category:
         | "estatuto"
@@ -1285,6 +1286,7 @@ export const Constants = {
         "consultor",
         "recenseador",
         "coordenador",
+        "coordenador_recenseador",
       ],
       assessment_module: ["social", "juridico", "contabil"],
       association_document_category: [
