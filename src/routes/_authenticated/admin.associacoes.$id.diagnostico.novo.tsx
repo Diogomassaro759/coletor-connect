@@ -535,6 +535,9 @@ function NewAssessment() {
                     setMaterials={setMaterials}
                     choice={choice}
                     setChoice={setChoice}
+                    entidades={entidades ?? []}
+                    entityId={id}
+                    onEntityChange={onEntityChange}
                   />
                   <div className="space-y-4 rounded-xl border border-border bg-card p-5">
                     <label className="flex items-start gap-3 text-sm">
