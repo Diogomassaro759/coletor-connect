@@ -19,7 +19,7 @@ import { loadNotifications } from "@/lib/notifications";
 export function AdminShell({ children }: { children: React.ReactNode }) {
   const navigate = useNavigate();
   const qc = useQueryClient();
-  const { isAdmin, isConsultant, isCoordenador, isRecenseador, area, user } = useRouteContext({
+  const { isAdmin, isConsultant, isCoordenador, isCoordenadorRecenseador, isRecenseador, area, user } = useRouteContext({
     from: "/_authenticated",
   }) as any;
   const isViewer = isConsultant || isCoordenador;
