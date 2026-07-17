@@ -98,7 +98,11 @@ function AdminDashboard() {
   const qc = useQueryClient();
   const { isAdmin, isRecenseador, isCoordenador, isCoordenadorRecenseador, user } = Route.useRouteContext() as any;
   const isAdminLike = isAdmin || isCoordenador;
-  const [showCatadoresScreen, setShowCatadoresScreen] = useState(false);
+  const routeSearch = Route.useSearch();
+  const navigate = Route.useNavigate();
+  const showCatadoresScreen = routeSearch.view === "catadores";
+  const setShowCatadoresScreen = (v: boolean) =>
+    navigate({ to: "/admin", search: v ? { view: "catadores" as const } : {} });
   const isCatadoresScreen = !isAdminLike || showCatadoresScreen;
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState<string>("todos");
