@@ -26,6 +26,7 @@ export const Route = createFileRoute("/_authenticated/admin/usuarios/")({
 });
 
 function UsuariosPage() {
+  const { isAdmin } = Route.useRouteContext() as any;
   const list = useServerFn(listOperationalUsers);
   const remove = useServerFn(deleteOperationalUser);
   const qc = useQueryClient();
