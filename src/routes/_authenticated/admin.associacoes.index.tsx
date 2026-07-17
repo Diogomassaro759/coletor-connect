@@ -70,6 +70,7 @@ const SITUACAO_TONE: Record<string, string> = {
 
 function AssociationsPage() {
   const { isAdmin, isConsultant, isCoordenador, area, user } = Route.useRouteContext() as any;
+  const searchParams = Route.useSearch() as { abrir?: "1" };
   const currentUserId: string | undefined = user?.id;
   const isViewer = isConsultant || isCoordenador;
   const [search, setSearch] = useState("");
@@ -81,6 +82,21 @@ function AssociationsPage() {
   const [municipioFilter, setMunicipioFilter] = useState<string>("todos");
   const navigate = useNavigate();
   const listSocialAssociations = useServerFn(listAssociationsWithSocial);
+
+  useEffect(() => {
+    if (
+      searchParams.abrir === "1" &&
+      isConsultant &&
+      area &&
+      area !== "social" &&
+      !pendingModulo
+    ) {
+      setSelectedEntity("");
+      setPendingModulo(area as "juridico" | "contabil" | "infraestrutura");
+      navigate({ to: "/admin/associacoes", search: {}, replace: true });
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [searchParams.abrir, isConsultant, area]);
 
   const { data: associations = [], isLoading } = useQuery({
     queryKey: ["associations"],
