@@ -66,7 +66,8 @@ const SITUACAO_TONE: Record<string, string> = {
 };
 
 function AssociationsPage() {
-  const { isAdmin, isConsultant, isCoordenador, area } = Route.useRouteContext() as any;
+  const { isAdmin, isConsultant, isCoordenador, area, user } = Route.useRouteContext() as any;
+  const currentUserId: string | undefined = user?.id;
   const isViewer = isConsultant || isCoordenador;
   const [search, setSearch] = useState("");
   const [selectedEntity, setSelectedEntity] = useState<string>("");
@@ -618,16 +619,18 @@ function AssociationsPage() {
                               >
                                 <Eye className="size-4 mr-2" /> Visualizar
                               </DropdownMenuItem>
-                              <DropdownMenuItem
-                                onSelect={() =>
-                                  navigate({
-                                    to: "/admin/associacoes/$id/editar",
-                                    params: { id: item.id },
-                                  })
-                                }
-                              >
-                                <Pencil className="size-4 mr-2" /> Editar
-                              </DropdownMenuItem>
+                              {item.created_by === currentUserId && (
+                                <DropdownMenuItem
+                                  onSelect={() =>
+                                    navigate({
+                                      to: "/admin/associacoes/$id/editar",
+                                      params: { id: item.id },
+                                    })
+                                  }
+                                >
+                                  <Pencil className="size-4 mr-2" /> Editar
+                                </DropdownMenuItem>
+                              )}
                               {areaForForm !== "social" && (
                                 blocked ? (
                                   <DropdownMenuItem disabled onSelect={(e) => e.preventDefault()}>
