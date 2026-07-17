@@ -22,7 +22,9 @@ import { MATERIAIS_OPTIONS } from "@/lib/catador-constants";
 
 export const Route = createFileRoute("/_authenticated/admin/associacoes/$id/diagnostico/novo")({
   beforeLoad: ({ context }) => {
-    if (!context.isConsultant) throw redirect({ to: "/admin/associacoes" });
+    if (!context.isConsultant && !context.isAdmin && !context.isCoordenador) {
+      throw redirect({ to: "/admin/associacoes" });
+    }
   },
   validateSearch: (search: Record<string, unknown>) => ({
     modulo:
