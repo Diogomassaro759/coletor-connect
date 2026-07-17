@@ -30,8 +30,17 @@ export const Route = createFileRoute("/_authenticated/admin/associacoes/nova")({
 
 function NewAssociationPage() {
   const navigate = useNavigate();
+  const ctx = Route.useRouteContext() as any;
   const [saving, setSaving] = useState(false);
   const [tipo, setTipo] = useState("associacao");
+  const now = new Date();
+  const pad = (n: number) => String(n).padStart(2, "0");
+  const defaultDate = `${now.getFullYear()}-${pad(now.getMonth() + 1)}-${pad(now.getDate())}`;
+  const defaultTime = `${pad(now.getHours())}:${pad(now.getMinutes())}`;
+  const defaultConsultor =
+    (ctx?.user?.user_metadata?.full_name as string | undefined) ??
+    (ctx?.user?.email as string | undefined) ??
+    "";
 
   async function submit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
