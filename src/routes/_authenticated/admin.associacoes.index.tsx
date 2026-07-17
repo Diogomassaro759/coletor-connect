@@ -94,6 +94,17 @@ function AssociationsPage() {
     },
   });
 
+  const { data: socialAssocIds = [] } = useQuery({
+    queryKey: ["associations-with-social"],
+    queryFn: async () => {
+      const { data, error } = await supabase.rpc("associations_with_social_ids");
+      if (error) throw error;
+      return (data ?? []) as string[];
+    },
+  });
+
+  const socialSet = useMemo(() => new Set(socialAssocIds), [socialAssocIds]);
+
   const latestByAssoc = useMemo(() => {
     const map = new Map<string, { status: string | null; data_visita: string | null }>();
     for (const a of latestAssessments as any[]) {
