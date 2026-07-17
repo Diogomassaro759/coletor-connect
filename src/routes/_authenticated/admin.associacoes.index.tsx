@@ -344,12 +344,13 @@ function AssociationsPage() {
             </p>
           </div>
           <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-            {([
+            {(([
               { key: "social", titulo: "Cadastro Social", descricao: "Perfil socioeconômico e organizacional." },
               { key: "juridico", titulo: "Cadastro Jurídico", descricao: "Documentação, estatuto e regularidade jurídica." },
               { key: "contabil", titulo: "Cadastro Contábil", descricao: "Escrituração, tributos e obrigações fiscais." },
               { key: "infraestrutura", titulo: "Cadastro de Infraestrutura", descricao: "Sede, equipamentos e condições operacionais." },
-            ] as const).map((m) => (
+            ] as const).filter((m) => isAdmin || !isCoordenador || m.key === areaForForm)).map((m) => (
+
               <div
                 key={m.key}
                 className="flex flex-col justify-between rounded-2xl border border-border bg-card p-5 shadow-card"
