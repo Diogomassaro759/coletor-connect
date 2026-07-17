@@ -8,15 +8,20 @@ import { ArrowLeft } from "lucide-react";
 
 export const Route = createFileRoute("/_authenticated/admin/$id/editar")({
   beforeLoad: async ({ context, params }) => {
-    if (!context.isRecenseador) throw redirect({ to: "/admin/$id", params: { id: params.id } });
-    // Only allow editing catadores created by the current user
-    const { data } = await supabase
-      .from("catadores")
-      .select("created_by")
-      .eq("id", params.id)
-      .maybeSingle();
-    if (!data || data.created_by !== context.user.id) {
+    const ctx = context as any;
+    if (!ctx.isRecenseador && !ctx.isCoordenadorRecenseador && !ctx.isAdmin) {
       throw redirect({ to: "/admin/$id", params: { id: params.id } });
+    }
+    // Recenseador: only own catadores. Coordenador recenseador / admin: any.
+    if (ctx.isRecenseador && !ctx.isCoordenadorRecenseador && !ctx.isAdmin) {
+      const { data } = await supabase
+        .from("catadores")
+        .select("created_by")
+        .eq("id", params.id)
+        .maybeSingle();
+      if (!data || data.created_by !== ctx.user.id) {
+        throw redirect({ to: "/admin/$id", params: { id: params.id } });
+      }
     }
   },
   head: () => ({ meta: [{ title: "Editar catador — RecicladoresBR" }] }),
