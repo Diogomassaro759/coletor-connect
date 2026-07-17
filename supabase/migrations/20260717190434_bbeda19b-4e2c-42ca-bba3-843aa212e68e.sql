@@ -1,0 +1,1 @@
+UPDATE public.user_roles SET role='consultor'::app_role, area='social'::operational_area WHERE user_id='231472ff-eb36-4bff-b884-e6a5dfa165bc';
