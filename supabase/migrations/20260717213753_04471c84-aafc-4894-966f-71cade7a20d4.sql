@@ -1,0 +1,1 @@
+CREATE POLICY "Coordenadores podem ver catadores" ON public.catadores FOR SELECT TO authenticated USING (public.is_coordenador(auth.uid()));
