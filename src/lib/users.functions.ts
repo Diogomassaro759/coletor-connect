@@ -19,6 +19,18 @@ async function assertAdmin(ctx: { supabase: any; userId: string }) {
   if (!isAdmin) throw new Error("Apenas administradores podem executar esta ação.");
 }
 
+async function assertAdminOrCoordenador(ctx: { supabase: any; userId: string }) {
+  const { data, error } = await ctx.supabase
+    .from("user_roles")
+    .select("role")
+    .eq("user_id", ctx.userId);
+  if (error) throw new Error("Falha ao verificar permissões.");
+  const allowed = !!data?.some((r: { role: string }) =>
+    ["admin", "coordenador", "coordenador_recenseador"].includes(r.role),
+  );
+  if (!allowed) throw new Error("Acesso não autorizado.");
+}
+
 const cpfRegex = /^\d{11}$/;
 
 export const createOperationalUser = createServerFn({ method: "POST" })
@@ -88,7 +100,7 @@ export const createOperationalUser = createServerFn({ method: "POST" })
 
 export const listOperationalUsers = createServerFn({ method: "GET" }).handler(
   async ({ context }) => {
-    await assertAdmin(context as any);
+    await assertAdminOrCoordenador(context as any);
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
 
     const { data: profiles, error } = await supabaseAdmin
