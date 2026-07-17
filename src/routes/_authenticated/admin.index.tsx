@@ -438,6 +438,7 @@ function AdminDashboard() {
       <div id="catadores-tabela" className="scroll-mt-20">
 
       {/* Filters */}
+      {!readOnlyCatadores && (
       <div className="bg-card rounded-xl border border-border p-4 mb-4 flex flex-wrap items-center gap-3 shadow-card">
 
         <div className="relative flex-1 min-w-[220px]">
