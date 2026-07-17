@@ -19,10 +19,15 @@ import { Textarea } from "@/components/ui/textarea";
 import { supabase } from "@/integrations/supabase/client";
 
 export const Route = createFileRoute("/_authenticated/admin/associacoes/$id/editar")({
-  beforeLoad: ({ context }) => {
-    if (!context.isAdmin) throw redirect({ to: "/admin/associacoes" });
+  validateSearch: (search: Record<string, unknown>) => ({
+    mode: search.mode === "view" ? ("view" as const) : ("edit" as const),
+  }),
+  beforeLoad: ({ context, search }) => {
+    if (search.mode === "view") return;
+    if (!context.isAdmin && !context.isCoordenador)
+      throw redirect({ to: "/admin/associacoes" });
   },
-  head: () => ({ meta: [{ title: "Editar associação — PROCATE" }] }),
+  head: () => ({ meta: [{ title: "Entidade — PROCATE" }] }),
   component: EditAssociationPage,
 });
 
