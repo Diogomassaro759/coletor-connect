@@ -514,26 +514,41 @@ function AssociationsPage() {
                         const requiresSocial = areaForForm !== "social";
                         const hasSocial = socialSet.has(item.id);
                         const blocked = requiresSocial && !hasSocial;
-                        if (blocked) {
-                          return (
-                            <Button size="sm" variant="outline" disabled>
-                              <Lock className="size-4 mr-1" /> Aguardando Social
-                            </Button>
-                          );
-                        }
                         return (
-                          <Button
-                            size="sm"
-                            onClick={() =>
-                              navigate({
-                                to: "/admin/associacoes/$id/diagnostico/novo",
-                                params: { id: item.id },
-                                search: { modulo: areaForForm },
-                              })
-                            }
-                          >
-                            <ClipboardPlus className="size-4 mr-1" /> Abrir formulário
-                          </Button>
+                          <DropdownMenu>
+                            <DropdownMenuTrigger asChild>
+                              <Button variant="ghost" size="sm">Ações</Button>
+                            </DropdownMenuTrigger>
+                            <DropdownMenuContent align="end">
+                              <DropdownMenuItem asChild>
+                                <Link to="/admin/associacoes/$id" params={{ id: item.id }}>
+                                  <Eye className="size-4 mr-2" /> Visualizar
+                                </Link>
+                              </DropdownMenuItem>
+                              <DropdownMenuItem asChild>
+                                <Link to="/admin/associacoes/$id/editar" params={{ id: item.id }}>
+                                  <Pencil className="size-4 mr-2" /> Editar
+                                </Link>
+                              </DropdownMenuItem>
+                              {areaForForm !== "social" && (
+                                blocked ? (
+                                  <DropdownMenuItem disabled onSelect={(e) => e.preventDefault()}>
+                                    <Lock className="size-4 mr-2" /> Aguardando Social
+                                  </DropdownMenuItem>
+                                ) : (
+                                  <DropdownMenuItem asChild>
+                                    <Link
+                                      to="/admin/associacoes/$id/diagnostico/novo"
+                                      params={{ id: item.id }}
+                                      search={{ modulo: areaForForm }}
+                                    >
+                                      <ClipboardPlus className="size-4 mr-2" /> Abrir formulário
+                                    </Link>
+                                  </DropdownMenuItem>
+                                )
+                              )}
+                            </DropdownMenuContent>
+                          </DropdownMenu>
                         );
                       })()
                     ) : (
@@ -582,6 +597,7 @@ function AssociationsPage() {
                       </DropdownMenu>
                     )}
                   </TableCell>
+
                 </TableRow>
               );
             })}
