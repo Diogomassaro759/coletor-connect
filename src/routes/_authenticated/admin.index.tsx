@@ -104,6 +104,7 @@ function AdminDashboard() {
   const setShowCatadoresScreen = (v: boolean) =>
     navigate({ to: "/admin", search: v ? { view: "catadores" as const } : {} });
   const isCatadoresScreen = !isAdminLike || showCatadoresScreen;
+  const readOnlyCatadores = isCoordenador && !isAdmin;
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState<string>("todos");
   const [materialFilter, setMaterialFilter] = useState<string>("todos");
