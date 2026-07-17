@@ -19,15 +19,22 @@ import { Textarea } from "@/components/ui/textarea";
 import { supabase } from "@/integrations/supabase/client";
 
 export const Route = createFileRoute("/_authenticated/admin/associacoes/$id/editar")({
-  beforeLoad: ({ context }) => {
-    if (!context.isAdmin) throw redirect({ to: "/admin/associacoes" });
+  validateSearch: (search: Record<string, unknown>) => ({
+    mode: search.mode === "view" ? ("view" as const) : ("edit" as const),
+  }),
+  beforeLoad: ({ context, search }) => {
+    if (search.mode === "view") return;
+    if (!context.isAdmin && !context.isCoordenador)
+      throw redirect({ to: "/admin/associacoes" });
   },
-  head: () => ({ meta: [{ title: "Editar associação — PROCATE" }] }),
+  head: () => ({ meta: [{ title: "Entidade — PROCATE" }] }),
   component: EditAssociationPage,
 });
 
 function EditAssociationPage() {
   const { id } = Route.useParams();
+  const { mode } = Route.useSearch();
+  const readOnly = mode === "view";
   const navigate = useNavigate();
   const [saving, setSaving] = useState(false);
   const [tipo, setTipo] = useState<string>("associacao");
@@ -99,11 +106,19 @@ function EditAssociationPage() {
         </Button>
       </Link>
       <div className="mx-auto max-w-3xl">
-        <h1 className="mb-7 text-3xl font-bold">Editar entidade</h1>
+        <h1 className="mb-2 text-3xl font-bold">
+          {readOnly ? "Visualizar entidade" : "Editar entidade"}
+        </h1>
+        {readOnly && (
+          <p className="mb-6 text-sm text-muted-foreground">
+            Dados preenchidos do cadastro Social desta entidade (somente leitura).
+          </p>
+        )}
         <form
           onSubmit={submit}
           className="space-y-7 rounded-xl border border-border bg-card p-6 shadow-card md:p-8"
         >
+          <fieldset disabled={readOnly} className="contents">
           <div className="grid gap-5 md:grid-cols-2">
             <Field label="Nome completo" className="md:col-span-2">
               <Input name="nome" defaultValue={data.nome} required minLength={2} maxLength={200} />
@@ -186,15 +201,18 @@ function EditAssociationPage() {
               />
             </Field>
           </div>
+          </fieldset>
           <div className="flex justify-end gap-3 border-t border-border pt-6">
             <Link to="/admin/associacoes/$id" params={{ id }}>
               <Button type="button" variant="ghost">
-                Cancelar
+                {readOnly ? "Voltar" : "Cancelar"}
               </Button>
             </Link>
-            <Button type="submit" size="lg" disabled={saving}>
-              {saving && <Loader2 className="size-4 animate-spin" />} Salvar alterações
-            </Button>
+            {!readOnly && (
+              <Button type="submit" size="lg" disabled={saving}>
+                {saving && <Loader2 className="size-4 animate-spin" />} Salvar alterações
+              </Button>
+            )}
           </div>
         </form>
       </div>
