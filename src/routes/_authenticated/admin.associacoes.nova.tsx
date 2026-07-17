@@ -17,8 +17,12 @@ import { Textarea } from "@/components/ui/textarea";
 import { supabase } from "@/integrations/supabase/client";
 
 export const Route = createFileRoute("/_authenticated/admin/associacoes/nova")({
-  beforeLoad: ({ context }) => {
-    if (!context.isAdmin) throw redirect({ to: "/admin/associacoes" });
+  beforeLoad: ({ context }: { context: any }) => {
+    const allowed =
+      context.isAdmin ||
+      (context.isCoordenador && context.area === "social") ||
+      (context.isConsultant && context.area === "social");
+    if (!allowed) throw redirect({ to: "/admin/associacoes" });
   },
   head: () => ({ meta: [{ title: "Nova associação — PROCATE" }] }),
   component: NewAssociationPage,
