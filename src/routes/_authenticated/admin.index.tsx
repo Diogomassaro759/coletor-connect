@@ -401,6 +401,7 @@ function AdminDashboard() {
               <h1 className="text-3xl font-bold tracking-tight">Catadores</h1>
               <p className="text-muted-foreground">Gerencie cadastros, filtre e exporte dados.</p>
             </div>
+            {!readOnlyCatadores && (
             <div className="flex flex-wrap gap-2">
               {isAdmin && (
                 <>
@@ -422,6 +423,7 @@ function AdminDashboard() {
                 </Link>
               )}
             </div>
+            )}
           </div>
 
           <div className="grid gap-4 sm:grid-cols-3 mb-6">
