@@ -66,7 +66,8 @@ const SITUACAO_TONE: Record<string, string> = {
 };
 
 function AssociationsPage() {
-  const { isAdmin, isConsultant, isCoordenador, area } = Route.useRouteContext() as any;
+  const { isAdmin, isConsultant, isCoordenador, area, user } = Route.useRouteContext() as any;
+  const currentUserId: string | undefined = user?.id;
   const isViewer = isConsultant || isCoordenador;
   const [search, setSearch] = useState("");
   const [selectedEntity, setSelectedEntity] = useState<string>("");
