@@ -503,7 +503,7 @@ function AdminDashboard() {
               <TableHead className="hidden lg:table-cell">Cooperativa</TableHead>
               <TableHead className="hidden md:table-cell">Materiais</TableHead>
               <TableHead>Status</TableHead>
-              <TableHead className="w-12"></TableHead>
+              {!readOnlyCatadores && <TableHead className="w-12"></TableHead>}
             </TableRow>
           </TableHeader>
           <TableBody>
