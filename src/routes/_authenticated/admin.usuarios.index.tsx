@@ -93,6 +93,13 @@ function UsuariosPage() {
                 </TableRow>
               )}
               {data?.map((u) => {
+                const areaLabel: Record<string, string> = {
+                  social: "Social",
+                  juridico: "Jurídico",
+                  contabil: "Contábil",
+                  infraestrutura: "Infraestrutura",
+                };
+                const areaSuffix = u.area ? ` ${areaLabel[u.area] ?? u.area}` : "";
                 const roleLabels = u.roles.map((r) =>
                   r === "admin"
                     ? "Administrador"
@@ -101,9 +108,9 @@ function UsuariosPage() {
                       : r === "coordenador_recenseador"
                         ? "Coordenador Recenseador"
                         : r === "coordenador"
-                          ? "Coordenador"
+                          ? `Coordenador${areaSuffix}`
                           : r === "consultor"
-                            ? "Consultor"
+                            ? `Consultor${areaSuffix}`
                             : r,
                 );
                 return (
