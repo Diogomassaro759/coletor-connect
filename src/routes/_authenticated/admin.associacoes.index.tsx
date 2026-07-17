@@ -619,16 +619,18 @@ function AssociationsPage() {
                               >
                                 <Eye className="size-4 mr-2" /> Visualizar
                               </DropdownMenuItem>
-                              <DropdownMenuItem
-                                onSelect={() =>
-                                  navigate({
-                                    to: "/admin/associacoes/$id/editar",
-                                    params: { id: item.id },
-                                  })
-                                }
-                              >
-                                <Pencil className="size-4 mr-2" /> Editar
-                              </DropdownMenuItem>
+                              {item.created_by === currentUserId && (
+                                <DropdownMenuItem
+                                  onSelect={() =>
+                                    navigate({
+                                      to: "/admin/associacoes/$id/editar",
+                                      params: { id: item.id },
+                                    })
+                                  }
+                                >
+                                  <Pencil className="size-4 mr-2" /> Editar
+                                </DropdownMenuItem>
+                              )}
                               {areaForForm !== "social" && (
                                 blocked ? (
                                   <DropdownMenuItem disabled onSelect={(e) => e.preventDefault()}>
