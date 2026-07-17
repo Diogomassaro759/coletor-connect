@@ -531,13 +531,17 @@ function AdminDashboard() {
             {filtered.map((c) => (
               <TableRow key={c.id} className="hover:bg-muted/40">
                 <TableCell>
-                  <Link
-                    to="/admin/$id"
-                    params={{ id: c.id }}
-                    className="font-medium hover:underline"
-                  >
-                    {c.nome_completo}
-                  </Link>
+                  {readOnlyCatadores ? (
+                    <span className="font-medium">{c.nome_completo}</span>
+                  ) : (
+                    <Link
+                      to="/admin/$id"
+                      params={{ id: c.id }}
+                      className="font-medium hover:underline"
+                    >
+                      {c.nome_completo}
+                    </Link>
+                  )}
                   <div className="md:hidden text-xs text-muted-foreground mt-0.5">{c.cpf}</div>
                 </TableCell>
                 <TableCell className="hidden md:table-cell text-sm tabular-nums">{c.cpf}</TableCell>
