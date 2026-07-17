@@ -68,7 +68,9 @@ function AssociationsPage() {
   const isViewer = isConsultant || isCoordenador;
   const [search, setSearch] = useState("");
   const [selectedEntity, setSelectedEntity] = useState<string>("");
+  const [entitySearch, setEntitySearch] = useState("");
   const [pendingModulo, setPendingModulo] = useState<"social" | "juridico" | "contabil" | "infraestrutura" | null>(null);
+
   const [tipoFilter, setTipoFilter] = useState<"todas" | "cooperativa" | "associacao" | "coletivo">("todas");
   const [municipioFilter, setMunicipioFilter] = useState<string>("todos");
   const navigate = useNavigate();
