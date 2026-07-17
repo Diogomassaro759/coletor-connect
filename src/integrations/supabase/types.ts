@@ -1110,6 +1110,7 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      associations_with_social_ids: { Args: never; Returns: string[] }
       get_user_area: {
         Args: { _user_id: string }
         Returns: Database["public"]["Enums"]["operational_area"]
