@@ -382,6 +382,7 @@ function AssociationsPage() {
           if (!open) {
             setPendingModulo(null);
             setSelectedEntity("");
+            setEntitySearch("");
           }
         }}
       >
@@ -395,26 +396,53 @@ function AssociationsPage() {
               Selecione a entidade para abrir o formulário correspondente.
             </DialogDescription>
           </DialogHeader>
-          <Select value={selectedEntity} onValueChange={setSelectedEntity}>
-            <SelectTrigger className="w-full">
-              <SelectValue placeholder="Escolha entidade" className="truncate" />
-            </SelectTrigger>
-            <SelectContent className="max-h-72 max-w-[calc(100vw-3rem)]">
-              {associations.map((a: any) => (
-                <SelectItem key={a.id} value={a.id}>
-                  <span className="block truncate max-w-[420px]">
-                    {a.nome} — {a.municipio}
-                  </span>
-                </SelectItem>
+          <div className="relative">
+            <Search className="absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
+            <Input
+              value={entitySearch}
+              onChange={(e) => setEntitySearch(e.target.value)}
+              placeholder="Buscar por nome ou município"
+              className="pl-9"
+            />
+          </div>
+          <div className="max-h-72 overflow-y-auto rounded-md border">
+            {(associations as any[])
+              .filter((a) => {
+                const term = entitySearch.trim().toLocaleLowerCase("pt-BR");
+                if (!term) return true;
+                return `${a.nome} ${a.municipio}`.toLocaleLowerCase("pt-BR").includes(term);
+              })
+              .map((a: any) => (
+                <button
+                  key={a.id}
+                  type="button"
+                  onClick={() => setSelectedEntity(a.id)}
+                  className={
+                    "flex w-full items-center justify-between gap-2 px-3 py-2 text-left text-sm hover:bg-muted " +
+                    (selectedEntity === a.id ? "bg-primary/10 font-medium" : "")
+                  }
+                >
+                  <span className="truncate">{a.nome}</span>
+                  <span className="shrink-0 text-xs text-muted-foreground">{a.municipio}</span>
+                </button>
               ))}
-            </SelectContent>
-          </Select>
+            {(associations as any[]).filter((a) => {
+              const term = entitySearch.trim().toLocaleLowerCase("pt-BR");
+              if (!term) return true;
+              return `${a.nome} ${a.municipio}`.toLocaleLowerCase("pt-BR").includes(term);
+            }).length === 0 && (
+              <p className="p-4 text-center text-sm text-muted-foreground">
+                Nenhuma entidade encontrada.
+              </p>
+            )}
+          </div>
           <DialogFooter>
             <Button
               variant="outline"
               onClick={() => {
                 setPendingModulo(null);
                 setSelectedEntity("");
+                setEntitySearch("");
               }}
             >
               Cancelar
@@ -427,6 +455,7 @@ function AssociationsPage() {
                 const id = selectedEntity;
                 setPendingModulo(null);
                 setSelectedEntity("");
+                setEntitySearch("");
                 navigate({
                   to: "/admin/associacoes/$id/diagnostico/novo",
                   params: { id },
@@ -439,6 +468,7 @@ function AssociationsPage() {
           </DialogFooter>
         </DialogContent>
       </Dialog>
+
 
 
 
