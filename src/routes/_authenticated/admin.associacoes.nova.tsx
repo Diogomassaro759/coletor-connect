@@ -30,8 +30,17 @@ export const Route = createFileRoute("/_authenticated/admin/associacoes/nova")({
 
 function NewAssociationPage() {
   const navigate = useNavigate();
+  const ctx = Route.useRouteContext() as any;
   const [saving, setSaving] = useState(false);
   const [tipo, setTipo] = useState("associacao");
+  const now = new Date();
+  const pad = (n: number) => String(n).padStart(2, "0");
+  const defaultDate = `${now.getFullYear()}-${pad(now.getMonth() + 1)}-${pad(now.getDate())}`;
+  const defaultTime = `${pad(now.getHours())}:${pad(now.getMinutes())}`;
+  const defaultConsultor =
+    (ctx?.user?.user_metadata?.full_name as string | undefined) ??
+    (ctx?.user?.email as string | undefined) ??
+    "";
 
   async function submit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -51,6 +60,9 @@ function NewAssociationPage() {
         email: String(form.get("email") ?? "").trim() || null,
         numero_associados_inicial: Number(form.get("numero_associados_inicial") ?? 0),
         numero_associados_atual: Number(form.get("numero_associados_atual") ?? 0),
+        consultor_nome: String(form.get("consultor_nome") ?? "").trim() || null,
+        data_visita: String(form.get("data_visita") ?? "").trim() || null,
+        horario_visita: String(form.get("horario_visita") ?? "").trim() || null,
       })
       .select("id")
       .single();
@@ -84,6 +96,17 @@ function NewAssociationPage() {
           onSubmit={submit}
           className="space-y-7 rounded-xl border border-border bg-card p-6 shadow-card md:p-8"
         >
+          <div className="grid gap-5 md:grid-cols-3">
+            <Field label="Nome do consultor">
+              <Input name="consultor_nome" defaultValue={defaultConsultor} maxLength={200} />
+            </Field>
+            <Field label="Data da visita">
+              <Input name="data_visita" type="date" defaultValue={defaultDate} />
+            </Field>
+            <Field label="Horário da visita">
+              <Input name="horario_visita" type="time" defaultValue={defaultTime} />
+            </Field>
+          </div>
           <div className="grid gap-5 md:grid-cols-2">
             <Field label="Nome completo" className="md:col-span-2">
               <Input name="nome" required minLength={2} maxLength={200} />
