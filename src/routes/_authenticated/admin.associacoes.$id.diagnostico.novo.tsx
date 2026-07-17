@@ -448,8 +448,8 @@ function NewAssessment() {
               <Input
                 name="consultant_name"
                 required
-                defaultValue={consultantProfile?.full_name ?? ""}
-                key={consultantProfile?.full_name ?? "loading"}
+                defaultValue={consultantName}
+                key={consultantName || "loading"}
               />
             </Field>
             <Field label="Data da visita">
