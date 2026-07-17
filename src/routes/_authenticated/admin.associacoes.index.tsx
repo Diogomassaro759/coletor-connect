@@ -512,7 +512,7 @@ function AssociationsPage() {
                     {isConsultant ? (
                       (() => {
                         const requiresSocial = areaForForm !== "social";
-                        const hasSocial = latestByAssoc.has(item.id);
+                        const hasSocial = socialSet.has(item.id);
                         const blocked = requiresSocial && !hasSocial;
                         if (blocked) {
                           return (
@@ -557,7 +557,7 @@ function AssociationsPage() {
                           {isCoordenador && (
                             (() => {
                               const requiresSocial = areaForForm !== "social";
-                              const hasSocial = latestByAssoc.has(item.id);
+                              const hasSocial = socialSet.has(item.id);
                               const blocked = requiresSocial && !hasSocial;
                               if (blocked) {
                                 return (
