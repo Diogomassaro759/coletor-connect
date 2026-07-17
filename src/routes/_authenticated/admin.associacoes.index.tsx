@@ -2,7 +2,7 @@ import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { ArrowRight, Building2, ClipboardPlus, Download, Eye, HardHat, Lock, Pencil, Plus, Scale, Search, Users2, Wallet } from "lucide-react";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { toast } from "sonner";
 import { AdminShell } from "@/components/admin/AdminShell";
 import { Badge } from "@/components/ui/badge";
@@ -42,6 +42,9 @@ import { listAssociationsWithSocial } from "@/lib/users.functions";
 
 export const Route = createFileRoute("/_authenticated/admin/associacoes/")({
   head: () => ({ meta: [{ title: "Associações — PROCATE" }] }),
+  validateSearch: (s: Record<string, unknown>) => ({
+    abrir: s.abrir === "1" ? ("1" as const) : undefined,
+  }),
   component: AssociationsPage,
 });
 
@@ -67,6 +70,7 @@ const SITUACAO_TONE: Record<string, string> = {
 
 function AssociationsPage() {
   const { isAdmin, isConsultant, isCoordenador, area, user } = Route.useRouteContext() as any;
+  const searchParams = Route.useSearch() as { abrir?: "1" };
   const currentUserId: string | undefined = user?.id;
   const isViewer = isConsultant || isCoordenador;
   const [search, setSearch] = useState("");
@@ -78,6 +82,21 @@ function AssociationsPage() {
   const [municipioFilter, setMunicipioFilter] = useState<string>("todos");
   const navigate = useNavigate();
   const listSocialAssociations = useServerFn(listAssociationsWithSocial);
+
+  useEffect(() => {
+    if (
+      searchParams.abrir === "1" &&
+      isConsultant &&
+      area &&
+      area !== "social" &&
+      !pendingModulo
+    ) {
+      setSelectedEntity("");
+      setPendingModulo(area as "juridico" | "contabil" | "infraestrutura");
+      navigate({ to: "/admin/associacoes", search: {}, replace: true });
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [searchParams.abrir, isConsultant, area]);
 
   const { data: associations = [], isLoading } = useQuery({
     queryKey: ["associations"],
