@@ -689,10 +689,13 @@ export type Database = {
         Row: {
           ativa: boolean
           cnpj: string | null
+          consultor_nome: string | null
           created_at: string
           created_by: string | null
+          data_visita: string | null
           email: string | null
           endereco_sede: string
+          horario_visita: string | null
           id: string
           inscricao_estadual: string | null
           inscricao_municipal: string | null
@@ -708,10 +711,13 @@ export type Database = {
         Insert: {
           ativa?: boolean
           cnpj?: string | null
+          consultor_nome?: string | null
           created_at?: string
           created_by?: string | null
+          data_visita?: string | null
           email?: string | null
           endereco_sede: string
+          horario_visita?: string | null
           id?: string
           inscricao_estadual?: string | null
           inscricao_municipal?: string | null
@@ -727,10 +733,13 @@ export type Database = {
         Update: {
           ativa?: boolean
           cnpj?: string | null
+          consultor_nome?: string | null
           created_at?: string
           created_by?: string | null
+          data_visita?: string | null
           email?: string | null
           endereco_sede?: string
+          horario_visita?: string | null
           id?: string
           inscricao_estadual?: string | null
           inscricao_municipal?: string | null
