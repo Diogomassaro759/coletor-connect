@@ -201,15 +201,18 @@ function EditAssociationPage() {
               />
             </Field>
           </div>
+          </fieldset>
           <div className="flex justify-end gap-3 border-t border-border pt-6">
             <Link to="/admin/associacoes/$id" params={{ id }}>
               <Button type="button" variant="ghost">
-                Cancelar
+                {readOnly ? "Voltar" : "Cancelar"}
               </Button>
             </Link>
-            <Button type="submit" size="lg" disabled={saving}>
-              {saving && <Loader2 className="size-4 animate-spin" />} Salvar alterações
-            </Button>
+            {!readOnly && (
+              <Button type="submit" size="lg" disabled={saving}>
+                {saving && <Loader2 className="size-4 animate-spin" />} Salvar alterações
+              </Button>
+            )}
           </div>
         </form>
       </div>
