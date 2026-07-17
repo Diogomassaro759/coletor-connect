@@ -33,6 +33,8 @@ export const Route = createFileRoute("/_authenticated/admin/associacoes/$id/edit
 
 function EditAssociationPage() {
   const { id } = Route.useParams();
+  const { mode } = Route.useSearch();
+  const readOnly = mode === "view";
   const navigate = useNavigate();
   const [saving, setSaving] = useState(false);
   const [tipo, setTipo] = useState<string>("associacao");
