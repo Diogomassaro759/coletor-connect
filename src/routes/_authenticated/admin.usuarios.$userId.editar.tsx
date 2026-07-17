@@ -154,7 +154,7 @@ function EditarUsuarioPage() {
                 <Label>Perfil *</Label>
                 <Select
                   value={form.role}
-                  onValueChange={(v) => setForm((f) => ({ ...f, role: v as any }))}
+                  onValueChange={(v) => { console.log("[role change]", v); setForm((f) => ({ ...f, role: v as any })); }}
                 >
                   <SelectTrigger>
                     <SelectValue />
