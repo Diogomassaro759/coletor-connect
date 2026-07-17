@@ -152,27 +152,29 @@ function UsuariosPage() {
                       </div>
                     </TableCell>
                     <TableCell>
-                      <div className="flex items-center justify-end gap-1">
-                        <Link
-                          to="/admin/usuarios/$userId/editar"
-                          params={{ userId: u.user_id }}
-                        >
-                          <Button variant="ghost" size="icon" title="Editar usuário">
-                            <Pencil className="size-4" />
+                      {isAdmin && (
+                        <div className="flex items-center justify-end gap-1">
+                          <Link
+                            to="/admin/usuarios/$userId/editar"
+                            params={{ userId: u.user_id }}
+                          >
+                            <Button variant="ghost" size="icon" title="Editar usuário">
+                              <Pencil className="size-4" />
+                            </Button>
+                          </Link>
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            title="Excluir usuário"
+                            onClick={() => {
+                              if (confirm(`Excluir ${u.full_name}?`)) del.mutate(u.user_id);
+                            }}
+                            disabled={del.isPending}
+                          >
+                            <Trash2 className="size-4 text-destructive" />
                           </Button>
-                        </Link>
-                        <Button
-                          variant="ghost"
-                          size="icon"
-                          title="Excluir usuário"
-                          onClick={() => {
-                            if (confirm(`Excluir ${u.full_name}?`)) del.mutate(u.user_id);
-                          }}
-                          disabled={del.isPending}
-                        >
-                          <Trash2 className="size-4 text-destructive" />
-                        </Button>
-                      </div>
+                        </div>
+                      )}
                     </TableCell>
                   </TableRow>
                 );
