@@ -115,6 +115,8 @@ function EditarUsuarioPage() {
         <ArrowLeft className="size-4" /> Voltar
       </Link>
       <h1 className="text-2xl font-bold mb-6">Editar usuário</h1>
+      <pre data-debug style={{fontSize:10}}>{JSON.stringify(data, null, 2)}</pre>
+      <pre data-debug2 style={{fontSize:10}}>form.role={JSON.stringify(form.role)} form.area={JSON.stringify(form.area)}</pre>
 
       {isLoading ? (
         <p className="text-muted-foreground">Carregando…</p>
