@@ -60,16 +60,22 @@ export function AdminShell({ children }: { children: React.ReactNode }) {
               className="h-10 w-auto sm:h-11"
             />
             <span className="hidden sm:inline-block text-xs font-medium uppercase tracking-wider text-muted-foreground ml-2 px-2 py-0.5 rounded bg-muted">
-              {isAdmin
-                ? "Administrador"
-                : isRecenseador
-                  ? "Recenseador"
-                  : isCoordenadorRecenseador
-                    ? "Coordenador Recenseador"
-                    : isCoordenador
-                      ? "Coordenador"
-                      : "Consultor"}
+              {(() => {
+                const areaLabel: Record<string, string> = {
+                  social: "Social",
+                  juridico: "Jurídico",
+                  contabil: "Contábil",
+                  infraestrutura: "Infraestrutura",
+                };
+                const suffix = area ? ` ${areaLabel[area] ?? area}` : "";
+                if (isAdmin) return "Administrador";
+                if (isRecenseador) return "Recenseador";
+                if (isCoordenadorRecenseador) return "Coordenador Recenseador";
+                if (isCoordenador) return `Coordenador${suffix}`;
+                return `Consultor${suffix}`;
+              })()}
             </span>
+
           </Link>
           <nav className="flex items-center gap-1">
             {(isAdmin || isCoordenador) && (
