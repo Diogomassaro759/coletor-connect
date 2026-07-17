@@ -490,6 +490,7 @@ function AdminDashboard() {
           </Select>
         </div>
       </div>
+      )}
 
       {/* Table */}
       <div className="bg-card rounded-xl border border-border shadow-card overflow-hidden">
