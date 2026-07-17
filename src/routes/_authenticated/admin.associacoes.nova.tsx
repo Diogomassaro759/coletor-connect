@@ -96,6 +96,17 @@ function NewAssociationPage() {
           onSubmit={submit}
           className="space-y-7 rounded-xl border border-border bg-card p-6 shadow-card md:p-8"
         >
+          <div className="grid gap-5 md:grid-cols-3">
+            <Field label="Nome do consultor">
+              <Input name="consultor_nome" defaultValue={defaultConsultor} maxLength={200} />
+            </Field>
+            <Field label="Data da visita">
+              <Input name="data_visita" type="date" defaultValue={defaultDate} />
+            </Field>
+            <Field label="Horário da visita">
+              <Input name="horario_visita" type="time" defaultValue={defaultTime} />
+            </Field>
+          </div>
           <div className="grid gap-5 md:grid-cols-2">
             <Field label="Nome completo" className="md:col-span-2">
               <Input name="nome" required minLength={2} maxLength={200} />
