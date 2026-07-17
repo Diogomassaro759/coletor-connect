@@ -1,0 +1,1 @@
+DROP FUNCTION IF EXISTS public.associations_with_social_ids();
