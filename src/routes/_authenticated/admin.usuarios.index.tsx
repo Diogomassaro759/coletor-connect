@@ -57,12 +57,14 @@ function UsuariosPage() {
             Recenseadores cadastram catadores; Consultores de Campo cadastram diagnósticos.
           </p>
         </div>
-        <Link to="/admin/usuarios/novo" className="shrink-0">
-          <Button size="sm" className="sm:size-default">
-            <Plus className="size-4 sm:mr-2" />
-            <span className="hidden sm:inline">Novo usuário</span>
-          </Button>
-        </Link>
+        {isAdmin && (
+          <Link to="/admin/usuarios/novo" className="shrink-0">
+            <Button size="sm" className="sm:size-default">
+              <Plus className="size-4 sm:mr-2" />
+              <span className="hidden sm:inline">Novo usuário</span>
+            </Button>
+          </Link>
+        )}
       </div>
 
       <Card className="p-0 overflow-hidden">
