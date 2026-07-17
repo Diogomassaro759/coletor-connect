@@ -215,4 +215,36 @@ export const deleteOperationalUser = createServerFn({ method: "POST" })
     return { ok: true };
   });
 
+export const listAssociationsWithSocial = createServerFn({ method: "GET" }).handler(
+  async ({ context }) => {
+    const ctx = context as { supabase: any; userId: string };
+    const { data: roles, error: roleError } = await ctx.supabase
+      .from("user_roles")
+      .select("role, area")
+      .eq("user_id", ctx.userId);
+
+    if (roleError) throw new Error("Falha ao verificar permissões.");
+
+    const canRead = (roles ?? []).some(
+      (r: { role: string; area: string | null }) =>
+        r.role === "admin" ||
+        r.role === "coordenador_recenseador" ||
+        r.role === "consultor" ||
+        r.role === "coordenador" ||
+        r.role === "atendente",
+    );
+
+    if (!canRead) throw new Error("Acesso não autorizado.");
+
+    const { data, error } = await ctx.supabase
+      .from("association_assessments")
+      .select("association_id")
+      .not("association_id", "is", null);
+
+    if (error) throw new Error(error.message);
+
+    return Array.from(new Set((data ?? []).map((row: { association_id: string }) => row.association_id)));
+  },
+);
+
 export const VALID_ROLES = ROLE_VALUES;

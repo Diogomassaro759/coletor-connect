@@ -1,5 +1,6 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
+import { useServerFn } from "@tanstack/react-start";
 import { ArrowRight, Building2, ClipboardPlus, Download, Eye, HardHat, Lock, Pencil, Plus, Scale, Search, Users2, Wallet } from "lucide-react";
 import { useMemo, useState } from "react";
 import { toast } from "sonner";
@@ -37,6 +38,7 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { supabase } from "@/integrations/supabase/client";
+import { listAssociationsWithSocial } from "@/lib/users.functions";
 
 export const Route = createFileRoute("/_authenticated/admin/associacoes/")({
   head: () => ({ meta: [{ title: "Associações — PROCATE" }] }),
@@ -74,6 +76,7 @@ function AssociationsPage() {
   const [tipoFilter, setTipoFilter] = useState<"todas" | "cooperativa" | "associacao" | "coletivo">("todas");
   const [municipioFilter, setMunicipioFilter] = useState<string>("todos");
   const navigate = useNavigate();
+  const listSocialAssociations = useServerFn(listAssociationsWithSocial);
 
   const { data: associations = [], isLoading } = useQuery({
     queryKey: ["associations"],
@@ -98,11 +101,7 @@ function AssociationsPage() {
 
   const { data: socialAssocIds = [] } = useQuery({
     queryKey: ["associations-with-social"],
-    queryFn: async () => {
-      const { data, error } = await supabase.rpc("associations_with_social_ids");
-      if (error) throw error;
-      return (data ?? []) as string[];
-    },
+    queryFn: () => listSocialAssociations(),
   });
 
   const socialSet = useMemo(() => new Set(socialAssocIds), [socialAssocIds]);
