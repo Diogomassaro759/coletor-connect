@@ -644,8 +644,12 @@ function AssociationsPage() {
                         </DropdownMenuTrigger>
                         <DropdownMenuContent align="end">
                           <DropdownMenuItem asChild>
-                            <Link to="/admin/associacoes/$id" params={{ id: item.id }}>
-                              <Eye className="size-4 mr-2" /> Ver detalhes
+                            <Link
+                              to="/admin/associacoes/$id/editar"
+                              params={{ id: item.id }}
+                              search={{ mode: "view" }}
+                            >
+                              <Eye className="size-4 mr-2" /> Visualizar
                             </Link>
                           </DropdownMenuItem>
                           {isAdmin && (
