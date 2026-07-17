@@ -100,7 +100,7 @@ export const createOperationalUser = createServerFn({ method: "POST" })
 
 export const listOperationalUsers = createServerFn({ method: "GET" }).handler(
   async ({ context }) => {
-    await assertAdmin(context as any);
+    await assertAdminOrCoordenador(context as any);
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
 
     const { data: profiles, error } = await supabaseAdmin
