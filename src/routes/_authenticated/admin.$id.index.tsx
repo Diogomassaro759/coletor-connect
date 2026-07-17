@@ -168,7 +168,7 @@ function CatadorDetails() {
               </DropdownMenuContent>
             </DropdownMenu>
           )}
-          {(isAdmin || c.created_by === user.id) && (
+          {(isAdmin || isCoordenadorRecenseador || c.created_by === user.id) && (
             <Link to="/admin/$id/editar" params={{ id }}>
               <Button variant="outline"><Pencil className="size-4" /> Editar</Button>
             </Link>
