@@ -611,7 +611,7 @@ function AssociationsPage() {
                               <DropdownMenuItem
                                 onSelect={() =>
                                   navigate({
-                                  to="/admin/associacoes/$id/editar"
+                                    to: "/admin/associacoes/$id/editar",
                                     params: { id: item.id },
                                     search: { mode: "view" },
                                   })
