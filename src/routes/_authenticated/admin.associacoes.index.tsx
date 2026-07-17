@@ -104,7 +104,7 @@ function AssociationsPage() {
     queryFn: () => listSocialAssociations(),
   });
 
-  const socialSet = useMemo(() => new Set(socialAssocIds), [socialAssocIds]);
+  const socialSet = useMemo(() => new Set((socialAssocIds ?? []) as string[]), [socialAssocIds]);
 
   const latestByAssoc = useMemo(() => {
     const map = new Map<string, { status: string | null; data_visita: string | null }>();

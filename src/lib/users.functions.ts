@@ -216,8 +216,8 @@ export const deleteOperationalUser = createServerFn({ method: "POST" })
   });
 
 export const listAssociationsWithSocial = createServerFn({ method: "GET" }).handler(
-  async ({ context }) => {
-    const ctx = context as { supabase: any; userId: string };
+  async ({ context }): Promise<string[]> => {
+    const ctx = context as unknown as { supabase: any; userId: string };
     const { data: roles, error: roleError } = await ctx.supabase
       .from("user_roles")
       .select("role, area")
@@ -243,7 +243,11 @@ export const listAssociationsWithSocial = createServerFn({ method: "GET" }).hand
 
     if (error) throw new Error(error.message);
 
-    return Array.from(new Set((data ?? []).map((row: { association_id: string }) => row.association_id)));
+    const ids = ((data ?? []) as Array<{ association_id: string | null }>)
+      .map((row) => row.association_id)
+      .filter((id): id is string => Boolean(id));
+
+    return Array.from(new Set(ids));
   },
 );
 
