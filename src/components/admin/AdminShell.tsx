@@ -88,7 +88,13 @@ export function AdminShell({ children }: { children: React.ReactNode }) {
             )}
             {(isAdmin || isViewer) && (
               <Button variant="ghost" size="sm" asChild>
-                <Link to="/admin/associacoes">
+                <Link
+                  to={
+                    isConsultant && area === "social"
+                      ? "/admin/associacoes/nova"
+                      : "/admin/associacoes"
+                  }
+                >
                   {isAdmin || isCoordenador ? (
                     <Building2 className="size-4" />
                   ) : (
