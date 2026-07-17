@@ -104,6 +104,7 @@ function AdminDashboard() {
   const setShowCatadoresScreen = (v: boolean) =>
     navigate({ to: "/admin", search: v ? { view: "catadores" as const } : {} });
   const isCatadoresScreen = !isAdminLike || showCatadoresScreen;
+  const readOnlyCatadores = isCoordenador && !isAdmin;
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState<string>("todos");
   const [materialFilter, setMaterialFilter] = useState<string>("todos");
@@ -400,6 +401,7 @@ function AdminDashboard() {
               <h1 className="text-3xl font-bold tracking-tight">Catadores</h1>
               <p className="text-muted-foreground">Gerencie cadastros, filtre e exporte dados.</p>
             </div>
+            {!readOnlyCatadores && (
             <div className="flex flex-wrap gap-2">
               {isAdmin && (
                 <>
@@ -421,6 +423,7 @@ function AdminDashboard() {
                 </Link>
               )}
             </div>
+            )}
           </div>
 
           <div className="grid gap-4 sm:grid-cols-3 mb-6">
@@ -435,6 +438,7 @@ function AdminDashboard() {
       <div id="catadores-tabela" className="scroll-mt-20">
 
       {/* Filters */}
+      {!readOnlyCatadores && (
       <div className="bg-card rounded-xl border border-border p-4 mb-4 flex flex-wrap items-center gap-3 shadow-card">
 
         <div className="relative flex-1 min-w-[220px]">
@@ -486,6 +490,7 @@ function AdminDashboard() {
           </Select>
         </div>
       </div>
+      )}
 
       {/* Table */}
       <div className="bg-card rounded-xl border border-border shadow-card overflow-hidden">
@@ -498,20 +503,20 @@ function AdminDashboard() {
               <TableHead className="hidden lg:table-cell">Cooperativa</TableHead>
               <TableHead className="hidden md:table-cell">Materiais</TableHead>
               <TableHead>Status</TableHead>
-              <TableHead className="w-12"></TableHead>
+              {!readOnlyCatadores && <TableHead className="w-12"></TableHead>}
             </TableRow>
           </TableHeader>
           <TableBody>
             {isLoading && (
               <TableRow>
-                <TableCell colSpan={6} className="text-center py-12 text-muted-foreground">
+                <TableCell colSpan={readOnlyCatadores ? 5 : 6} className="text-center py-12 text-muted-foreground">
                   Carregando...
                 </TableCell>
               </TableRow>
             )}
             {!isLoading && filtered.length === 0 && (
               <TableRow>
-                <TableCell colSpan={6} className="text-center py-16">
+                <TableCell colSpan={readOnlyCatadores ? 5 : 6} className="text-center py-16">
                   <p className="text-muted-foreground">Nenhum catador encontrado.</p>
                   {isRecenseador && (
                     <Link to="/admin/novo" className="inline-block mt-4">
@@ -526,13 +531,17 @@ function AdminDashboard() {
             {filtered.map((c) => (
               <TableRow key={c.id} className="hover:bg-muted/40">
                 <TableCell>
-                  <Link
-                    to="/admin/$id"
-                    params={{ id: c.id }}
-                    className="font-medium hover:underline"
-                  >
-                    {c.nome_completo}
-                  </Link>
+                  {readOnlyCatadores ? (
+                    <span className="font-medium">{c.nome_completo}</span>
+                  ) : (
+                    <Link
+                      to="/admin/$id"
+                      params={{ id: c.id }}
+                      className="font-medium hover:underline"
+                    >
+                      {c.nome_completo}
+                    </Link>
+                  )}
                   <div className="md:hidden text-xs text-muted-foreground mt-0.5">{c.cpf}</div>
                 </TableCell>
                 <TableCell className="hidden md:table-cell text-sm tabular-nums">{c.cpf}</TableCell>
@@ -556,6 +565,7 @@ function AdminDashboard() {
                 <TableCell>
                   <StatusBadge status={c.status} />
                 </TableCell>
+                {!readOnlyCatadores && (
                 <TableCell>
                   <div className="flex items-center justify-end gap-1">
                     {((isRecenseador && c.created_by === user.id) || isCoordenadorRecenseador || isAdmin) && (
@@ -639,6 +649,7 @@ function AdminDashboard() {
                     </DropdownMenu>
                   </div>
                 </TableCell>
+                )}
               </TableRow>
             ))}
           </TableBody>
