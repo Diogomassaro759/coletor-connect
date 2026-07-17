@@ -233,12 +233,18 @@ function AssociationsPage() {
               </p>
               <h1 className="mt-1 text-2xl font-bold">{moduloLabel[areaForForm]}</h1>
               <p className="mt-1 text-sm text-muted-foreground">
-                Selecione uma entidade na lista abaixo para abrir o formulário da sua área.
+                {areaForForm === "social"
+                  ? "Abra um cadastro vazio para registrar uma nova entidade."
+                  : "Selecione uma entidade na lista abaixo para abrir o formulário da sua área."}
               </p>
             </div>
             <Button
               size="lg"
               onClick={() => {
+                if (areaForForm === "social") {
+                  navigate({ to: "/admin/associacoes/nova" });
+                  return;
+                }
                 setSelectedEntity("");
                 setPendingModulo(areaForForm);
               }}
@@ -602,19 +608,26 @@ function AssociationsPage() {
                               <Button variant="ghost" size="sm">Ações</Button>
                             </DropdownMenuTrigger>
                             <DropdownMenuContent align="end">
-                              <DropdownMenuItem asChild>
-                                <Link
+                              <DropdownMenuItem
+                                onSelect={() =>
+                                  navigate({
                                   to="/admin/associacoes/$id/editar"
-                                  params={{ id: item.id }}
-                                  search={{ mode: "view" }}
-                                >
-                                  <Eye className="size-4 mr-2" /> Visualizar
-                                </Link>
+                                    params: { id: item.id },
+                                    search: { mode: "view" },
+                                  })
+                                }
+                              >
+                                <Eye className="size-4 mr-2" /> Visualizar
                               </DropdownMenuItem>
-                              <DropdownMenuItem asChild>
-                                <Link to="/admin/associacoes/$id/editar" params={{ id: item.id }}>
-                                  <Pencil className="size-4 mr-2" /> Editar
-                                </Link>
+                              <DropdownMenuItem
+                                onSelect={() =>
+                                  navigate({
+                                    to: "/admin/associacoes/$id/editar",
+                                    params: { id: item.id },
+                                  })
+                                }
+                              >
+                                <Pencil className="size-4 mr-2" /> Editar
                               </DropdownMenuItem>
                               {areaForForm !== "social" && (
                                 blocked ? (
@@ -622,14 +635,16 @@ function AssociationsPage() {
                                     <Lock className="size-4 mr-2" /> Aguardando Social
                                   </DropdownMenuItem>
                                 ) : (
-                                  <DropdownMenuItem asChild>
-                                    <Link
-                                      to="/admin/associacoes/$id/diagnostico/novo"
-                                      params={{ id: item.id }}
-                                      search={{ modulo: areaForForm }}
-                                    >
-                                      <ClipboardPlus className="size-4 mr-2" /> Abrir formulário
-                                    </Link>
+                                  <DropdownMenuItem
+                                    onSelect={() =>
+                                      navigate({
+                                        to: "/admin/associacoes/$id/diagnostico/novo",
+                                        params: { id: item.id },
+                                        search: { modulo: areaForForm },
+                                      })
+                                    }
+                                  >
+                                    <ClipboardPlus className="size-4 mr-2" /> Abrir formulário
                                   </DropdownMenuItem>
                                 )
                               )}
@@ -643,20 +658,27 @@ function AssociationsPage() {
                           <Button variant="ghost" size="sm">Ações</Button>
                         </DropdownMenuTrigger>
                         <DropdownMenuContent align="end">
-                          <DropdownMenuItem asChild>
-                            <Link
-                              to="/admin/associacoes/$id/editar"
-                              params={{ id: item.id }}
-                              search={{ mode: "view" }}
-                            >
-                              <Eye className="size-4 mr-2" /> Visualizar
-                            </Link>
+                          <DropdownMenuItem
+                            onSelect={() =>
+                              navigate({
+                                to: "/admin/associacoes/$id/editar",
+                                params: { id: item.id },
+                                search: { mode: "view" },
+                              })
+                            }
+                          >
+                            <Eye className="size-4 mr-2" /> Visualizar
                           </DropdownMenuItem>
                           {isAdmin && (
-                            <DropdownMenuItem asChild>
-                              <Link to="/admin/associacoes/$id/editar" params={{ id: item.id }}>
-                                <Pencil className="size-4 mr-2" /> Editar
-                              </Link>
+                            <DropdownMenuItem
+                              onSelect={() =>
+                                navigate({
+                                  to: "/admin/associacoes/$id/editar",
+                                  params: { id: item.id },
+                                })
+                              }
+                            >
+                              <Pencil className="size-4 mr-2" /> Editar
                             </DropdownMenuItem>
                           )}
                           {isCoordenador && (
@@ -672,13 +694,16 @@ function AssociationsPage() {
                                 );
                               }
                               return (
-                                <DropdownMenuItem asChild>
-                                  <Link
-                                    to="/admin/associacoes/$id/diagnostico/novo"
-                                    params={{ id: item.id }}
-                                  >
-                                    <ClipboardPlus className="size-4 mr-2" /> Abrir formulário
-                                  </Link>
+                                <DropdownMenuItem
+                                  onSelect={() =>
+                                    navigate({
+                                      to: "/admin/associacoes/$id/diagnostico/novo",
+                                      params: { id: item.id },
+                                      search: { modulo: areaForForm },
+                                    })
+                                  }
+                                >
+                                  <ClipboardPlus className="size-4 mr-2" /> Abrir formulário
                                 </DropdownMenuItem>
                               );
                             })()
