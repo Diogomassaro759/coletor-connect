@@ -41,7 +41,7 @@ export const Route = createFileRoute("/_authenticated/admin/associacoes/$id/diag
 function NewAssessment() {
   const { id } = Route.useParams();
   const { modulo } = Route.useSearch();
-  const { area } = Route.useRouteContext() as any;
+  const { area, user } = Route.useRouteContext() as any;
   const navigate = useNavigate();
   const [saving, setSaving] = useState(false);
   const forcedModule =
@@ -61,18 +61,22 @@ function NewAssessment() {
   const defaultDate = `${now.getFullYear()}-${pad(now.getMonth() + 1)}-${pad(now.getDate())}`;
   const defaultTime = `${pad(now.getHours())}:${pad(now.getMinutes())}`;
   const { data: consultantProfile } = useQuery({
-    queryKey: ["consultant-profile-me"],
+    queryKey: ["consultant-profile-me", user?.id ?? null],
     queryFn: async () => {
-      const { data: auth } = await supabase.auth.getUser();
-      if (!auth.user) return null;
+      if (!user?.id) return null;
       const { data } = await supabase
         .from("profiles")
         .select("full_name")
-        .eq("user_id", auth.user.id)
+        .eq("user_id", user.id)
         .maybeSingle();
       return data;
     },
   });
+  const consultantName =
+    consultantProfile?.full_name ??
+    (user?.user_metadata?.full_name as string | undefined) ??
+    (user?.email as string | undefined) ??
+    "";
   const { data: association, isLoading: loadingAssociation } = useQuery({
     queryKey: ["association-social-form", id],
     queryFn: async () => {
