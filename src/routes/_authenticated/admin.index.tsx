@@ -565,6 +565,7 @@ function AdminDashboard() {
                 <TableCell>
                   <StatusBadge status={c.status} />
                 </TableCell>
+                {!readOnlyCatadores && (
                 <TableCell>
                   <div className="flex items-center justify-end gap-1">
                     {((isRecenseador && c.created_by === user.id) || isCoordenadorRecenseador || isAdmin) && (
@@ -648,6 +649,7 @@ function AdminDashboard() {
                     </DropdownMenu>
                   </div>
                 </TableCell>
+                )}
               </TableRow>
             ))}
           </TableBody>
