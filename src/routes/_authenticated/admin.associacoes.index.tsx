@@ -1,6 +1,6 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
-import { Building2, ClipboardPlus, Download, Eye, Lock, Pencil, Plus, Search } from "lucide-react";
+import { ArrowRight, Building2, ClipboardPlus, Download, Eye, HardHat, Lock, Pencil, Plus, Scale, Search, Users2, Wallet } from "lucide-react";
 import { useMemo, useState } from "react";
 import { toast } from "sonner";
 import { AdminShell } from "@/components/admin/AdminShell";
@@ -333,48 +333,97 @@ function AssociationsPage() {
 
 
       {isAdminLike && (
-        <section className="mb-6 rounded-xl border border-primary/30 bg-primary/5 p-5 shadow-card">
-          <div className="mb-4">
-            <p className="text-xs font-bold uppercase tracking-[0.16em] text-primary">
+        <section className="mb-8">
+          <div className="mb-6 flex flex-col gap-1">
+            <p className="text-[11px] font-bold uppercase tracking-[0.18em] text-primary">
               Formulários de campo
             </p>
-            <h2 className="mt-1 text-xl font-bold">Cadastros por área</h2>
-            <p className="mt-1 text-sm text-muted-foreground">
-              Escolha o módulo do diagnóstico. A entidade será selecionada em seguida.
+            <h2 className="text-2xl font-bold tracking-tight text-foreground">Cadastros por área</h2>
+            <p className="text-sm text-muted-foreground">
+              Selecione o módulo para preenchimento dos diagnósticos institucionais.
             </p>
           </div>
-          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+          <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
             {(([
-              { key: "social", titulo: "Cadastro Social", descricao: "Perfil socioeconômico e organizacional." },
-              { key: "juridico", titulo: "Cadastro Jurídico", descricao: "Documentação, estatuto e regularidade jurídica." },
-              { key: "contabil", titulo: "Cadastro Contábil", descricao: "Escrituração, tributos e obrigações fiscais." },
-              { key: "infraestrutura", titulo: "Cadastro de Infraestrutura", descricao: "Sede, equipamentos e condições operacionais." },
-            ] as const).filter((m) => isAdmin || !isCoordenador || m.key === areaForForm)).map((m) => (
-
-              <div
-                key={m.key}
-                className="flex flex-col justify-between rounded-2xl border border-border bg-card p-5 shadow-card"
-              >
-                <div>
-                  <h3 className="text-base font-semibold">{m.titulo}</h3>
-                  <p className="mt-1 text-xs text-muted-foreground">{m.descricao}</p>
-                </div>
-                <Button
-                  size="sm"
-                  className="mt-4 w-full"
-                  onClick={() => {
-                    if (m.key === "social") {
-                      navigate({ to: "/admin/associacoes/nova" });
-                      return;
-                    }
-                    setSelectedEntity("");
-                    setPendingModulo(m.key);
-                  }}
+              {
+                key: "social",
+                titulo: "Social",
+                descricao: "Perfil socioeconômico, composição e vulnerabilidades da entidade.",
+                Icon: Users2,
+                accent: "bg-[hsl(217_91%_55%)]",
+                iconBg: "bg-[hsl(217_91%_96%)]",
+                iconText: "text-[hsl(217_91%_45%)]",
+                iconHover: "group-hover:bg-[hsl(217_91%_55%)] group-hover:text-white",
+                button: "bg-[hsl(217_91%_50%)] hover:bg-[hsl(217_91%_42%)] focus-visible:ring-[hsl(217_91%_85%)]",
+              },
+              {
+                key: "juridico",
+                titulo: "Jurídico",
+                descricao: "Documentação legal, estatutos e regularidade institucional.",
+                Icon: Scale,
+                accent: "bg-[hsl(243_75%_60%)]",
+                iconBg: "bg-[hsl(243_75%_96%)]",
+                iconText: "text-[hsl(243_75%_50%)]",
+                iconHover: "group-hover:bg-[hsl(243_75%_60%)] group-hover:text-white",
+                button: "bg-[hsl(243_75%_58%)] hover:bg-[hsl(243_75%_50%)] focus-visible:ring-[hsl(243_75%_88%)]",
+              },
+              {
+                key: "contabil",
+                titulo: "Contábil",
+                descricao: "Escrituração, tributos, fluxo financeiro e obrigações fiscais.",
+                Icon: Wallet,
+                accent: "bg-[hsl(173_68%_39%)]",
+                iconBg: "bg-[hsl(173_68%_94%)]",
+                iconText: "text-[hsl(173_68%_32%)]",
+                iconHover: "group-hover:bg-[hsl(173_68%_39%)] group-hover:text-white",
+                button: "bg-[hsl(173_68%_36%)] hover:bg-[hsl(173_68%_30%)] focus-visible:ring-[hsl(173_60%_85%)]",
+              },
+              {
+                key: "infraestrutura",
+                titulo: "Infraestrutura",
+                descricao: "Sede, equipamentos, veículos e condições operacionais.",
+                Icon: HardHat,
+                accent: "bg-[hsl(38_92%_50%)]",
+                iconBg: "bg-[hsl(38_92%_95%)]",
+                iconText: "text-[hsl(32_95%_44%)]",
+                iconHover: "group-hover:bg-[hsl(38_92%_50%)] group-hover:text-white",
+                button: "bg-[hsl(32_95%_48%)] hover:bg-[hsl(28_92%_42%)] focus-visible:ring-[hsl(38_92%_85%)]",
+              },
+            ] as const).filter((m) => isAdmin || !isCoordenador || m.key === areaForForm)).map((m) => {
+              const Icon = m.Icon;
+              return (
+                <div
+                  key={m.key}
+                  className="group relative flex flex-col overflow-hidden rounded-2xl border border-border bg-card p-6 shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-xl"
                 >
-                  <ClipboardPlus className="size-4 mr-1" /> Abrir formulário
-                </Button>
-              </div>
-            ))}
+                  <span className={`absolute inset-x-0 top-0 h-1 ${m.accent}`} aria-hidden />
+                  <div
+                    className={`mb-4 flex size-12 items-center justify-center rounded-xl transition-colors ${m.iconBg} ${m.iconText} ${m.iconHover}`}
+                  >
+                    <Icon className="size-6" />
+                  </div>
+                  <h3 className="mb-2 text-lg font-bold text-foreground">{m.titulo}</h3>
+                  <p className="mb-8 text-sm leading-relaxed text-muted-foreground">{m.descricao}</p>
+                  <div className="mt-auto">
+                    <button
+                      type="button"
+                      onClick={() => {
+                        if (m.key === "social") {
+                          navigate({ to: "/admin/associacoes/nova" });
+                          return;
+                        }
+                        setSelectedEntity("");
+                        setPendingModulo(m.key);
+                      }}
+                      className={`inline-flex w-full items-center justify-center rounded-lg px-4 py-2.5 text-sm font-semibold text-white shadow-sm transition-all focus:outline-none focus-visible:ring-4 active:scale-[0.98] ${m.button}`}
+                    >
+                      Abrir formulário
+                      <ArrowRight className="ml-2 size-4 transition-transform group-hover:translate-x-1" />
+                    </button>
+                  </div>
+                </div>
+              );
+            })}
           </div>
         </section>
       )}
