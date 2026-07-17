@@ -34,7 +34,7 @@ export const Route = createFileRoute("/_authenticated/admin/$id/")({
 
 function CatadorDetails() {
   const { id } = Route.useParams();
-  const { role, user, isAdmin } = Route.useRouteContext();
+  const { role, user, isAdmin, isCoordenadorRecenseador } = Route.useRouteContext() as any;
   const showFull = canViewSensitive(role);
   const navigate = useNavigate();
   const qc = useQueryClient();
@@ -168,7 +168,7 @@ function CatadorDetails() {
               </DropdownMenuContent>
             </DropdownMenu>
           )}
-          {(isAdmin || c.created_by === user.id) && (
+          {(isAdmin || isCoordenadorRecenseador || c.created_by === user.id) && (
             <Link to="/admin/$id/editar" params={{ id }}>
               <Button variant="outline"><Pencil className="size-4" /> Editar</Button>
             </Link>
