@@ -42,6 +42,9 @@ import { listAssociationsWithSocial } from "@/lib/users.functions";
 
 export const Route = createFileRoute("/_authenticated/admin/associacoes/")({
   head: () => ({ meta: [{ title: "Associações — PROCATE" }] }),
+  validateSearch: (s: Record<string, unknown>) => ({
+    abrir: s.abrir === "1" ? ("1" as const) : undefined,
+  }),
   component: AssociationsPage,
 });
 
