@@ -61,10 +61,11 @@ function EditarUsuarioPage() {
 
   useEffect(() => {
     if (data) {
+      console.log("[EditarUsuario] data loaded:", data);
       const rawRole = ((data as any).roles?.[0] ?? "recenseador") as any;
-      // Expor coordenador_recenseador como Perfil=coordenador + Tipo=recenseador
       const uiRole = rawRole === "coordenador_recenseador" ? "coordenador" : rawRole;
       const uiArea = rawRole === "coordenador_recenseador" ? "recenseador" : ((data as any).area ?? "");
+      console.log("[EditarUsuario] uiRole/uiArea:", uiRole, uiArea);
       setForm({
         full_name: (data as any).full_name ?? "",
         email: (data as any).email ?? "",
