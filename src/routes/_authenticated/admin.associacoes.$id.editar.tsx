@@ -24,7 +24,11 @@ export const Route = createFileRoute("/_authenticated/admin/associacoes/$id/edit
   }),
   beforeLoad: ({ context, search }) => {
     if (search.mode === "view") return;
-    if (!context.isAdmin && !context.isCoordenador)
+    const canEdit =
+      context.isAdmin ||
+      context.isCoordenador ||
+      (context.isConsultant && context.area === "social");
+    if (!canEdit)
       throw redirect({ to: "/admin/associacoes" });
   },
   head: () => ({ meta: [{ title: "Entidade — PROCATE" }] }),

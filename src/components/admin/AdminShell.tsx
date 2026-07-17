@@ -79,16 +79,16 @@ export function AdminShell({ children }: { children: React.ReactNode }) {
           </Link>
           <nav className="flex items-center gap-1">
             {(isAdmin || isCoordenador) && (
-              <Link to="/admin" search={{ view: "catadores" as const }}>
-                <Button variant="ghost" size="sm">
+              <Button variant="ghost" size="sm" asChild>
+                <Link to="/admin" search={{ view: "catadores" as const }}>
                   <LayoutDashboard className="size-4" />{" "}
                   <span className="hidden sm:inline">Catadores</span>
-                </Button>
-              </Link>
+                </Link>
+              </Button>
             )}
             {(isAdmin || isViewer) && (
-              <Link to="/admin/associacoes">
-                <Button variant="ghost" size="sm">
+              <Button variant="ghost" size="sm" asChild>
+                <Link to="/admin/associacoes">
                   {isAdmin || isCoordenador ? (
                     <Building2 className="size-4" />
                   ) : (
@@ -97,28 +97,28 @@ export function AdminShell({ children }: { children: React.ReactNode }) {
                   <span className="hidden md:inline">
                     {isAdmin || isCoordenador ? "Entidades" : "Cadastros de campo"}
                   </span>
-                </Button>
-              </Link>
+                </Link>
+              </Button>
             )}
             {(isAdmin || isCoordenador) && (
-              <Link to="/admin/diagnosticos">
-                <Button variant="ghost" size="sm">
+              <Button variant="ghost" size="sm" asChild>
+                <Link to="/admin/diagnosticos">
                   <BarChart3 className="size-4" />{" "}
                   <span className="hidden lg:inline">Regularidade</span>
-                </Button>
-              </Link>
+                </Link>
+              </Button>
             )}
             {(isAdmin || isCoordenador) && (
-              <Link to="/admin/usuarios">
-                <Button variant="ghost" size="sm">
+              <Button variant="ghost" size="sm" asChild>
+                <Link to="/admin/usuarios">
                   <UserCog className="size-4" />{" "}
                   <span className="hidden lg:inline">Usuários</span>
-                </Button>
-              </Link>
+                </Link>
+              </Button>
             )}
             {(isAdmin || isViewer) && (
-              <Link to="/admin/notificacoes" className="relative">
-                <Button variant="ghost" size="sm" title="Notificações">
+              <Button variant="ghost" size="sm" title="Notificações" asChild>
+                <Link to="/admin/notificacoes" className="relative">
                   <Bell className="size-4" />
                   {unreadCount > 0 && (
                     <Badge
@@ -128,15 +128,15 @@ export function AdminShell({ children }: { children: React.ReactNode }) {
                       {unreadCount > 9 ? "9+" : unreadCount}
                     </Badge>
                   )}
-                </Button>
-              </Link>
+                </Link>
+              </Button>
             )}
 
-            <Link to="/admin/perfil">
-              <Button variant="ghost" size="sm" title="Meu perfil">
+            <Button variant="ghost" size="sm" title="Meu perfil" asChild>
+              <Link to="/admin/perfil">
                 <UserCircle2 className="size-4" />
-              </Button>
-            </Link>
+              </Link>
+            </Button>
             <Button variant="ghost" size="sm" onClick={signOut} title="Sair">
               <LogOut className="size-4" />
             </Button>
