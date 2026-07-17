@@ -60,6 +60,9 @@ function NewAssociationPage() {
         email: String(form.get("email") ?? "").trim() || null,
         numero_associados_inicial: Number(form.get("numero_associados_inicial") ?? 0),
         numero_associados_atual: Number(form.get("numero_associados_atual") ?? 0),
+        consultor_nome: String(form.get("consultor_nome") ?? "").trim() || null,
+        data_visita: String(form.get("data_visita") ?? "").trim() || null,
+        horario_visita: String(form.get("horario_visita") ?? "").trim() || null,
       })
       .select("id")
       .single();
