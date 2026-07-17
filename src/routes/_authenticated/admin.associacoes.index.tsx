@@ -243,36 +243,93 @@ function AssociationsPage() {
 
   return (
     <AdminShell>
-      {!isAdminLike && (
-        <section className="mb-5 rounded-xl border border-primary/30 bg-primary/5 p-5 shadow-card">
-          <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-            <div>
-              <p className="text-xs font-bold uppercase tracking-[0.16em] text-primary">
+      {!isAdminLike && (() => {
+        const MODULE_STYLES = {
+          social: {
+            titulo: "Social",
+            descricao: "Perfil socioeconômico, composição e vulnerabilidades da entidade.",
+            Icon: Users2,
+            accent: "bg-[hsl(217_91%_55%)]",
+            iconBg: "bg-[hsl(217_91%_96%)]",
+            iconText: "text-[hsl(217_91%_45%)]",
+            iconHover: "group-hover:bg-[hsl(217_91%_55%)] group-hover:text-white",
+            button: "bg-[hsl(217_91%_50%)] hover:bg-[hsl(217_91%_42%)] focus-visible:ring-[hsl(217_91%_85%)]",
+          },
+          juridico: {
+            titulo: "Jurídico",
+            descricao: "Documentação legal, estatutos e regularidade institucional.",
+            Icon: Scale,
+            accent: "bg-[hsl(243_75%_60%)]",
+            iconBg: "bg-[hsl(243_75%_96%)]",
+            iconText: "text-[hsl(243_75%_50%)]",
+            iconHover: "group-hover:bg-[hsl(243_75%_60%)] group-hover:text-white",
+            button: "bg-[hsl(243_75%_58%)] hover:bg-[hsl(243_75%_50%)] focus-visible:ring-[hsl(243_75%_88%)]",
+          },
+          contabil: {
+            titulo: "Contábil",
+            descricao: "Escrituração, tributos, fluxo financeiro e obrigações fiscais.",
+            Icon: Wallet,
+            accent: "bg-[hsl(173_68%_39%)]",
+            iconBg: "bg-[hsl(173_68%_94%)]",
+            iconText: "text-[hsl(173_68%_32%)]",
+            iconHover: "group-hover:bg-[hsl(173_68%_39%)] group-hover:text-white",
+            button: "bg-[hsl(173_68%_36%)] hover:bg-[hsl(173_68%_30%)] focus-visible:ring-[hsl(173_60%_85%)]",
+          },
+          infraestrutura: {
+            titulo: "Infraestrutura",
+            descricao: "Sede, equipamentos, veículos e condições operacionais.",
+            Icon: HardHat,
+            accent: "bg-[hsl(38_92%_50%)]",
+            iconBg: "bg-[hsl(38_92%_95%)]",
+            iconText: "text-[hsl(32_95%_44%)]",
+            iconHover: "group-hover:bg-[hsl(38_92%_50%)] group-hover:text-white",
+            button: "bg-[hsl(32_95%_48%)] hover:bg-[hsl(28_92%_42%)] focus-visible:ring-[hsl(38_92%_85%)]",
+          },
+        } as const;
+        const m = MODULE_STYLES[areaForForm];
+        const Icon = m.Icon;
+        return (
+          <section className="mb-8">
+            <div className="mb-6 flex flex-col gap-1">
+              <p className="text-[11px] font-bold uppercase tracking-[0.18em] text-primary">
                 Formulário de campo
               </p>
-              <h1 className="mt-1 text-2xl font-bold">{moduloLabel[areaForForm]}</h1>
-              <p className="mt-1 text-sm text-muted-foreground">
+              <h2 className="text-2xl font-bold tracking-tight text-foreground">{moduloLabel[areaForForm]}</h2>
+              <p className="text-sm text-muted-foreground">
                 {areaForForm === "social"
                   ? "Abra um cadastro vazio para registrar uma nova entidade."
                   : "Selecione uma entidade na lista abaixo para abrir o formulário da sua área."}
               </p>
             </div>
-            <Button
-              size="lg"
-              onClick={() => {
-                if (areaForForm === "social") {
-                  navigate({ to: "/admin/associacoes/nova" });
-                  return;
-                }
-                setSelectedEntity("");
-                setPendingModulo(areaForForm);
-              }}
-            >
-              <ClipboardPlus className="size-4 mr-1" /> Abrir formulário
-            </Button>
-          </div>
-        </section>
-      )}
+            <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
+              <div className="group relative flex flex-col overflow-hidden rounded-2xl border border-border bg-card p-6 shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-xl">
+                <span className={`absolute inset-x-0 top-0 h-1 ${m.accent}`} aria-hidden />
+                <div className={`mb-4 flex size-12 items-center justify-center rounded-xl transition-colors ${m.iconBg} ${m.iconText} ${m.iconHover}`}>
+                  <Icon className="size-6" />
+                </div>
+                <h3 className="mb-2 text-lg font-bold text-foreground">{m.titulo}</h3>
+                <p className="mb-8 text-sm leading-relaxed text-muted-foreground">{m.descricao}</p>
+                <div className="mt-auto">
+                  <button
+                    type="button"
+                    onClick={() => {
+                      if (areaForForm === "social") {
+                        navigate({ to: "/admin/associacoes/nova" });
+                        return;
+                      }
+                      setSelectedEntity("");
+                      setPendingModulo(areaForForm);
+                    }}
+                    className={`inline-flex w-full items-center justify-center gap-2 rounded-xl px-4 py-2.5 text-sm font-semibold text-white shadow-sm transition-all duration-200 hover:shadow-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 ${m.button}`}
+                  >
+                    Abrir formulário <ArrowRight className="size-4 transition-transform group-hover:translate-x-0.5" />
+                  </button>
+                </div>
+              </div>
+            </div>
+          </section>
+        );
+      })()}
 
       {isAdminLike && (
         <div className="mb-6 grid gap-4 lg:grid-cols-[1fr_auto] lg:items-start">
