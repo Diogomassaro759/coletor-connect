@@ -537,8 +537,8 @@ function AssessmentDetails() {
                 ["Movimento/rede", a.movimento_qual],
                 ["Consentimento", yes(a.consentimento_dados)],
               ]}
-            />
-            <Summary
+            />)}
+            {showJuridico && (<Summary
               title="Jurídico"
               rows={[
                 ["Mandato em dia", a.mandato_em_dia],
