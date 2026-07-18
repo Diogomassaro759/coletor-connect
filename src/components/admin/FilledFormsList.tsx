@@ -1,31 +1,45 @@
-import { Link } from "@tanstack/react-router";
+import { Link, useRouteContext } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
 
 export function FilledFormsList({ associationId }: { associationId: string }) {
+  const ctx = useRouteContext({ from: "/_authenticated" }) as any;
+  const area = ctx?.area as "social" | "juridico" | "contabil" | "infraestrutura" | null;
+  const isAdmin = !!ctx?.isAdmin;
+  // Admins see all forms. Everyone else (coordenador/consultor) is filtered by their area.
+  const showAssessment = isAdmin || !area || area === "social" || area === "juridico" || area === "contabil";
+  const showInfra = isAdmin || area === "infraestrutura";
+
+  const assessmentLabel =
+    area === "juridico" ? "Jurídico" : area === "contabil" ? "Contábil" : "Social";
+
   const { data: rows = [] } = useQuery({
-    queryKey: ["filled-forms", associationId],
+    queryKey: ["filled-forms", associationId, area, isAdmin],
     queryFn: async () => {
       const [a, i] = await Promise.all([
-        supabase
-          .from("association_assessments")
-          .select("id,data_visita,horario_visita,consultant_name,created_at")
-          .eq("association_id", associationId)
-          .order("data_visita", { ascending: false }),
-        supabase
-          .from("infrastructure_assessments")
-          .select("id,data_visita,horario_visita,consultant_name,created_at")
-          .eq("association_id", associationId)
-          .order("data_visita", { ascending: false }),
+        showAssessment
+          ? supabase
+              .from("association_assessments")
+              .select("id,data_visita,horario_visita,consultant_name,created_at")
+              .eq("association_id", associationId)
+              .order("data_visita", { ascending: false })
+          : Promise.resolve({ data: [] as any[] }),
+        showInfra
+          ? supabase
+              .from("infrastructure_assessments")
+              .select("id,data_visita,horario_visita,consultant_name,created_at")
+              .eq("association_id", associationId)
+              .order("data_visita", { ascending: false })
+          : Promise.resolve({ data: [] as any[] }),
       ]);
       const list = [
-        ...((a.data ?? []) as any[]).map((r) => ({
+        ...(((a as any).data ?? []) as any[]).map((r) => ({
           ...r,
-          formulario: "Social",
+          formulario: assessmentLabel,
           kind: "assessment" as const,
         })),
-        ...((i.data ?? []) as any[]).map((r) => ({
+        ...(((i as any).data ?? []) as any[]).map((r) => ({
           ...r,
           formulario: "Infraestrutura",
           kind: "infra" as const,
@@ -81,12 +95,14 @@ export function FilledFormsList({ associationId }: { associationId: string }) {
                         <Link
                           to="/admin/associacoes/$id/diagnostico/$assessmentId"
                           params={{ id: associationId, assessmentId: r.id }}
+                          search={{ mode: "view" as const }}
                         >
                           <Button size="sm" variant="outline">Visualizar</Button>
                         </Link>
                         <Link
                           to="/admin/associacoes/$id/diagnostico/$assessmentId"
                           params={{ id: associationId, assessmentId: r.id }}
+                          search={{ mode: "edit" as const }}
                         >
                           <Button size="sm">Editar</Button>
                         </Link>

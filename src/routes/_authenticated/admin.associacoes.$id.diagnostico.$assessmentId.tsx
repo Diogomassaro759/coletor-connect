@@ -35,6 +35,9 @@ import { supabase } from "@/integrations/supabase/client";
 export const Route = createFileRoute(
   "/_authenticated/admin/associacoes/$id/diagnostico/$assessmentId",
 )({
+  validateSearch: (search: Record<string, unknown>) => ({
+    mode: search.mode === "edit" ? ("edit" as const) : ("view" as const),
+  }),
   head: () => ({ meta: [{ title: "Diagnóstico institucional — PROCATE" }] }),
   component: AssessmentDetails,
 });
@@ -65,8 +68,9 @@ const EVIDENCE = [
 
 function AssessmentDetails() {
   const { id, assessmentId } = Route.useParams();
+  const { mode } = Route.useSearch();
   const { isConsultant } = Route.useRouteContext();
-  const canEditFieldData = isConsultant;
+  const canEditFieldData = isConsultant && mode === "edit";
   const qc = useQueryClient();
   const [cameraCategory, setCameraCategory] = useState<string | null>(null);
   const [uploading, setUploading] = useState(false);
