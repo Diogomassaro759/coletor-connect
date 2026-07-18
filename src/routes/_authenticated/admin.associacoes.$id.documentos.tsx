@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { BackButton } from "@/components/ui/back-button";
 import { createFileRoute, Link, redirect } from "@tanstack/react-router";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { ArrowLeft, Download, FileText, Loader2, Trash2, Upload } from "lucide-react";
@@ -146,11 +147,7 @@ function DocumentsPage() {
 
   return (
     <AdminShell>
-      <Link to="/admin/associacoes/$id" params={{ id }}>
-        <Button variant="ghost" size="sm" className="mb-5">
-          <ArrowLeft className="size-4" /> Voltar à entidade
-        </Button>
-      </Link>
+      <BackButton label="Voltar à entidade" className="mb-5" />
 
       <div className="mb-8">
         <p className="text-xs font-bold uppercase tracking-[0.16em] text-primary">

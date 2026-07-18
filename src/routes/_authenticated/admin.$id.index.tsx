@@ -1,4 +1,5 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
+import { BackButton } from "@/components/ui/back-button";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { supabase } from "@/integrations/supabase/client";
@@ -75,11 +76,7 @@ function CatadorDetails() {
 
   return (
     <AdminShell>
-      <Link to="/admin">
-        <Button variant="ghost" size="sm" className="mb-4">
-          <ArrowLeft className="size-4" /> Voltar
-        </Button>
-      </Link>
+      <BackButton />
 
       <div className="flex flex-wrap items-start justify-between gap-4 mb-8">
         <div>

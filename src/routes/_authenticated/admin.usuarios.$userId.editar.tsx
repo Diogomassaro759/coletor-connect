@@ -1,4 +1,5 @@
 import { createFileRoute, redirect, useNavigate, Link } from "@tanstack/react-router";
+import { BackButton } from "@/components/ui/back-button";
 import { useState } from "react";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
@@ -52,12 +53,7 @@ function EditarUsuarioPage() {
 
   return (
     <AdminShell>
-      <Link
-        to="/admin/usuarios"
-        className="inline-flex items-center gap-1 text-sm text-muted-foreground mb-4 hover:underline"
-      >
-        <ArrowLeft className="size-4" /> Voltar
-      </Link>
+      <BackButton />
       <h1 className="text-2xl font-bold mb-6">Editar usuário</h1>
 
       {isLoading || !data ? (

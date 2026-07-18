@@ -1,4 +1,5 @@
 import { createFileRoute, Link, redirect, useNavigate } from "@tanstack/react-router";
+import { BackButton } from "@/components/ui/back-button";
 import { useState, type FormEvent } from "react";
 import { ArrowLeft, Loader2 } from "lucide-react";
 import { toast } from "sonner";
@@ -77,11 +78,7 @@ function NewAssociationPage() {
 
   return (
     <AdminShell>
-      <Link to="/admin/associacoes">
-        <Button variant="ghost" size="sm" className="mb-5">
-          <ArrowLeft className="size-4" /> Voltar
-        </Button>
-      </Link>
+      <BackButton className="mb-5" />
       <div className="mx-auto max-w-3xl">
         <div className="mb-7">
           <p className="text-sm font-semibold uppercase tracking-wider text-primary">

@@ -1,4 +1,5 @@
 import { createFileRoute, Link, redirect } from "@tanstack/react-router";
+import { BackButton } from "@/components/ui/back-button";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useState, useMemo, useRef } from "react";
 import { ArrowLeft, Upload, Download, FileSpreadsheet, AlertCircle, CheckCircle2, Loader2 } from "lucide-react";
@@ -148,11 +149,7 @@ function ImportarCatadoresPage() {
 
   return (
     <AdminShell>
-      <Link to="/admin">
-        <Button variant="ghost" size="sm" className="mb-4">
-          <ArrowLeft className="size-4" /> Voltar à lista
-        </Button>
-      </Link>
+      <BackButton label="Voltar à lista" />
       <div className="mb-8">
         <h1 className="text-3xl font-bold tracking-tight">Importação em massa de catadores</h1>
         <p className="text-muted-foreground mt-1">
