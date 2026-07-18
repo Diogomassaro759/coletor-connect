@@ -701,7 +701,7 @@ function AssociationsPage() {
                               >
                                 <Eye className="size-4 mr-2" /> Visualizar
                               </DropdownMenuItem>
-                              {item.created_by === currentUserId && (
+                              {(isAdmin || isCoordenador || item.created_by === currentUserId) && (
                                 <DropdownMenuItem
                                   onSelect={() =>
                                     navigate({
