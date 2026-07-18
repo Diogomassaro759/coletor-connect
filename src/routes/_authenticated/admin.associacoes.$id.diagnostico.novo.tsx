@@ -526,7 +526,7 @@ function NewAssessment() {
               <div className="flex justify-end">
                 <Button type="submit" size="lg" disabled={saving}>
                   {saving && <Loader2 className="mr-2 size-4 animate-spin" />}
-                  Salvar diagnóstico de infraestrutura
+                  Salvar
                 </Button>
               </div>
             </div>
