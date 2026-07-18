@@ -97,12 +97,7 @@ function NovoUsuarioPage() {
 
   return (
     <AdminShell>
-      <Link
-        to="/admin/usuarios"
-        className="inline-flex items-center gap-1 text-sm text-muted-foreground mb-4 hover:underline"
-      >
-        <ArrowLeft className="size-4" /> Voltar
-      </Link>
+      <BackButton />
       <h1 className="text-2xl font-bold mb-1">Novo usuário operacional</h1>
       <p className="text-sm text-muted-foreground mb-6">
         O usuário será criado com a senha inicial abaixo e deverá redefini-la no primeiro acesso.
