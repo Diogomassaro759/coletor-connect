@@ -20,6 +20,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
 import { buildAssociationReportPDF } from "@/lib/association-report";
+import { FilledFormsList } from "@/components/admin/FilledFormsList";
 
 export const Route = createFileRoute("/_authenticated/admin/associacoes/$id/")({
   head: () => ({ meta: [{ title: "Detalhes da associação — PROCATE" }] }),
