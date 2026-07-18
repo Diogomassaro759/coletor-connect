@@ -559,8 +559,8 @@ function AssessmentDetails() {
                 ["Pendências", a.pendencias_juridicas],
                 ["Classificação", a.classificacao_juridica],
               ]}
-            />
-            <Summary
+            />)}
+            {showContabil && (<Summary
               title="Contábil"
               rows={[
                 ["Estatuto", a.estatuto_registrado],
