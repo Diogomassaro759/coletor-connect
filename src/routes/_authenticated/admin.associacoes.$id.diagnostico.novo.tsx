@@ -147,6 +147,18 @@ function NewAssessment() {
     if (!auth.user) return toast.error("Sua sessão expirou.");
 
     if (isInfrastructure) {
+      const { data: existingInfra } = await supabase
+        .from("infrastructure_assessments")
+        .select("id")
+        .eq("association_id", id)
+        .maybeSingle();
+      if (existingInfra?.id) {
+        toast.error("Já existe um formulário de infraestrutura para esta entidade.", {
+          description: "Abra o formulário existente para editar.",
+        });
+        navigate({ to: "/admin/associacoes/$id", params: { id } });
+        return;
+      }
       setSaving(true);
       const payload: Record<string, unknown> = {};
       for (const [k, v] of values.entries()) {
@@ -182,11 +194,30 @@ function NewAssessment() {
     if (!values.has("consentimento_dados") || !values.has("declaracao_veracidade")) {
       return toast.error("Confirme o consentimento e a veracidade das informações.");
     }
+    const assessmentArea = activeModule as "social" | "juridico" | "contabil";
+    const { data: existing } = await supabase
+      .from("association_assessments")
+      .select("id")
+      .eq("association_id", id)
+      .eq("area", assessmentArea)
+      .maybeSingle();
+    if (existing?.id) {
+      toast.error(`Já existe um formulário ${assessmentArea} para esta entidade.`, {
+        description: "Abra o formulário existente para editar.",
+      });
+      navigate({
+        to: "/admin/associacoes/$id/diagnostico/$assessmentId",
+        params: { id, assessmentId: existing.id },
+        search: { mode: "edit" },
+      });
+      return;
+    }
     setSaving(true);
     const { data: assessment, error } = await supabase
       .from("association_assessments")
       .insert({
         association_id: id,
+        area: assessmentArea,
         consultant_id: auth.user.id,
         consultant_name: String(values.get("consultant_name") ?? "").trim(),
         data_visita: String(values.get("data_visita") ?? ""),
