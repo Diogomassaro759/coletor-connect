@@ -69,7 +69,8 @@ export const IMPORT_HEADERS = [
   "materiais_coletados",
   "possui_carroca",
   "tipo_carroca",
-  "status",
+
+
 ] as const;
 
 const GENERO_MAP: Record<string, CatadorImportPayload["genero"]> = {};
