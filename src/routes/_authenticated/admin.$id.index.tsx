@@ -19,7 +19,7 @@ import {
 } from "@/components/ui/tooltip";
 import { ArrowLeft, Pencil, Trash2, ChevronDown, Check, Info, History, ShieldAlert } from "lucide-react";
 import { toast } from "sonner";
-import { GENERO_LABEL, STATUS_OPTIONS, STATUS_LABEL, STATUS_DESCRIPTION, STATUS_INATIVO_CRITERIOS } from "@/lib/catador-constants";
+import { GENERO_LABEL } from "@/lib/catador-constants";
 import {
   canViewSensitive,
   maskCPF,
@@ -51,20 +51,8 @@ function CatadorDetails() {
     },
   });
 
-  const statusMutation = useMutation({
-    mutationFn: async (status: string) => {
-      const { error } = await supabase
-        .from("catadores")
-        .update({ status: status as "ativo" | "inativo" | "pendente" })
-        .eq("id", id);
-      if (error) throw error;
-    },
-    onSuccess: () => {
-      toast.success("Status atualizado.");
-      qc.invalidateQueries({ queryKey: ["catador", id] });
-      qc.invalidateQueries({ queryKey: ["catadores"] });
-    },
-  });
+
+
 
   const deleteMutation = useMutation({
     mutationFn: async () => {
@@ -97,23 +85,6 @@ function CatadorDetails() {
         <div>
           <div className="flex items-center gap-3 flex-wrap">
             <h1 className="text-3xl font-bold">{c.nome_completo}</h1>
-            <StatusPill status={c.status} />
-            <TooltipProvider delayDuration={200}>
-              <Tooltip>
-                <TooltipTrigger asChild>
-                  <button
-                    type="button"
-                    aria-label={`Sobre o status ${STATUS_LABEL[c.status] ?? c.status}`}
-                    className="text-muted-foreground hover:text-foreground"
-                  >
-                    <Info className="size-4" />
-                  </button>
-                </TooltipTrigger>
-                <TooltipContent className="max-w-xs text-xs">
-                  {STATUS_DESCRIPTION[c.status] ?? "Sem descrição."}
-                </TooltipContent>
-              </Tooltip>
-            </TooltipProvider>
           </div>
           <p className="text-muted-foreground mt-1">
             Cadastrado em {new Date(c.data_cadastro).toLocaleDateString("pt-BR")}
@@ -124,57 +95,6 @@ function CatadorDetails() {
 
         </div>
         <div className="flex gap-2">
-          {isAdmin && (
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button variant="outline" className="gap-2">
-                  <span className="text-xs text-muted-foreground">Status atual:</span>
-                  <StatusPill status={c.status} />
-                  <ChevronDown className="size-4 opacity-60" />
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="end" className="w-80">
-                <DropdownMenuLabel className="flex items-start gap-2 py-3 bg-muted/40">
-                  <Check className="size-4 mt-0.5 text-primary shrink-0" />
-                  <div className="flex-1">
-                    <div className="flex items-center gap-2">
-                      <span className="text-xs uppercase tracking-wide text-muted-foreground">
-                        Status atual
-                      </span>
-                      <StatusPill status={c.status} />
-                    </div>
-                    <p className="text-xs text-muted-foreground font-normal leading-snug mt-1">
-                      {STATUS_DESCRIPTION[c.status]}
-                    </p>
-                    {c.status === "inativo" && (
-                      <ul className="mt-2 space-y-0.5 text-[11px] text-muted-foreground list-disc pl-4">
-                        {STATUS_INATIVO_CRITERIOS.map((cr) => <li key={cr}>{cr}</li>)}
-                      </ul>
-                    )}
-                  </div>
-                </DropdownMenuLabel>
-                <DropdownMenuSeparator />
-                <DropdownMenuLabel className="text-[11px] font-normal uppercase tracking-wide text-muted-foreground pt-2">
-                  Alterar para
-                </DropdownMenuLabel>
-                {STATUS_OPTIONS.filter((s) => s.value !== c.status).map((s) => (
-                  <DropdownMenuItem
-                    key={s.value}
-                    onClick={() => statusMutation.mutate(s.value)}
-                    className="flex items-start gap-2 py-2"
-                  >
-                    <div className="size-4 mt-0.5 shrink-0" />
-                    <div className="flex-1">
-                      <div className="font-medium text-sm">{s.label}</div>
-                      <p className="text-xs text-muted-foreground leading-snug">
-                        {STATUS_DESCRIPTION[s.value]}
-                      </p>
-                    </div>
-                  </DropdownMenuItem>
-                ))}
-              </DropdownMenuContent>
-            </DropdownMenu>
-          )}
           {(isAdmin || isCoordenadorRecenseador || c.created_by === user.id) && (
             <Link to="/admin/$id/editar" params={{ id }}>
               <Button variant="outline"><Pencil className="size-4" /> Editar</Button>
@@ -198,6 +118,7 @@ function CatadorDetails() {
                   <AlertDialogCancel>Cancelar</AlertDialogCancel>
                   <AlertDialogAction
                     onClick={() => deleteMutation.mutate()}
+
                     className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
                   >
                     Excluir
@@ -299,14 +220,8 @@ function RecenseadorName({ userId }: { userId: string | null | undefined }) {
 }
 
 
-function StatusPill({ status }: { status: string }) {
-  const map: Record<string, string> = {
-    ativo: "bg-success/15 text-success border-success/30",
-    pendente: "bg-warning/20 text-warning-foreground border-warning/40",
-    inativo: "bg-muted text-muted-foreground border-border",
-  };
-  return <Badge variant="outline" className={map[status] ?? ""}>{STATUS_LABEL[status] ?? status}</Badge>;
-}
+
+
 
 function Section({ title, children, className = "" }: { title: string; children: React.ReactNode; className?: string }) {
   return (

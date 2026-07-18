@@ -58,28 +58,8 @@ export const NIVEL_GOV_BR_OPTIONS = ["Bronze", "Prata", "Ouro"];
 
 export const RENDA_REFERENCIA = 1621; // salário mínimo nacional 2026 (referência)
 
-export const STATUS_OPTIONS = [
-  { value: "pendente", label: "Pendente" },
-  { value: "ativo", label: "Ativo" },
-  { value: "inativo", label: "Inativo" },
-] as const;
 
-export const STATUS_DESCRIPTION: Record<string, string> = {
-  pendente: "Cadastro recém-criado, aguardando validação dos dados pelo Administrador.",
-  ativo: "Catador validado e participando ativamente das atividades de coleta.",
-  inativo:
-    "Catador sem atividade de coleta registrada nos últimos 6 meses, com solicitação formal de desativação ou com documentos essenciais (CPF, comprovante de residência ou vínculo com cooperativa) não renovados/inválidos.",
-};
 
-export const STATUS_INATIVO_CRITERIOS: string[] = [
-  "Sem atividade de coleta registrada nos últimos 6 meses.",
-  "Solicitação formal de desativação pelo próprio catador ou pela cooperativa.",
-  "Documentos essenciais não renovados ou inválidos (CPF, comprovante de residência, vínculo com cooperativa).",
-];
-
-export const STATUS_LABEL: Record<string, string> = Object.fromEntries(
-  STATUS_OPTIONS.map((o) => [o.value, o.label]),
-);
 
 export function maskCPF(v: string) {
   return v

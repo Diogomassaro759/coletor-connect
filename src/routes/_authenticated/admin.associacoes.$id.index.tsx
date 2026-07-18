@@ -85,9 +85,8 @@ function AssociationDetails() {
             <Badge variant="secondary">
               {association.tipo === "formal" ? "Formal" : "Informal"}
             </Badge>
-            <Badge variant={association.ativa ? "outline" : "secondary"}>
-              {association.ativa ? "Ativa" : "Inativa"}
-            </Badge>
+
+
           </div>
           <h1 className="max-w-3xl text-3xl font-bold leading-tight">{association.nome}</h1>
           <p className="mt-2 flex items-center gap-1.5 text-muted-foreground">

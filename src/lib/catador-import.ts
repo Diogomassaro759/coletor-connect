@@ -4,9 +4,9 @@ import {
   ESCOLARIDADE_OPTIONS,
   MATERIAIS_OPTIONS,
   NIVEL_GOV_BR_OPTIONS,
-  STATUS_OPTIONS,
   isValidCPF,
 } from "./catador-constants";
+
 
 export type ImportRow = {
   rowNumber: number;
@@ -69,7 +69,8 @@ export const IMPORT_HEADERS = [
   "materiais_coletados",
   "possui_carroca",
   "tipo_carroca",
-  "status",
+
+
 ] as const;
 
 const GENERO_MAP: Record<string, CatadorImportPayload["genero"]> = {};
@@ -160,11 +161,8 @@ export function validateRow(
     if (!nivelGovMatched) errors.push(`nivel_cadastro_gov_br inválido (${NIVEL_GOV_BR_OPTIONS.join(", ")})`);
   }
 
-  const statusRaw = toStr(get("status")).toLowerCase() || "pendente";
-  const statusMatch = STATUS_OPTIONS.find(
-    (s) => s.value === statusRaw || s.label.toLowerCase() === statusRaw,
-  );
-  if (!statusMatch) errors.push("status inválido (pendente, ativo, inativo)");
+
+
 
   const emailRaw = toStr(get("email"));
   if (emailRaw && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(emailRaw))
@@ -197,7 +195,7 @@ export function validateRow(
         materiais_coletados: materiais,
         possui_carroca: toBool(get("possui_carroca")),
         tipo_carroca: toStr(get("tipo_carroca")) || null,
-        status: statusMatch?.value ?? "pendente",
+        status: "pendente",
         association_id: associationId,
       };
 
@@ -234,7 +232,7 @@ export async function buildTemplateXLSX(): Promise<Blob> {
     "Papelão; Plástico PET; Alumínio (latinha)",
     "Não",
     "",
-    "pendente",
+
   ]);
 
   // README sheet
@@ -257,7 +255,7 @@ export async function buildTemplateXLSX(): Promise<Blob> {
     ["contribui_inss / inscrito_cadunico / possui_bolsa_familia / cadastro_gov_br / possui_carroca", "Não", "Sim | Não"],
     ["nivel_cadastro_gov_br", "Não", NIVEL_GOV_BR_OPTIONS.join(" | ")],
     ["materiais_coletados", "Não", "Lista separada por ; (use exatamente os nomes oficiais)"],
-    ["status", "Não", "pendente | ativo | inativo (padrão: pendente)"],
+    
   ]);
   readme.getRow(1).font = { bold: true };
   readme.columns.forEach((c) => (c.width = 40));

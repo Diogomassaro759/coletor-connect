@@ -173,12 +173,10 @@ function AssociationsPage() {
       { header: "Município", key: "municipio" },
       { header: "Associados", key: "atuais" },
       { header: "Situação", key: "situacao" },
-      { header: "Status", key: "status" },
     ];
     filtered.forEach((item) => {
       const latest = latestByAssoc.get(item.id);
       const situacao = latest?.status ? SITUACAO_LABEL[latest.status] : "Sem diagnóstico";
-      const status = item.ativa ? "Ativa" : "Inativa";
       sheet.addRow({
         nome: item.nome,
         tipo: TIPO_LABEL[item.tipo] ?? item.tipo,
@@ -186,9 +184,9 @@ function AssociationsPage() {
         municipio: item.municipio,
         atuais: item.numero_associados_atual,
         situacao,
-        status,
       });
     });
+
     sheet.getRow(1).eachCell((cell) => {
       cell.font = { bold: true, color: { argb: "FFFFFFFF" } };
       cell.fill = { type: "pattern", pattern: "solid", fgColor: { argb: "FF15803D" } };
@@ -621,21 +619,21 @@ function AssociationsPage() {
               <TableHead className="hidden sm:table-cell">Associados</TableHead>
               <TableHead>Consultor</TableHead>
               <TableHead>Situação</TableHead>
-              <TableHead>Status</TableHead>
+              
               <TableHead className="w-24 text-right">Ações</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
             {isLoading && (
               <TableRow>
-                <TableCell colSpan={8} className="py-12 text-center text-muted-foreground">
+                <TableCell colSpan={7} className="py-12 text-center text-muted-foreground">
                   Carregando entidades...
                 </TableCell>
               </TableRow>
             )}
             {!isLoading && filtered.length === 0 && (
               <TableRow>
-                <TableCell colSpan={8} className="py-16 text-center">
+                <TableCell colSpan={7} className="py-16 text-center">
                   <Building2 className="mx-auto mb-3 size-10 text-muted-foreground" />
                   <p className="text-muted-foreground">Nenhuma entidade encontrada.</p>
                 </TableCell>
@@ -677,11 +675,7 @@ function AssociationsPage() {
                     )}
                   </TableCell>
 
-                  <TableCell>
-                    <Badge variant={item.ativa ? "secondary" : "outline"}>
-                      {item.ativa ? "Ativa" : "Inativa"}
-                    </Badge>
-                  </TableCell>
+
                   <TableCell className="text-right">
                     {isConsultant ? (
                       (() => {

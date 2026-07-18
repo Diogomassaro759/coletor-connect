@@ -62,11 +62,10 @@ import {
 import { toast } from "sonner";
 import {
   MATERIAIS_OPTIONS,
-  STATUS_OPTIONS,
-  STATUS_LABEL,
   GENERO_LABEL,
   RENDA_REFERENCIA,
 } from "@/lib/catador-constants";
+
 
 export const Route = createFileRoute("/_authenticated/admin/")({
   beforeLoad: ({ context }) => {
@@ -109,9 +108,9 @@ function AdminDashboard() {
   const isCatadoresScreen = !isAdminLike || showCatadoresScreen;
   const readOnlyCatadores = isCoordenador && !isAdmin;
   const [search, setSearch] = useState("");
-  const [statusFilter, setStatusFilter] = useState<string>("todos");
   const [materialFilter, setMaterialFilter] = useState<string>("todos");
   const [rendaFilter, setRendaFilter] = useState<string>("todos");
+
 
   const { data: catadores, isLoading } = useQuery({
     queryKey: ["catadores"],
@@ -145,14 +144,13 @@ function AdminDashboard() {
   const { data: assocStats } = useQuery({
     queryKey: ["assoc-stats"],
     queryFn: async () => {
-      const { data, error } = await supabase.from("associations").select("id,ativa");
+      const { data, error } = await supabase.from("associations").select("id");
       if (error) throw error;
-      const total = data.length;
-      const ativos = data.filter((a: any) => a.ativa).length;
-      return { total, ativos, pendentes: total - ativos };
+      return { total: data.length };
     },
     enabled: isAdminLike,
   });
+
 
   const RENDA_THRESHOLD = RENDA_REFERENCIA; // salário mínimo de referência
 
@@ -160,7 +158,6 @@ function AdminDashboard() {
   const filtered = useMemo(() => {
     if (!catadores) return [];
     return catadores.filter((c) => {
-      if (statusFilter !== "todos" && c.status !== statusFilter) return false;
       if (materialFilter !== "todos" && !c.materiais_coletados.includes(materialFilter))
         return false;
       if (rendaFilter === "menor" && !(c.renda_media_mensal < RENDA_THRESHOLD)) return false;
@@ -172,14 +169,13 @@ function AdminDashboard() {
       }
       return true;
     });
-  }, [catadores, statusFilter, materialFilter, rendaFilter, search]);
+  }, [catadores, materialFilter, rendaFilter, search]);
 
   const stats = useMemo(() => {
     const total = catadores?.length ?? 0;
-    const ativos = catadores?.filter((c) => c.status === "ativo").length ?? 0;
-    const pendentes = catadores?.filter((c) => c.status === "pendente").length ?? 0;
-    return { total, ativos, pendentes };
+    return { total };
   }, [catadores]);
+
 
   const deleteMutation = useMutation({
     mutationFn: async (id: string) => {
@@ -193,20 +189,8 @@ function AdminDashboard() {
     onError: (e: Error) => toast.error("Erro ao excluir", { description: e.message }),
   });
 
-  const statusMutation = useMutation({
-    mutationFn: async ({ id, status }: { id: string; status: string }) => {
-      const { error } = await supabase
-        .from("catadores")
-        .update({ status: status as "ativo" | "inativo" | "pendente" })
-        .eq("id", id);
-      if (error) throw error;
-    },
-    onSuccess: () => {
-      toast.success("Status atualizado.");
-      qc.invalidateQueries({ queryKey: ["catadores"] });
-    },
-    onError: (e: Error) => toast.error("Erro ao atualizar", { description: e.message }),
-  });
+
+
 
   async function exportXLSX() {
     if (!filtered.length) return toast.info("Nada para exportar.");
@@ -256,10 +240,10 @@ function AdminDashboard() {
       { header: "Conta bancária digital", key: "conta_bancaria_digital" },
       { header: "Cadastro gov.br", key: "cadastro_gov_br" },
       { header: "Nível gov.br", key: "nivel_cadastro_gov_br" },
-      { header: "Status", key: "status" },
       { header: "Data de cadastro", key: "data_cadastro", numFmt: "dd/mm/yyyy hh:mm" },
       { header: "Última atualização", key: "updated_at", numFmt: "dd/mm/yyyy hh:mm" },
     ];
+
     ws.columns = columns.map((c) => ({
       header: c.header,
       key: c.key,
@@ -292,8 +276,8 @@ function AdminDashboard() {
         conta_bancaria_digital: c.conta_bancaria_digital ?? "",
         cadastro_gov_br: c.cadastro_gov_br ? "Sim" : "Não",
         nivel_cadastro_gov_br: c.nivel_cadastro_gov_br ?? "",
-        status: STATUS_LABEL[c.status] ?? c.status,
         data_cadastro: new Date(c.data_cadastro),
+
         updated_at: c.updated_at ? new Date(c.updated_at) : null,
       });
     });
@@ -365,9 +349,8 @@ function AdminDashboard() {
             primaryLabel="ACESSAR"
             stats={[
               { icon: Users, label: "Total", value: assocStats?.total ?? 0, tone: "primary" },
-              { icon: UserCheck, label: "Ativas", value: assocStats?.ativos ?? 0, tone: "success" },
-              { icon: UserCog, label: "Pendentes", value: assocStats?.pendentes ?? 0, tone: "warning" },
             ]}
+
             actions={
               <>
                 <Link to="/admin/associacoes">
@@ -393,9 +376,8 @@ function AdminDashboard() {
             onPrimaryClick={() => setShowCatadoresScreen(true)}
             stats={[
               { icon: Users, label: "Total", value: stats.total, tone: "primary" },
-              { icon: UserCheck, label: "Ativos", value: stats.ativos, tone: "success" },
-              { icon: UserCog, label: "Pendentes", value: stats.pendentes, tone: "warning" },
             ]}
+
             actions={
               <>
                 <Button variant="outline" size="sm" onClick={exportXLSX}>
@@ -444,11 +426,10 @@ function AdminDashboard() {
             )}
           </div>
 
-          <div className="grid gap-4 sm:grid-cols-3 mb-6">
+          <div className="grid gap-4 sm:grid-cols-1 mb-6">
             <StatCard icon={Users} label="Total" value={stats.total} tone="primary" />
-            <StatCard icon={UserCheck} label="Ativos" value={stats.ativos} tone="success" />
-            <StatCard icon={UserCog} label="Pendentes" value={stats.pendentes} tone="warning" />
           </div>
+
         </>
       )}
 
@@ -470,19 +451,7 @@ function AdminDashboard() {
         </div>
         <div className="flex items-center gap-2">
           <Filter className="size-4 text-muted-foreground" />
-          <Select value={statusFilter} onValueChange={setStatusFilter}>
-            <SelectTrigger className="w-[150px]">
-              <SelectValue placeholder="Status" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="todos">Todos status</SelectItem>
-              {STATUS_OPTIONS.map((s) => (
-                <SelectItem key={s.value} value={s.value}>
-                  {s.label}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
+
           <Select value={materialFilter} onValueChange={setMaterialFilter}>
             <SelectTrigger className="w-[170px]">
               <SelectValue placeholder="Material" />
@@ -521,7 +490,7 @@ function AdminDashboard() {
               <TableHead className="hidden lg:table-cell">Cooperativa</TableHead>
               <TableHead className="hidden md:table-cell">Materiais</TableHead>
               <TableHead>Recenseador</TableHead>
-              <TableHead>Status</TableHead>
+              
               {!readOnlyCatadores && <TableHead className="w-12"></TableHead>}
             </TableRow>
           </TableHeader>
@@ -584,9 +553,8 @@ function AdminDashboard() {
                 <TableCell className="text-sm">
                   {c.created_by ? (creatorNames?.[c.created_by] ?? "—") : "—"}
                 </TableCell>
-                <TableCell>
-                  <StatusBadge status={c.status} />
-                </TableCell>
+
+
                 {!readOnlyCatadores && (
                 <TableCell>
                   <div className="flex items-center justify-end gap-1">
@@ -617,23 +585,8 @@ function AdminDashboard() {
                             </DropdownMenuItem>
                           </Link>
                         )}
-                      {isAdminLike && (
-                        <>
-                          <DropdownMenuSeparator />
-                          <DropdownMenuLabel className="text-xs font-normal text-muted-foreground">
-                            Status
-                          </DropdownMenuLabel>
-                          {STATUS_OPTIONS.map((s) => (
-                            <DropdownMenuItem
-                              key={s.value}
-                              disabled={c.status === s.value}
-                              onClick={() => statusMutation.mutate({ id: c.id, status: s.value })}
-                            >
-                              {s.label}
-                            </DropdownMenuItem>
-                          ))}
-                        </>
-                      )}
+
+
                       {isAdminLike && (
                         <>
                           <DropdownMenuSeparator />
@@ -776,15 +729,5 @@ function StatCard({
   );
 }
 
-function StatusBadge({ status }: { status: string }) {
-  const map: Record<string, string> = {
-    ativo: "bg-success/15 text-success border-success/30",
-    pendente: "bg-warning/20 text-warning-foreground border-warning/40",
-    inativo: "bg-muted text-muted-foreground border-border",
-  };
-  return (
-    <Badge variant="outline" className={map[status] ?? ""}>
-      {STATUS_LABEL[status] ?? status}
-    </Badge>
-  );
-}
+
+
