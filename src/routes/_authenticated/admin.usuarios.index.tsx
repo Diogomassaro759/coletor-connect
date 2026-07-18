@@ -48,6 +48,7 @@ function UsuariosPage() {
 
   return (
     <AdminShell>
+      <BackButton />
       <div className="mb-6 grid grid-cols-[minmax(0,1fr)_auto] items-start gap-3 sm:flex sm:items-center sm:justify-between">
         <div className="min-w-0">
           <h1 className="flex items-center gap-2 text-xl font-bold sm:text-2xl">
