@@ -677,11 +677,7 @@ function AssociationsPage() {
                     )}
                   </TableCell>
 
-                  <TableCell>
-                    <Badge variant={item.ativa ? "secondary" : "outline"}>
-                      {item.ativa ? "Ativa" : "Inativa"}
-                    </Badge>
-                  </TableCell>
+
                   <TableCell className="text-right">
                     {isConsultant ? (
                       (() => {
