@@ -117,7 +117,11 @@ function CatadorDetails() {
           </div>
           <p className="text-muted-foreground mt-1">
             Cadastrado em {new Date(c.data_cadastro).toLocaleDateString("pt-BR")}
+            {c.created_by && (
+              <> · por <RecenseadorName userId={c.created_by} /></>
+            )}
           </p>
+
         </div>
         <div className="flex gap-2">
           {isAdmin && (
