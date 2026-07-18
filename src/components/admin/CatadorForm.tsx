@@ -902,7 +902,7 @@ export function CatadorForm({
           </Button>
           <Button type="submit" disabled={submitting} size="lg">
             {submitting && <Loader2 className="size-4 animate-spin" />}
-            {mode === "edit" ? "Salvar alterações" : "Finalizar cadastro"}
+            Salvar
           </Button>
         </div>
       </div>

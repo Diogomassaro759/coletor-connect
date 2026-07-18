@@ -1000,7 +1000,7 @@ function EditableSummaryForm({
       )}
 
       <div className="flex justify-end border-t border-border pt-4">
-        <Button type="submit">Salvar formulário</Button>
+        <Button type="submit">Salvar</Button>
       </div>
     </form>
   );
