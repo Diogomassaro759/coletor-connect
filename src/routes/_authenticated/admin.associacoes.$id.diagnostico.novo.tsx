@@ -147,6 +147,18 @@ function NewAssessment() {
     if (!auth.user) return toast.error("Sua sessão expirou.");
 
     if (isInfrastructure) {
+      const { data: existingInfra } = await supabase
+        .from("infrastructure_assessments")
+        .select("id")
+        .eq("association_id", id)
+        .maybeSingle();
+      if (existingInfra?.id) {
+        toast.error("Já existe um formulário de infraestrutura para esta entidade.", {
+          description: "Abra o formulário existente para editar.",
+        });
+        navigate({ to: "/admin/associacoes/$id", params: { id } });
+        return;
+      }
       setSaving(true);
       const payload: Record<string, unknown> = {};
       for (const [k, v] of values.entries()) {
