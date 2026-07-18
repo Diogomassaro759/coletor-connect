@@ -621,7 +621,7 @@ function AssociationsPage() {
               <TableHead className="hidden sm:table-cell">Associados</TableHead>
               <TableHead>Consultor</TableHead>
               <TableHead>Situação</TableHead>
-              <TableHead>Status</TableHead>
+              
               <TableHead className="w-24 text-right">Ações</TableHead>
             </TableRow>
           </TableHeader>
