@@ -362,9 +362,8 @@ function AdminDashboard() {
             primaryLabel="ACESSAR"
             stats={[
               { icon: Users, label: "Total", value: assocStats?.total ?? 0, tone: "primary" },
-              { icon: UserCheck, label: "Ativas", value: assocStats?.ativos ?? 0, tone: "success" },
-              { icon: UserCog, label: "Pendentes", value: assocStats?.pendentes ?? 0, tone: "warning" },
             ]}
+
             actions={
               <>
                 <Link to="/admin/associacoes">
