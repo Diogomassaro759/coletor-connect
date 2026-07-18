@@ -18,6 +18,7 @@ import {
 import { Switch } from "@/components/ui/switch";
 import { Textarea } from "@/components/ui/textarea";
 import { supabase } from "@/integrations/supabase/client";
+import { FilledFormsList } from "@/components/admin/FilledFormsList";
 
 export const Route = createFileRoute("/_authenticated/admin/associacoes/$id/editar")({
   validateSearch: (search: Record<string, unknown>) => ({
