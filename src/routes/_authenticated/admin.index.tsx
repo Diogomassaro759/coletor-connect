@@ -172,8 +172,18 @@ function AdminDashboard() {
   }, [catadores, materialFilter, rendaFilter, search]);
 
   const stats = useMemo(() => {
-    const total = catadores?.length ?? 0;
-    return { total };
+    const list = catadores ?? [];
+    const total = list.length;
+    let cooperativa = 0;
+    let associacao = 0;
+    let coletivo = 0;
+    for (const c of list) {
+      const tipo = (c as { associations?: { tipo?: string | null } | null }).associations?.tipo;
+      if (tipo === "cooperativa") cooperativa++;
+      else if (tipo === "associacao") associacao++;
+      else if (tipo === "coletivo") coletivo++;
+    }
+    return { total, cooperativa, associacao, coletivo };
   }, [catadores]);
 
 
