@@ -1,30 +1,29 @@
 import { useRouter } from "@tanstack/react-router";
 import { ArrowLeft } from "lucide-react";
+import { Button } from "@/components/ui/button";
 
 type BackButtonProps = {
   label?: string;
+  fallbackTo?: string;
   className?: string;
 };
 
-export function BackButton({ label = "Voltar", className }: BackButtonProps) {
+export function BackButton({
+  label = "Voltar",
+  fallbackTo = "/admin",
+  className = "mb-4",
+}: BackButtonProps) {
   const router = useRouter();
   const handleClick = () => {
-    if (window.history.length > 1) {
+    if (typeof window !== "undefined" && window.history.length > 1) {
       router.history.back();
     } else {
-      router.navigate({ to: "/admin" });
+      router.navigate({ to: fallbackTo });
     }
   };
   return (
-    <button
-      type="button"
-      onClick={handleClick}
-      className={
-        className ??
-        "inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground"
-      }
-    >
+    <Button variant="ghost" size="sm" className={className} onClick={handleClick}>
       <ArrowLeft className="size-4" /> {label}
-    </button>
+    </Button>
   );
 }
