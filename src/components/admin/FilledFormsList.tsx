@@ -7,12 +7,9 @@ export function FilledFormsList({ associationId }: { associationId: string }) {
   const ctx = useRouteContext({ from: "/_authenticated" }) as any;
   const area = ctx?.area as "social" | "juridico" | "contabil" | "infraestrutura" | null;
   const isAdmin = !!ctx?.isAdmin;
-  const isCoordenador = !!ctx?.isCoordenador;
-  const showAll = isAdmin || isCoordenador ? !area : false;
-  // Determine which kinds to show. Social/Juridico/Contabil all live in association_assessments;
-  // Infra lives in infrastructure_assessments. Admins/Coordinators without area see all.
-  const showAssessment = showAll || area === "social" || area === "juridico" || area === "contabil" || (isAdmin || isCoordenador);
-  const showInfra = showAll || area === "infraestrutura" || (isAdmin || isCoordenador);
+  // Admins see all forms. Everyone else (coordenador/consultor) is filtered by their area.
+  const showAssessment = isAdmin || !area || area === "social" || area === "juridico" || area === "contabil";
+  const showInfra = isAdmin || area === "infraestrutura";
 
   const assessmentLabel =
     area === "juridico" ? "Jurídico" : area === "contabil" ? "Contábil" : "Social";
