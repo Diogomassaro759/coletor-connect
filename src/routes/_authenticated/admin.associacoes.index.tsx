@@ -1,7 +1,7 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
-import { ArrowRight, Building2, ClipboardPlus, Download, Eye, HardHat, Lock, Pencil, Plus, Scale, Search, Users2, Wallet } from "lucide-react";
+import { ArrowRight, Building2, ClipboardPlus, Download, Eye, HardHat, Lock, Pencil, Plus, Scale, Search, Users, Users2, Wallet } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 import { toast } from "sonner";
 import { AdminShell } from "@/components/admin/AdminShell";
@@ -176,6 +176,17 @@ function AssociationsPage() {
         .includes(term);
     });
   }, [associations, search, tipoFilter, municipioFilter]);
+
+  const entityStats = useMemo(() => {
+    const all = associations as any[];
+    return {
+      total: all.length,
+      cooperativa: all.filter((a) => tipoMatches(a, "cooperativa")).length,
+      associacao: all.filter((a) => tipoMatches(a, "associacao")).length,
+      coletivo: all.filter((a) => tipoMatches(a, "coletivo")).length,
+    };
+  }, [associations]);
+
 
   async function exportAssociations() {
     if (!filtered.length) return toast.info("Nenhuma entidade para exportar.");
@@ -376,7 +387,15 @@ function AssociationsPage() {
         </div>
       )}
 
+      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4 mb-6">
+        <EntityStatCard icon={Building2} label="Total" value={entityStats.total} tone="primary" />
+        <EntityStatCard icon={Users} label="Cooperativa" value={entityStats.cooperativa} tone="success" />
+        <EntityStatCard icon={Users} label="Associação" value={entityStats.associacao} tone="success" />
+        <EntityStatCard icon={Users} label="Coletivo" value={entityStats.coletivo} tone="warning" />
+      </div>
+
       <div className="mb-3 flex items-center gap-3">
+
         <div className="relative w-full max-w-xl">
           <Search className="absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
           <Input
@@ -902,5 +921,34 @@ function AssociationsPage() {
         </div>
       </div>
     </AdminShell>
+  );
+}
+
+function EntityStatCard({
+  icon: Icon,
+  label,
+  value,
+  tone,
+}: {
+  icon: typeof Users;
+  label: string;
+  value: number;
+  tone: "primary" | "success" | "warning";
+}) {
+  const tones = {
+    primary: "bg-primary-soft text-primary",
+    success: "bg-success/15 text-success",
+    warning: "bg-warning/20 text-warning-foreground",
+  };
+  return (
+    <div className="bg-card rounded-xl border border-border p-5 shadow-card flex items-center gap-4">
+      <div className={`grid place-items-center size-12 rounded-xl ${tones[tone]}`}>
+        <Icon className="size-5" />
+      </div>
+      <div>
+        <div className="text-2xl font-bold tabular-nums">{value}</div>
+        <div className="text-sm text-muted-foreground">{label}</div>
+      </div>
+    </div>
   );
 }
