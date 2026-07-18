@@ -430,11 +430,7 @@ function NewAssessment() {
 
   return (
     <AdminShell>
-      <Link to="/admin/associacoes/$id" params={{ id }}>
-        <Button variant="ghost" size="sm" className="mb-5">
-          <ArrowLeft className="size-4" /> Voltar à entidade
-        </Button>
-      </Link>
+      <BackButton label="Voltar à entidade" className="mb-5" />
       <div className="mx-auto max-w-5xl">
         <p className="text-xs font-bold uppercase tracking-[0.16em] text-primary">
           3 tipos de cadastro de campo
