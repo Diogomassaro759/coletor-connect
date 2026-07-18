@@ -231,10 +231,10 @@ function AssociationsPage() {
   const areaForForm = (area ?? "social") as "social" | "juridico" | "contabil" | "infraestrutura";
 
   const moduloLabel: Record<string, string> = {
-    social: "Cadastro Social",
-    juridico: "Cadastro Jurídico",
-    contabil: "Cadastro Contábil",
-    infraestrutura: "Cadastro de Infraestrutura",
+    social: "Formulário Social",
+    juridico: "Formulário Jurídico",
+    contabil: "Formulário Contábil",
+    infraestrutura: "Formulário de Infraestrutura",
   };
 
   const areaSuffix: Record<string, string> = {
