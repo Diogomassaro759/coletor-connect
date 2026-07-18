@@ -145,9 +145,15 @@ function AdminDashboard() {
   const { data: assocStats } = useQuery({
     queryKey: ["assoc-stats"],
     queryFn: async () => {
-      const { data, error } = await supabase.from("associations").select("id");
+      const { data, error } = await supabase.from("associations").select("id,tipo");
       if (error) throw error;
-      return { total: data.length };
+      let cooperativa = 0, associacao = 0, coletivo = 0;
+      for (const a of data as { tipo: string | null }[]) {
+        if (a.tipo === "cooperativa") cooperativa++;
+        else if (a.tipo === "associacao") associacao++;
+        else if (a.tipo === "coletivo") coletivo++;
+      }
+      return { total: data.length, cooperativa, associacao, coletivo };
     },
     enabled: isAdminLike,
   });
