@@ -173,12 +173,10 @@ function AssociationsPage() {
       { header: "Município", key: "municipio" },
       { header: "Associados", key: "atuais" },
       { header: "Situação", key: "situacao" },
-      { header: "Status", key: "status" },
     ];
     filtered.forEach((item) => {
       const latest = latestByAssoc.get(item.id);
       const situacao = latest?.status ? SITUACAO_LABEL[latest.status] : "Sem diagnóstico";
-      const status = item.ativa ? "Ativa" : "Inativa";
       sheet.addRow({
         nome: item.nome,
         tipo: TIPO_LABEL[item.tipo] ?? item.tipo,
@@ -186,9 +184,9 @@ function AssociationsPage() {
         municipio: item.municipio,
         atuais: item.numero_associados_atual,
         situacao,
-        status,
       });
     });
+
     sheet.getRow(1).eachCell((cell) => {
       cell.font = { bold: true, color: { argb: "FFFFFFFF" } };
       cell.fill = { type: "pattern", pattern: "solid", fgColor: { argb: "FF15803D" } };
