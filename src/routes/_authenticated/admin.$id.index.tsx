@@ -51,20 +51,8 @@ function CatadorDetails() {
     },
   });
 
-  const statusMutation = useMutation({
-    mutationFn: async (status: string) => {
-      const { error } = await supabase
-        .from("catadores")
-        .update({ status: status as "ativo" | "inativo" | "pendente" })
-        .eq("id", id);
-      if (error) throw error;
-    },
-    onSuccess: () => {
-      toast.success("Status atualizado.");
-      qc.invalidateQueries({ queryKey: ["catador", id] });
-      qc.invalidateQueries({ queryKey: ["catadores"] });
-    },
-  });
+
+
 
   const deleteMutation = useMutation({
     mutationFn: async () => {
