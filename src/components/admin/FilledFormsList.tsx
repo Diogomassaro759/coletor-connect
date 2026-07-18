@@ -7,12 +7,15 @@ export function FilledFormsList({ associationId }: { associationId: string }) {
   const ctx = useRouteContext({ from: "/_authenticated" }) as any;
   const area = ctx?.area as "social" | "juridico" | "contabil" | "infraestrutura" | null;
   const isAdmin = !!ctx?.isAdmin;
+  const areaLabels: Record<string, string> = {
+    social: "Social",
+    juridico: "Jurídico",
+    contabil: "Contábil",
+    infraestrutura: "Infraestrutura",
+  };
   // Admins see all forms. Everyone else (coordenador/consultor) is filtered by their area.
   const showAssessment = isAdmin || !area || area === "social" || area === "juridico" || area === "contabil";
   const showInfra = isAdmin || area === "infraestrutura";
-
-  const assessmentLabel =
-    area === "juridico" ? "Jurídico" : area === "contabil" ? "Contábil" : "Social";
 
   const { data: rows = [] } = useQuery({
     queryKey: ["filled-forms", associationId, area, isAdmin],
@@ -21,7 +24,7 @@ export function FilledFormsList({ associationId }: { associationId: string }) {
         showAssessment
           ? supabase
               .from("association_assessments")
-              .select("id,data_visita,horario_visita,consultant_name,created_at")
+              .select("id,data_visita,horario_visita,consultant_name,created_at,created_by")
               .eq("association_id", associationId)
               .order("data_visita", { ascending: false })
           : Promise.resolve({ data: [] as any[] }),
@@ -33,12 +36,37 @@ export function FilledFormsList({ associationId }: { associationId: string }) {
               .order("data_visita", { ascending: false })
           : Promise.resolve({ data: [] as any[] }),
       ]);
+      const assessmentRows = (((a as any).data ?? []) as any[]);
+      const creatorIds = [...new Set(assessmentRows.map((r) => r.created_by).filter(Boolean))];
+      let creatorAreas: Record<string, string> = {};
+
+      if (creatorIds.length > 0) {
+        const { data: roleRows } = await supabase
+          .from("user_roles")
+          .select("user_id,area")
+          .in("user_id", creatorIds)
+          .not("area", "is", null);
+
+        creatorAreas = ((roleRows ?? []) as any[]).reduce((acc, role) => {
+          if (!acc[role.user_id]) acc[role.user_id] = role.area;
+          return acc;
+        }, {} as Record<string, string>);
+      }
+
+      const visibleAssessmentRows = assessmentRows.filter((r) => {
+        const formArea = creatorAreas[r.created_by] ?? "social";
+        return isAdmin || !area || formArea === area;
+      });
+
       const list = [
-        ...(((a as any).data ?? []) as any[]).map((r) => ({
+        ...visibleAssessmentRows.map((r) => {
+          const formArea = creatorAreas[r.created_by] ?? "social";
+          return {
           ...r,
-          formulario: assessmentLabel,
+          formulario: areaLabels[formArea] ?? "Social",
           kind: "assessment" as const,
-        })),
+          };
+        }),
         ...(((i as any).data ?? []) as any[]).map((r) => ({
           ...r,
           formulario: "Infraestrutura",
