@@ -70,8 +70,7 @@ function AssessmentDetails() {
   const { id, assessmentId } = Route.useParams();
   const { mode } = Route.useSearch();
   const ctx = Route.useRouteContext() as any;
-  const { isConsultant, area } = ctx;
-  const canEditFieldData = isConsultant && mode === "edit";
+  const { isAdmin, isConsultant, isCoordenador, area } = ctx;
   const { data: assessmentArea } = useQuery({
     queryKey: ["assessment-area", assessmentId],
     queryFn: async () => {
@@ -94,6 +93,11 @@ function AssessmentDetails() {
   const showSocial = !effectiveArea || effectiveArea === "social";
   const showJuridico = effectiveArea === "juridico";
   const showContabil = effectiveArea === "contabil";
+  const canEditFieldData =
+    mode === "edit" &&
+    (isAdmin ||
+      (isCoordenador && (!effectiveArea || area === effectiveArea)) ||
+      (isConsultant && (!effectiveArea || area === effectiveArea)));
   const qc = useQueryClient();
   const [cameraCategory, setCameraCategory] = useState<string | null>(null);
   const [uploading, setUploading] = useState(false);
@@ -204,6 +208,20 @@ function AssessmentDetails() {
           .insert({ assessment_id: assessmentId, tipo, ...changes });
     if (result.error) toast.error("Erro ao atualizar livro", { description: result.error.message });
     else refresh();
+  }
+
+  async function saveSummary(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    const form = new FormData(event.currentTarget);
+    const payload = buildAssessmentUpdatePayload(form, effectiveArea ?? "social");
+    const { error } = await supabase
+      .from("association_assessments")
+      .update(payload)
+      .eq("id", assessmentId);
+
+    if (error) return toast.error("Não foi possível salvar", { description: error.message });
+    toast.success("Formulário atualizado.");
+    refresh();
   }
 
   async function uploadEvidence(file: File, category: string) {
@@ -525,85 +543,96 @@ function AssessmentDetails() {
           <TabsTrigger value="evidencias">Evidências</TabsTrigger>
         </TabsList>
         <TabsContent value="resumo">
-          <div className="mt-5 grid gap-5 md:grid-cols-3">
-            {showSocial && (<Summary
-              title="Social / Cadastral"
-              rows={[
-                ["Presidente", a.presidente_nome],
-                ["Telefone", a.presidente_telefone],
-                ["Vice-presidente", a.vice_presidente_nome],
-                ["Homens", a.homens],
-                ["Mulheres", a.mulheres],
-                ["Faixa etária", a.faixa_etaria_predominante],
-                ["Escolaridade", a.escolaridade_predominante],
-                ["Dependentes", yes(a.criancas_adolescentes_dependentes)],
-                ["INSS", a.contribuicao_inss],
-                ["CadÚnico", a.inscritos_cadunico],
-                ["Uso de EPIs", a.uso_epis],
-                ["Fornecimento de EPIs", a.cooperativa_fornece_epis],
-                ["Jornada", a.media_horas_trabalhadas],
-                ["Beneficiários", a.quantidade_beneficiarios],
-                ["Preconceito", yes(a.relatos_preconceito)],
-                ["Trabalho infantil", yes(a.historico_trabalho_infantil)],
-                ["Capacitação", yes(a.interesse_capacitacao)],
-                ["Coleta", a.tipo_coleta],
-                ["Triagem", yes(a.realiza_triagem)],
-                ["Materiais", a.materiais_coletados.join(", ")],
-                ["Volumetria", `${a.volumetria_toneladas_mes ?? 0} t/mês`],
-                ["Parcerias", a.possui_parcerias],
-                ["Destino da venda", a.destino_venda],
-                ["Galpão", a.tipo_galpao],
-                ["Movimento/rede", a.movimento_qual],
-                ["Consentimento", yes(a.consentimento_dados)],
-              ]}
-            />)}
-            {showJuridico && (<Summary
-              title="Jurídico"
-              rows={[
-                ["Mandato em dia", a.mandato_em_dia],
-                ["Ata registrada", a.ata_registrada_cartorio],
-                ["Registro de atas", a.possui_registro_atas],
-                ["Conselho fiscal", a.conselho_fiscal],
-                ["Assessoria jurídica", yes(a.assessoria_juridica)],
-                ["Apoio institucional", yes(a.apoio_instituicoes)],
-                ["Instituições", a.apoio_instituicoes_quais],
-                ["Lista de cooperados", a.lista_cooperados_atualizada],
-                ["Lista de não cooperados", a.lista_nao_cooperados_atualizada],
-                ["Regras de entrada", a.regras_entrada],
-                ["Regras de saída", a.regras_saida_exclusao],
-                ["Divisão de tarefas", a.divisao_tarefas],
-                ["Coordenação/gerência", a.coordenacao_gerencia],
-                ["Contrato remunerado", yes(a.contrato_remunerado)],
-                ["Tipo de contrato", a.contrato_tipo],
-                ["Pendências", a.pendencias_juridicas],
-                ["Classificação", a.classificacao_juridica],
-              ]}
-            />)}
-            {showContabil && (<Summary
-              title="Contábil"
-              rows={[
-                ["Estatuto", a.estatuto_registrado],
-                ["Alvará", a.alvara_funcionamento],
-                ["Licença", a.licenca_ambiental_status],
-                ["Ficha/livro de trabalho", yes(a.livro_ficha_trabalho)],
-                ["Livro de inspeção", yes(a.livro_inspecao_trabalho)],
-                ["Sindicato", yes(a.filiacao_sindical)],
-                ["SST", a.contrato_sst],
-                ["Controle de frequência", a.controle_frequencia_tipo],
-                ["Tipo de contador", a.contador_tipo],
-                ["Nome do contador", a.contador_nome],
-                ["Telefone", a.contador_telefone],
-                ["E-mail", a.contador_email],
-                ["Contabilidade", a.contabilidade_regular],
-                ["Notas fiscais", a.emite_notas_fiscais],
-                ["Estoque", a.controle_estoque],
-                ["Divisão — critério", a.divisao_resultados_criterio],
-                ["Divisão — procedimento", a.divisao_resultados_procedimento],
-                ["Pendências", a.pendencias_contabeis],
-                ["Classificação", a.classificacao_contabil],
-              ]}
-            />)}
-          </div>
+          {canEditFieldData ? (
+            <EditableSummaryForm
+              assessment={a}
+              area={effectiveArea ?? "social"}
+              showSocial={showSocial}
+              showJuridico={showJuridico}
+              showContabil={showContabil}
+              onSubmit={saveSummary}
+            />
+          ) : (
+            <div className="mt-5 grid gap-5 md:grid-cols-3">
+              {showSocial && (<Summary
+                title="Social / Cadastral"
+                rows={[
+                  ["Presidente", a.presidente_nome],
+                  ["Telefone", a.presidente_telefone],
+                  ["Vice-presidente", a.vice_presidente_nome],
+                  ["Homens", a.homens],
+                  ["Mulheres", a.mulheres],
+                  ["Faixa etária", a.faixa_etaria_predominante],
+                  ["Escolaridade", a.escolaridade_predominante],
+                  ["Dependentes", yes(a.criancas_adolescentes_dependentes)],
+                  ["INSS", a.contribuicao_inss],
+                  ["CadÚnico", a.inscritos_cadunico],
+                  ["Uso de EPIs", a.uso_epis],
+                  ["Fornecimento de EPIs", a.cooperativa_fornece_epis],
+                  ["Jornada", a.media_horas_trabalhadas],
+                  ["Beneficiários", a.quantidade_beneficiarios],
+                  ["Preconceito", yes(a.relatos_preconceito)],
+                  ["Trabalho infantil", yes(a.historico_trabalho_infantil)],
+                  ["Capacitação", yes(a.interesse_capacitacao)],
+                  ["Coleta", a.tipo_coleta],
+                  ["Triagem", yes(a.realiza_triagem)],
+                  ["Materiais", a.materiais_coletados.join(", ")],
+                  ["Volumetria", `${a.volumetria_toneladas_mes ?? 0} t/mês`],
+                  ["Parcerias", a.possui_parcerias],
+                  ["Destino da venda", a.destino_venda],
+                  ["Galpão", a.tipo_galpao],
+                  ["Movimento/rede", a.movimento_qual],
+                  ["Consentimento", yes(a.consentimento_dados)],
+                ]}
+              />)}
+              {showJuridico && (<Summary
+                title="Jurídico"
+                rows={[
+                  ["Mandato em dia", a.mandato_em_dia],
+                  ["Ata registrada", a.ata_registrada_cartorio],
+                  ["Registro de atas", a.possui_registro_atas],
+                  ["Conselho fiscal", a.conselho_fiscal],
+                  ["Assessoria jurídica", yes(a.assessoria_juridica)],
+                  ["Apoio institucional", yes(a.apoio_instituicoes)],
+                  ["Instituições", a.apoio_instituicoes_quais],
+                  ["Lista de cooperados", a.lista_cooperados_atualizada],
+                  ["Lista de não cooperados", a.lista_nao_cooperados_atualizada],
+                  ["Regras de entrada", a.regras_entrada],
+                  ["Regras de saída", a.regras_saida_exclusao],
+                  ["Divisão de tarefas", a.divisao_tarefas],
+                  ["Coordenação/gerência", a.coordenacao_gerencia],
+                  ["Contrato remunerado", yes(a.contrato_remunerado)],
+                  ["Tipo de contrato", a.contrato_tipo],
+                  ["Pendências", a.pendencias_juridicas],
+                  ["Classificação", a.classificacao_juridica],
+                ]}
+              />)}
+              {showContabil && (<Summary
+                title="Contábil"
+                rows={[
+                  ["Estatuto", a.estatuto_registrado],
+                  ["Alvará", a.alvara_funcionamento],
+                  ["Licença", a.licenca_ambiental_status],
+                  ["Ficha/livro de trabalho", yes(a.livro_ficha_trabalho)],
+                  ["Livro de inspeção", yes(a.livro_inspecao_trabalho)],
+                  ["Sindicato", yes(a.filiacao_sindical)],
+                  ["SST", a.contrato_sst],
+                  ["Controle de frequência", a.controle_frequencia_tipo],
+                  ["Tipo de contador", a.contador_tipo],
+                  ["Nome do contador", a.contador_nome],
+                  ["Telefone", a.contador_telefone],
+                  ["E-mail", a.contador_email],
+                  ["Contabilidade", a.contabilidade_regular],
+                  ["Notas fiscais", a.emite_notas_fiscais],
+                  ["Estoque", a.controle_estoque],
+                  ["Divisão — critério", a.divisao_resultados_criterio],
+                  ["Divisão — procedimento", a.divisao_resultados_procedimento],
+                  ["Pendências", a.pendencias_contabeis],
+                  ["Classificação", a.classificacao_contabil],
+                ]}
+              />)}
+            </div>
+          )}
         </TabsContent>
         <TabsContent value="precos">
           <Collection title="Compradores e preços por quilograma">
