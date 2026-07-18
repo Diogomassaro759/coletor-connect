@@ -139,7 +139,7 @@ function EditAssociationPage() {
               <Input name="nome" defaultValue={data.nome} required minLength={2} maxLength={200} />
             </Field>
             <Field label="Tipo">
-              <Select value={tipo} onValueChange={(v) => setTipo(v)}>
+              <Select value={tipo} onValueChange={(v) => setTipo(v)} disabled={readOnly}>
                 <SelectTrigger>
                   <SelectValue />
                 </SelectTrigger>
@@ -152,7 +152,7 @@ function EditAssociationPage() {
             </Field>
             <Field label="Situação">
               <div className="flex h-10 items-center gap-3 rounded-md border border-input px-3">
-                <Switch checked={ativa} onCheckedChange={setAtiva} />
+                <Switch checked={ativa} onCheckedChange={setAtiva} disabled={readOnly} />
                 <span className="text-sm">{ativa ? "Ativa" : "Inativa"}</span>
               </div>
             </Field>
