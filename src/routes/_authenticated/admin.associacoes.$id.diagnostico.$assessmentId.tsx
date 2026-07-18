@@ -583,7 +583,7 @@ function AssessmentDetails() {
                 ["Pendências", a.pendencias_contabeis],
                 ["Classificação", a.classificacao_contabil],
               ]}
-            />
+            />)}
           </div>
         </TabsContent>
         <TabsContent value="precos">
