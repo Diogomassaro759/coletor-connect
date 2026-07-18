@@ -300,16 +300,25 @@ function FilledFormsList({ associationId }: { associationId: string }) {
                   <td className="py-3 pr-4">{r.consultant_name ?? "—"}</td>
                   <td className="py-3 pr-4 text-right">
                     {r.kind === "assessment" ? (
-                      <Link
-                        to="/admin/associacoes/$id/diagnostico/$assessmentId"
-                        params={{ id: associationId, assessmentId: r.id }}
-                      >
-                        <Button size="sm" variant="outline">Visualizar / Editar</Button>
-                      </Link>
+                      <div className="flex justify-end gap-2">
+                        <Link
+                          to="/admin/associacoes/$id/diagnostico/$assessmentId"
+                          params={{ id: associationId, assessmentId: r.id }}
+                        >
+                          <Button size="sm" variant="outline">Visualizar</Button>
+                        </Link>
+                        <Link
+                          to="/admin/associacoes/$id/diagnostico/$assessmentId"
+                          params={{ id: associationId, assessmentId: r.id }}
+                        >
+                          <Button size="sm">Editar</Button>
+                        </Link>
+                      </div>
                     ) : (
-                      <Button size="sm" variant="outline" disabled>
-                        Visualizar / Editar
-                      </Button>
+                      <div className="flex justify-end gap-2">
+                        <Button size="sm" variant="outline" disabled>Visualizar</Button>
+                        <Button size="sm" disabled>Editar</Button>
+                      </div>
                     )}
                   </td>
                 </tr>
