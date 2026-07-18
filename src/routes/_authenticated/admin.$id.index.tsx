@@ -278,22 +278,19 @@ function CatadorDetails() {
 }
 
 function RecenseadorName({ userId }: { userId: string | null | undefined }) {
+  const fetchDisplayNames = useServerFn(getUserDisplayNames);
   const { data } = useQuery({
-    queryKey: ["profile-name", userId],
+    queryKey: ["display-name", userId],
     enabled: !!userId,
     queryFn: async () => {
-      const { data, error } = await supabase
-        .from("profiles")
-        .select("full_name, email")
-        .eq("user_id", userId as string)
-        .maybeSingle();
-      if (error) throw error;
-      return data?.full_name || data?.email || "—";
+      const map = (await fetchDisplayNames({ data: { ids: [userId as string] } })) as Record<string, string>;
+      return map[userId as string] ?? "—";
     },
   });
   if (!userId) return <>—</>;
   return <>{data ?? "…"}</>;
 }
+
 
 function StatusPill({ status }: { status: string }) {
   const map: Record<string, string> = {
