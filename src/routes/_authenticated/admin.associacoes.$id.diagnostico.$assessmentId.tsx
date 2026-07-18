@@ -69,8 +69,12 @@ const EVIDENCE = [
 function AssessmentDetails() {
   const { id, assessmentId } = Route.useParams();
   const { mode } = Route.useSearch();
-  const { isConsultant } = Route.useRouteContext();
+  const ctx = Route.useRouteContext() as any;
+  const { isConsultant, isAdmin, area } = ctx;
   const canEditFieldData = isConsultant && mode === "edit";
+  const showSocial = isAdmin || !area || area === "social";
+  const showJuridico = isAdmin || area === "juridico";
+  const showContabil = isAdmin || area === "contabil";
   const qc = useQueryClient();
   const [cameraCategory, setCameraCategory] = useState<string | null>(null);
   const [uploading, setUploading] = useState(false);
@@ -503,7 +507,7 @@ function AssessmentDetails() {
         </TabsList>
         <TabsContent value="resumo">
           <div className="mt-5 grid gap-5 md:grid-cols-3">
-            <Summary
+            {showSocial && (<Summary
               title="Social / Cadastral"
               rows={[
                 ["Presidente", a.presidente_nome],
@@ -533,8 +537,8 @@ function AssessmentDetails() {
                 ["Movimento/rede", a.movimento_qual],
                 ["Consentimento", yes(a.consentimento_dados)],
               ]}
-            />
-            <Summary
+            />)}
+            {showJuridico && (<Summary
               title="Jurídico"
               rows={[
                 ["Mandato em dia", a.mandato_em_dia],
@@ -555,8 +559,8 @@ function AssessmentDetails() {
                 ["Pendências", a.pendencias_juridicas],
                 ["Classificação", a.classificacao_juridica],
               ]}
-            />
-            <Summary
+            />)}
+            {showContabil && (<Summary
               title="Contábil"
               rows={[
                 ["Estatuto", a.estatuto_registrado],
@@ -579,7 +583,7 @@ function AssessmentDetails() {
                 ["Pendências", a.pendencias_contabeis],
                 ["Classificação", a.classificacao_contabil],
               ]}
-            />
+            />)}
           </div>
         </TabsContent>
         <TabsContent value="precos">
