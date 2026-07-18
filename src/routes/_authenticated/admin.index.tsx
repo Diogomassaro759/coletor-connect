@@ -730,15 +730,5 @@ function StatCard({
   );
 }
 
-function StatusBadge({ status }: { status: string }) {
-  const map: Record<string, string> = {
-    ativo: "bg-success/15 text-success border-success/30",
-    pendente: "bg-warning/20 text-warning-foreground border-warning/40",
-    inativo: "bg-muted text-muted-foreground border-border",
-  };
-  return (
-    <Badge variant="outline" className={map[status] ?? ""}>
-      {STATUS_LABEL[status] ?? status}
-    </Badge>
-  );
-}
+
+
