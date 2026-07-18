@@ -38,6 +38,17 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
+import { FileCheck2 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { listAssociationsWithSocial } from "@/lib/users.functions";
 
@@ -78,6 +89,10 @@ function AssociationsPage() {
   const [selectedEntity, setSelectedEntity] = useState<string>("");
   const [entitySearch, setEntitySearch] = useState("");
   const [pendingModulo, setPendingModulo] = useState<"social" | "juridico" | "contabil" | "infraestrutura" | null>(null);
+  const [existingPrompt, setExistingPrompt] = useState<
+    | { modulo: "social" | "juridico" | "contabil" | "infraestrutura"; associationId: string; assessmentId: string | null }
+    | null
+  >(null);
 
   const [tipoFilter, setTipoFilter] = useState<"todas" | "cooperativa" | "associacao" | "coletivo">("todas");
   const [municipioFilter, setMunicipioFilter] = useState<string>("todos");
@@ -595,15 +610,10 @@ function AssociationsPage() {
                     .eq("association_id", id)
                     .maybeSingle();
                   if (existing?.id) {
-                    const editar = window.confirm(
-                      "Já existe um formulário preenchido. Deseja editar?"
-                    );
                     setPendingModulo(null);
                     setSelectedEntity("");
                     setEntitySearch("");
-                    if (editar) {
-                      navigate({ to: "/admin/associacoes/$id", params: { id } });
-                    }
+                    setExistingPrompt({ modulo, associationId: id, assessmentId: null });
                     return;
                   }
                 } else {
@@ -614,19 +624,10 @@ function AssociationsPage() {
                     .eq("area", modulo)
                     .maybeSingle();
                   if (existing?.id) {
-                    const editar = window.confirm(
-                      "Já existe um formulário preenchido. Deseja editar?"
-                    );
                     setPendingModulo(null);
                     setSelectedEntity("");
                     setEntitySearch("");
-                    if (editar) {
-                      navigate({
-                        to: "/admin/associacoes/$id/diagnostico/$assessmentId",
-                        params: { id, assessmentId: existing.id },
-                        search: { mode: "edit" },
-                      });
-                    }
+                    setExistingPrompt({ modulo, associationId: id, assessmentId: existing.id });
                     return;
                   }
                 }
@@ -647,6 +648,57 @@ function AssociationsPage() {
           </DialogFooter>
         </DialogContent>
       </Dialog>
+
+      <AlertDialog
+        open={!!existingPrompt}
+        onOpenChange={(open) => {
+          if (!open) setExistingPrompt(null);
+        }}
+      >
+        <AlertDialogContent className="max-w-md">
+          <AlertDialogHeader>
+            <div className="mx-auto mb-2 flex h-12 w-12 items-center justify-center rounded-full bg-primary/10 text-primary">
+              <FileCheck2 className="h-6 w-6" aria-hidden="true" />
+            </div>
+            <AlertDialogTitle className="text-center text-lg">
+              Formulário já preenchido
+            </AlertDialogTitle>
+            <AlertDialogDescription className="text-center">
+              Já existe um formulário{" "}
+              <span className="font-medium text-foreground">
+                {existingPrompt ? moduloLabel[existingPrompt.modulo] : ""}
+              </span>{" "}
+              para esta entidade. Deseja editar o formulário existente?
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter className="sm:justify-center gap-2">
+            <AlertDialogCancel className="mt-0">Não, voltar</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={() => {
+                if (!existingPrompt) return;
+                const { modulo, associationId, assessmentId } = existingPrompt;
+                setExistingPrompt(null);
+                if (modulo === "infraestrutura") {
+                  navigate({
+                    to: "/admin/associacoes/$id",
+                    params: { id: associationId },
+                  });
+                } else if (assessmentId) {
+                  navigate({
+                    to: "/admin/associacoes/$id/diagnostico/$assessmentId",
+                    params: { id: associationId, assessmentId },
+                    search: { mode: "edit" },
+                  });
+                }
+              }}
+            >
+              Sim, editar
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
+
 
 
 
