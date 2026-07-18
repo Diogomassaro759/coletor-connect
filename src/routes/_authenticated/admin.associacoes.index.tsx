@@ -5,6 +5,7 @@ import { ArrowRight, Building2, ClipboardPlus, Download, Eye, HardHat, Lock, Pen
 import { useEffect, useMemo, useState } from "react";
 import { toast } from "sonner";
 import { AdminShell } from "@/components/admin/AdminShell";
+import { BackButton } from "@/components/ui/back-button";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
