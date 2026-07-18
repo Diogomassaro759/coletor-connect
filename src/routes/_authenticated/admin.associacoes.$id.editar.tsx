@@ -230,7 +230,7 @@ function EditAssociationPage() {
             )}
           </div>
         </form>
-        {readOnly && <FilledFormsList associationId={id} />}
+        <FilledFormsList associationId={id} />
       </div>
     </AdminShell>
   );
