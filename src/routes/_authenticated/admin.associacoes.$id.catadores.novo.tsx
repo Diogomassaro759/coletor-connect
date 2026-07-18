@@ -48,11 +48,7 @@ function NewAssociationCollector() {
 
   return (
     <AdminShell>
-      <Link to="/admin/associacoes/$id" params={{ id }}>
-        <Button variant="ghost" size="sm" className="mb-5">
-          <ArrowLeft className="size-4" /> Voltar para a entidade
-        </Button>
-      </Link>
+      <BackButton label="Voltar para a entidade" className="mb-5" />
       <div className="mx-auto mb-8 max-w-6xl">
         <p className="text-xs font-bold uppercase tracking-[0.18em] text-primary">
           {association.nome}
