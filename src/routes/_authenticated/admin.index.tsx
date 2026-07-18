@@ -108,9 +108,9 @@ function AdminDashboard() {
   const isCatadoresScreen = !isAdminLike || showCatadoresScreen;
   const readOnlyCatadores = isCoordenador && !isAdmin;
   const [search, setSearch] = useState("");
-  const [statusFilter, setStatusFilter] = useState<string>("todos");
   const [materialFilter, setMaterialFilter] = useState<string>("todos");
   const [rendaFilter, setRendaFilter] = useState<string>("todos");
+
 
   const { data: catadores, isLoading } = useQuery({
     queryKey: ["catadores"],
