@@ -619,6 +619,7 @@ function AssociationsPage() {
               <TableHead className="hidden md:table-cell">CNPJ</TableHead>
               <TableHead>Município</TableHead>
               <TableHead className="hidden sm:table-cell">Associados</TableHead>
+              <TableHead>Consultor</TableHead>
               <TableHead>Situação</TableHead>
               <TableHead>Status</TableHead>
               <TableHead className="w-24 text-right">Ações</TableHead>
@@ -627,19 +628,20 @@ function AssociationsPage() {
           <TableBody>
             {isLoading && (
               <TableRow>
-                <TableCell colSpan={7} className="py-12 text-center text-muted-foreground">
+                <TableCell colSpan={8} className="py-12 text-center text-muted-foreground">
                   Carregando entidades...
                 </TableCell>
               </TableRow>
             )}
             {!isLoading && filtered.length === 0 && (
               <TableRow>
-                <TableCell colSpan={7} className="py-16 text-center">
+                <TableCell colSpan={8} className="py-16 text-center">
                   <Building2 className="mx-auto mb-3 size-10 text-muted-foreground" />
                   <p className="text-muted-foreground">Nenhuma entidade encontrada.</p>
                 </TableCell>
               </TableRow>
             )}
+
             {filtered.map((item) => {
               const latest = latestByAssoc.get(item.id);
               const situacao = latest?.status ?? null;
@@ -658,6 +660,13 @@ function AssociationsPage() {
                   <TableCell className="hidden sm:table-cell tabular-nums">
                     {item.numero_associados_atual ?? "—"}
                   </TableCell>
+                  <TableCell className="text-sm">
+                    {item.consultor_nome ? (
+                      <span>{item.consultor_nome}</span>
+                    ) : (
+                      <span className="text-xs text-muted-foreground">—</span>
+                    )}
+                  </TableCell>
                   <TableCell>
                     {situacao ? (
                       <Badge variant="outline" className={SITUACAO_TONE[situacao] ?? ""}>
@@ -667,6 +676,7 @@ function AssociationsPage() {
                       <span className="text-xs text-muted-foreground">Sem diagnóstico</span>
                     )}
                   </TableCell>
+
                   <TableCell>
                     <Badge variant={item.ativa ? "secondary" : "outline"}>
                       {item.ativa ? "Ativa" : "Inativa"}
