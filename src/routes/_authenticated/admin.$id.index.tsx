@@ -277,6 +277,24 @@ function CatadorDetails() {
   );
 }
 
+function RecenseadorName({ userId }: { userId: string | null | undefined }) {
+  const { data } = useQuery({
+    queryKey: ["profile-name", userId],
+    enabled: !!userId,
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("profiles")
+        .select("full_name, email")
+        .eq("user_id", userId as string)
+        .maybeSingle();
+      if (error) throw error;
+      return data?.full_name || data?.email || "—";
+    },
+  });
+  if (!userId) return <>—</>;
+  return <>{data ?? "…"}</>;
+}
+
 function StatusPill({ status }: { status: string }) {
   const map: Record<string, string> = {
     ativo: "bg-success/15 text-success border-success/30",
