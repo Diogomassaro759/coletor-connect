@@ -1,7 +1,10 @@
 import { createFileRoute, Link, redirect } from "@tanstack/react-router";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { useServerFn } from "@tanstack/react-start";
 import { useState, useMemo } from "react";
 import { supabase } from "@/integrations/supabase/client";
+import { getUserDisplayNames } from "@/lib/users.functions";
+
 import { AdminShell } from "@/components/admin/AdminShell";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -129,20 +132,15 @@ function AdminDashboard() {
     [catadores],
   );
 
+  const fetchDisplayNames = useServerFn(getUserDisplayNames);
   const { data: creatorNames } = useQuery({
     queryKey: ["catador-creators", creatorIds],
     enabled: creatorIds.length > 0,
     queryFn: async () => {
-      const { data, error } = await supabase
-        .from("profiles")
-        .select("user_id, full_name, email")
-        .in("user_id", creatorIds);
-      if (error) throw error;
-      const map: Record<string, string> = {};
-      for (const p of data ?? []) map[p.user_id] = p.full_name || p.email || "—";
-      return map;
+      return (await fetchDisplayNames({ data: { ids: creatorIds } })) as Record<string, string>;
     },
   });
+
 
   const { data: assocStats } = useQuery({
     queryKey: ["assoc-stats"],

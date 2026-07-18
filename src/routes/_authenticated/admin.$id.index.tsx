@@ -1,6 +1,9 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { useServerFn } from "@tanstack/react-start";
 import { supabase } from "@/integrations/supabase/client";
+import { getUserDisplayNames } from "@/lib/users.functions";
+
 import { AdminShell } from "@/components/admin/AdminShell";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -278,22 +281,19 @@ function CatadorDetails() {
 }
 
 function RecenseadorName({ userId }: { userId: string | null | undefined }) {
+  const fetchDisplayNames = useServerFn(getUserDisplayNames);
   const { data } = useQuery({
-    queryKey: ["profile-name", userId],
+    queryKey: ["display-name", userId],
     enabled: !!userId,
     queryFn: async () => {
-      const { data, error } = await supabase
-        .from("profiles")
-        .select("full_name, email")
-        .eq("user_id", userId as string)
-        .maybeSingle();
-      if (error) throw error;
-      return data?.full_name || data?.email || "—";
+      const map = (await fetchDisplayNames({ data: { ids: [userId as string] } })) as Record<string, string>;
+      return map[userId as string] ?? "—";
     },
   });
   if (!userId) return <>—</>;
   return <>{data ?? "…"}</>;
 }
+
 
 function StatusPill({ status }: { status: string }) {
   const map: Record<string, string> = {
