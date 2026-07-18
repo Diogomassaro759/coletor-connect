@@ -222,6 +222,7 @@ function CatadorDetails() {
           <Field k="Autodeclaração racial" v={c.autodeclaracao_racial ?? "—"} />
           <Field k="Escolaridade" v={c.escolaridade ?? "—"} />
           <Field k="Cooperativa / Grupo" v={c.nome_cooperativa ?? "—"} />
+          <Field k="Recenseador" v={<RecenseadorName userId={c.created_by} />} />
         </Section>
 
         <Section title="Contato">
