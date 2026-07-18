@@ -522,7 +522,7 @@ function AdminDashboard() {
               <TableHead className="hidden md:table-cell">CPF</TableHead>
               <TableHead className="hidden lg:table-cell">Cooperativa</TableHead>
               <TableHead className="hidden md:table-cell">Materiais</TableHead>
-              <TableHead className="hidden lg:table-cell">Recenseador</TableHead>
+              <TableHead>Recenseador</TableHead>
               <TableHead>Status</TableHead>
               {!readOnlyCatadores && <TableHead className="w-12"></TableHead>}
             </TableRow>
