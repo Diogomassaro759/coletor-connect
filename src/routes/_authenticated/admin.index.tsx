@@ -190,20 +190,8 @@ function AdminDashboard() {
     onError: (e: Error) => toast.error("Erro ao excluir", { description: e.message }),
   });
 
-  const statusMutation = useMutation({
-    mutationFn: async ({ id, status }: { id: string; status: string }) => {
-      const { error } = await supabase
-        .from("catadores")
-        .update({ status: status as "ativo" | "inativo" | "pendente" })
-        .eq("id", id);
-      if (error) throw error;
-    },
-    onSuccess: () => {
-      toast.success("Status atualizado.");
-      qc.invalidateQueries({ queryKey: ["catadores"] });
-    },
-    onError: (e: Error) => toast.error("Erro ao atualizar", { description: e.message }),
-  });
+
+
 
   async function exportXLSX() {
     if (!filtered.length) return toast.info("Nada para exportar.");
