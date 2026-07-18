@@ -923,3 +923,32 @@ function AssociationsPage() {
     </AdminShell>
   );
 }
+
+function EntityStatCard({
+  icon: Icon,
+  label,
+  value,
+  tone,
+}: {
+  icon: typeof Users;
+  label: string;
+  value: number;
+  tone: "primary" | "success" | "warning";
+}) {
+  const tones = {
+    primary: "bg-primary-soft text-primary",
+    success: "bg-success/15 text-success",
+    warning: "bg-warning/20 text-warning-foreground",
+  };
+  return (
+    <div className="bg-card rounded-xl border border-border p-5 shadow-card flex items-center gap-4">
+      <div className={`grid place-items-center size-12 rounded-xl ${tones[tone]}`}>
+        <Icon className="size-5" />
+      </div>
+      <div>
+        <div className="text-2xl font-bold tabular-nums">{value}</div>
+        <div className="text-sm text-muted-foreground">{label}</div>
+      </div>
+    </div>
+  );
+}
