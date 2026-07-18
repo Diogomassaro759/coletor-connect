@@ -427,11 +427,10 @@ function AdminDashboard() {
             )}
           </div>
 
-          <div className="grid gap-4 sm:grid-cols-3 mb-6">
+          <div className="grid gap-4 sm:grid-cols-1 mb-6">
             <StatCard icon={Users} label="Total" value={stats.total} tone="primary" />
-            <StatCard icon={UserCheck} label="Ativos" value={stats.ativos} tone="success" />
-            <StatCard icon={UserCog} label="Pendentes" value={stats.pendentes} tone="warning" />
           </div>
+
         </>
       )}
 
