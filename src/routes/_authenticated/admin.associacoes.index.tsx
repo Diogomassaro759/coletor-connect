@@ -435,7 +435,7 @@ function AssociationsPage() {
             <p className="text-[11px] font-bold uppercase tracking-[0.18em] text-primary">
               Formulários de campo
             </p>
-            <h2 className="text-2xl font-bold tracking-tight text-foreground">Cadastros por área</h2>
+            <h2 className="text-2xl font-bold tracking-tight text-foreground">Formulários por área</h2>
             <p className="text-sm text-muted-foreground">
               Selecione o módulo para preenchimento dos diagnósticos institucionais.
             </p>
