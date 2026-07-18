@@ -1,4 +1,5 @@
 import { createFileRoute, Link, redirect } from "@tanstack/react-router";
+import { BackButton } from "@/components/ui/back-button";
 import { ArrowLeft } from "lucide-react";
 import { AdminShell } from "@/components/admin/AdminShell";
 import { CatadorForm } from "@/components/admin/CatadorForm";
