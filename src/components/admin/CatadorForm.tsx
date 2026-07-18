@@ -53,6 +53,68 @@ import {
 } from "@/lib/catador-constants";
 import { CameraCapture } from "./CameraCapture";
 
+function InstituicaoCombobox({
+  value,
+  onChange,
+  options,
+}: {
+  value: string;
+  onChange: (id: string) => void;
+  options: { id: string; nome: string }[];
+}) {
+  const [open, setOpen] = useState(false);
+  const selected = options.find((o) => o.id === value);
+  return (
+    <Popover open={open} onOpenChange={setOpen}>
+      <PopoverTrigger asChild>
+        <Button
+          type="button"
+          variant="outline"
+          role="combobox"
+          aria-expanded={open}
+          className={cn(
+            "w-full justify-between font-normal",
+            !selected && "text-muted-foreground",
+          )}
+        >
+          <span className="truncate">
+            {selected?.nome ?? "Selecione na lista oficial"}
+          </span>
+          <ChevronsUpDown className="ml-2 size-4 shrink-0 opacity-50" />
+        </Button>
+      </PopoverTrigger>
+      <PopoverContent className="w-[--radix-popover-trigger-width] p-0" align="start">
+        <Command>
+          <CommandInput placeholder="Pesquisar entidade..." />
+          <CommandList>
+            <CommandEmpty>Nenhuma entidade encontrada.</CommandEmpty>
+            <CommandGroup>
+              {options.map((item) => (
+                <CommandItem
+                  key={item.id}
+                  value={item.nome}
+                  onSelect={() => {
+                    onChange(item.id);
+                    setOpen(false);
+                  }}
+                >
+                  <Check
+                    className={cn(
+                      "mr-2 size-4",
+                      value === item.id ? "opacity-100" : "opacity-0",
+                    )}
+                  />
+                  <span className="truncate">{item.nome}</span>
+                </CommandItem>
+              ))}
+            </CommandGroup>
+          </CommandList>
+        </Command>
+      </PopoverContent>
+    </Popover>
+  );
+}
+
 type DocKey =
   | "comprovante_residencia_url"
   | "cpf_foto_url"
