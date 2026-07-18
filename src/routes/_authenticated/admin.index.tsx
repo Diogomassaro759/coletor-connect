@@ -289,8 +289,8 @@ function AdminDashboard() {
         conta_bancaria_digital: c.conta_bancaria_digital ?? "",
         cadastro_gov_br: c.cadastro_gov_br ? "Sim" : "Não",
         nivel_cadastro_gov_br: c.nivel_cadastro_gov_br ?? "",
-        status: STATUS_LABEL[c.status] ?? c.status,
         data_cadastro: new Date(c.data_cadastro),
+
         updated_at: c.updated_at ? new Date(c.updated_at) : null,
       });
     });
