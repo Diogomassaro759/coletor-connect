@@ -221,65 +221,7 @@ function AssociationDetails() {
         <Info label="Diagnósticos realizados" value={assessments.length} icon={CalendarDays} />
       </div>
 
-      <section>
-        <h2 className="text-xl font-semibold">Histórico de diagnósticos</h2>
-        <p className="mt-1 text-sm text-muted-foreground">
-          Cada visita mantém seu próprio retrato institucional.
-        </p>
-        <div className="mt-5 divide-y divide-border border-y border-border">
-          {assessments.length === 0 ? (
-            <p className="py-10 text-center text-muted-foreground">Nenhum diagnóstico realizado.</p>
-          ) : (
-            assessments.map((item) => (
-              <Link
-                key={item.id}
-                to="/admin/associacoes/$id/diagnostico/$assessmentId"
-                params={{ id, assessmentId: item.id }}
-                className="flex flex-wrap items-center justify-between gap-4 py-4 transition hover:bg-muted/40"
-              >
-                <div className="flex flex-wrap gap-x-8 gap-y-2">
-                  <div>
-                    <p className="text-xs font-medium text-muted-foreground">Nome do consultor</p>
-                    <p className="font-medium">{item.consultant_name}</p>
-                  </div>
-                  <div>
-                    <p className="text-xs font-medium text-muted-foreground">Data da visita</p>
-                    <p className="font-medium tabular-nums">
-                      {new Date(`${item.data_visita}T12:00:00`).toLocaleDateString("pt-BR")}
-                    </p>
-                  </div>
-                  <div>
-                    <p className="text-xs font-medium text-muted-foreground">Horário da visita</p>
-                    <p className="font-medium tabular-nums">
-                      {item.horario_visita ? String(item.horario_visita).slice(0, 5) : "—"}
-                    </p>
-                  </div>
-                </div>
-                <div className="flex items-center gap-2">
-                  <strong className="tabular-nums">
-                    {Number(item.regularity_index).toLocaleString("pt-BR")}%
-                  </strong>
-                  <Badge
-                    variant="outline"
-                    className={
-                      item.status === "regular"
-                        ? "border-success/40 text-success"
-                        : item.status === "irregular"
-                          ? "border-destructive/40 text-destructive"
-                          : "border-warning/50 text-warning-foreground"
-                    }
-                  >
-                    {STATUS_LABEL[item.status]}
-                  </Badge>
-                  <Badge variant={item.evidence_validated ? "secondary" : "outline"}>
-                    {item.evidence_validated ? "Concluído" : "Evidências pendentes"}
-                  </Badge>
-                </div>
-              </Link>
-            ))
-          )}
-        </div>
-      </section>
+      <FilledFormsList associationId={id} />
     </AdminShell>
   );
 }
