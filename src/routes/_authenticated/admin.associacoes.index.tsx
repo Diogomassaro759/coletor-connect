@@ -177,6 +177,17 @@ function AssociationsPage() {
     });
   }, [associations, search, tipoFilter, municipioFilter]);
 
+  const entityStats = useMemo(() => {
+    const all = associations as any[];
+    return {
+      total: all.length,
+      cooperativa: all.filter((a) => tipoMatches(a, "cooperativa")).length,
+      associacao: all.filter((a) => tipoMatches(a, "associacao")).length,
+      coletivo: all.filter((a) => tipoMatches(a, "coletivo")).length,
+    };
+  }, [associations]);
+
+
   async function exportAssociations() {
     if (!filtered.length) return toast.info("Nenhuma entidade para exportar.");
     const ExcelJS = (await import("exceljs")).default;
