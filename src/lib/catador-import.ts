@@ -4,9 +4,9 @@ import {
   ESCOLARIDADE_OPTIONS,
   MATERIAIS_OPTIONS,
   NIVEL_GOV_BR_OPTIONS,
-  STATUS_OPTIONS,
   isValidCPF,
 } from "./catador-constants";
+
 
 export type ImportRow = {
   rowNumber: number;
