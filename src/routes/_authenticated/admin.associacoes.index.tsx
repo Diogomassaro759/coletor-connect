@@ -626,14 +626,14 @@ function AssociationsPage() {
           <TableBody>
             {isLoading && (
               <TableRow>
-                <TableCell colSpan={8} className="py-12 text-center text-muted-foreground">
+                <TableCell colSpan={7} className="py-12 text-center text-muted-foreground">
                   Carregando entidades...
                 </TableCell>
               </TableRow>
             )}
             {!isLoading && filtered.length === 0 && (
               <TableRow>
-                <TableCell colSpan={8} className="py-16 text-center">
+                <TableCell colSpan={7} className="py-16 text-center">
                   <Building2 className="mx-auto mb-3 size-10 text-muted-foreground" />
                   <p className="text-muted-foreground">Nenhuma entidade encontrada.</p>
                 </TableCell>
