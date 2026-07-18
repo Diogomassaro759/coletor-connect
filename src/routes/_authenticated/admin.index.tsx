@@ -145,9 +145,15 @@ function AdminDashboard() {
   const { data: assocStats } = useQuery({
     queryKey: ["assoc-stats"],
     queryFn: async () => {
-      const { data, error } = await supabase.from("associations").select("id");
+      const { data, error } = await supabase.from("associations").select("id,tipo");
       if (error) throw error;
-      return { total: data.length };
+      let cooperativa = 0, associacao = 0, coletivo = 0;
+      for (const a of data as { tipo: string | null }[]) {
+        if (a.tipo === "cooperativa") cooperativa++;
+        else if (a.tipo === "associacao") associacao++;
+        else if (a.tipo === "coletivo") coletivo++;
+      }
+      return { total: data.length, cooperativa, associacao, coletivo };
     },
     enabled: isAdminLike,
   });
@@ -361,6 +367,9 @@ function AdminDashboard() {
             primaryLabel="ACESSAR"
             stats={[
               { icon: Users, label: "Total", value: assocStats?.total ?? 0, tone: "primary" },
+              { icon: Users, label: "Cooperativa", value: assocStats?.cooperativa ?? 0, tone: "success" },
+              { icon: Users, label: "Associação", value: assocStats?.associacao ?? 0, tone: "success" },
+              { icon: Users, label: "Coletivo", value: assocStats?.coletivo ?? 0, tone: "warning" },
             ]}
 
             actions={
@@ -388,6 +397,9 @@ function AdminDashboard() {
             onPrimaryClick={() => setShowCatadoresScreen(true)}
             stats={[
               { icon: Users, label: "Total", value: stats.total, tone: "primary" },
+              { icon: Users, label: "Cooperativa", value: stats.cooperativa, tone: "success" },
+              { icon: Users, label: "Associação", value: stats.associacao, tone: "success" },
+              { icon: Users, label: "Coletivo", value: stats.coletivo, tone: "warning" },
             ]}
 
             actions={
@@ -705,7 +717,7 @@ function LauncherCard({
           {actions}
         </div>
       </div>
-      <div className="mt-5 grid gap-3 sm:grid-cols-3">
+      <div className="mt-5 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
         {stats.map((s) => (
           <StatCard key={s.label} icon={s.icon} label={s.label} value={s.value} tone={s.tone} />
         ))}
