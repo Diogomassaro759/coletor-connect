@@ -25,6 +25,7 @@ import {
   YAxis,
 } from "recharts";
 import { AdminShell } from "@/components/admin/AdminShell";
+import { BackButton } from "@/components/ui/back-button";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -330,6 +331,7 @@ function DiagnosticsDashboard() {
 
   return (
     <AdminShell>
+      <BackButton />
       <div className="mb-6 flex flex-wrap items-end justify-between gap-4 border-b border-border pb-6">
         <div>
           <p className="text-xs font-bold uppercase tracking-wider text-primary">

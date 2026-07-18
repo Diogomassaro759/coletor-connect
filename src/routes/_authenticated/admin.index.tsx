@@ -6,6 +6,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { getUserDisplayNames } from "@/lib/users.functions";
 
 import { AdminShell } from "@/components/admin/AdminShell";
+import { BackButton } from "@/components/ui/back-button";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
@@ -349,6 +350,7 @@ function AdminDashboard() {
 
   return (
     <AdminShell>
+      <BackButton />
       {isAdminLike && !showCatadoresScreen && (
         <div className="mb-8 space-y-5">
           <LauncherCard

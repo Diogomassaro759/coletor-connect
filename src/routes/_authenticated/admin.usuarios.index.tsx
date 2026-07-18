@@ -3,6 +3,7 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { Plus, Pencil, Trash2, UserCog } from "lucide-react";
 import { AdminShell } from "@/components/admin/AdminShell";
+import { BackButton } from "@/components/ui/back-button";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -47,6 +48,7 @@ function UsuariosPage() {
 
   return (
     <AdminShell>
+      <BackButton />
       <div className="mb-6 grid grid-cols-[minmax(0,1fr)_auto] items-start gap-3 sm:flex sm:items-center sm:justify-between">
         <div className="min-w-0">
           <h1 className="flex items-center gap-2 text-xl font-bold sm:text-2xl">
