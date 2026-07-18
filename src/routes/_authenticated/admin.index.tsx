@@ -124,6 +124,26 @@ function AdminDashboard() {
     },
   });
 
+  const creatorIds = useMemo(
+    () => Array.from(new Set((catadores ?? []).map((c) => c.created_by).filter(Boolean) as string[])),
+    [catadores],
+  );
+
+  const { data: creatorNames } = useQuery({
+    queryKey: ["catador-creators", creatorIds],
+    enabled: creatorIds.length > 0,
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("profiles")
+        .select("user_id, full_name, email")
+        .in("user_id", creatorIds);
+      if (error) throw error;
+      const map: Record<string, string> = {};
+      for (const p of data ?? []) map[p.user_id] = p.full_name || p.email || "—";
+      return map;
+    },
+  });
+
   const { data: assocStats } = useQuery({
     queryKey: ["assoc-stats"],
     queryFn: async () => {
