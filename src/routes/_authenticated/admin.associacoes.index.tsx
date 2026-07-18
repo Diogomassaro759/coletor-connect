@@ -387,7 +387,15 @@ function AssociationsPage() {
         </div>
       )}
 
+      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4 mb-6">
+        <EntityStatCard icon={Building2} label="Total" value={entityStats.total} tone="primary" />
+        <EntityStatCard icon={Users} label="Cooperativa" value={entityStats.cooperativa} tone="success" />
+        <EntityStatCard icon={Users} label="Associação" value={entityStats.associacao} tone="success" />
+        <EntityStatCard icon={Users} label="Coletivo" value={entityStats.coletivo} tone="warning" />
+      </div>
+
       <div className="mb-3 flex items-center gap-3">
+
         <div className="relative w-full max-w-xl">
           <Search className="absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
           <Input
