@@ -660,6 +660,13 @@ function AssociationsPage() {
                   <TableCell className="hidden sm:table-cell tabular-nums">
                     {item.numero_associados_atual ?? "—"}
                   </TableCell>
+                  <TableCell className="text-sm">
+                    {item.consultor_nome ? (
+                      <span>{item.consultor_nome}</span>
+                    ) : (
+                      <span className="text-xs text-muted-foreground">—</span>
+                    )}
+                  </TableCell>
                   <TableCell>
                     {situacao ? (
                       <Badge variant="outline" className={SITUACAO_TONE[situacao] ?? ""}>
@@ -669,6 +676,7 @@ function AssociationsPage() {
                       <span className="text-xs text-muted-foreground">Sem diagnóstico</span>
                     )}
                   </TableCell>
+
                   <TableCell>
                     <Badge variant={item.ativa ? "secondary" : "outline"}>
                       {item.ativa ? "Ativa" : "Inativa"}
