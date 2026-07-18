@@ -255,7 +255,7 @@ export async function buildTemplateXLSX(): Promise<Blob> {
     ["contribui_inss / inscrito_cadunico / possui_bolsa_familia / cadastro_gov_br / possui_carroca", "Não", "Sim | Não"],
     ["nivel_cadastro_gov_br", "Não", NIVEL_GOV_BR_OPTIONS.join(" | ")],
     ["materiais_coletados", "Não", "Lista separada por ; (use exatamente os nomes oficiais)"],
-    ["status", "Não", "pendente | ativo | inativo (padrão: pendente)"],
+    
   ]);
   readme.getRow(1).font = { bold: true };
   readme.columns.forEach((c) => (c.width = 40));
