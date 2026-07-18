@@ -226,7 +226,7 @@ function EditAssociationPage() {
             </Link>
             {!readOnly && (
               <Button type="submit" size="lg" disabled={saving}>
-                {saving && <Loader2 className="size-4 animate-spin" />} Salvar alterações
+                {saving && <Loader2 className="size-4 animate-spin" />} Salvar
               </Button>
             )}
           </div>
