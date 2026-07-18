@@ -70,7 +70,7 @@ function AssessmentDetails() {
   const { id, assessmentId } = Route.useParams();
   const { mode } = Route.useSearch();
   const ctx = Route.useRouteContext() as any;
-  const { isConsultant, isAdmin, area } = ctx;
+  const { isConsultant, area } = ctx;
   const canEditFieldData = isConsultant && mode === "edit";
   const { data: assessmentArea } = useQuery({
     queryKey: ["assessment-area", assessmentId],
