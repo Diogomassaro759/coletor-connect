@@ -264,3 +264,42 @@ export const listAssociationsWithSocial = createServerFn({ method: "GET" }).hand
 );
 
 export const VALID_ROLES = ROLE_VALUES;
+
+// Returns a display name for each user_id (profile.full_name → auth email → "—").
+// Any authenticated user can call this to resolve creator names.
+export const getUserDisplayNames = createServerFn({ method: "POST" })
+  .inputValidator((data) =>
+    z.object({ ids: z.array(z.string().uuid()).max(500) }).parse(data),
+  )
+  .handler(async ({ data }) => {
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const out: Record<string, string> = {};
+    if (data.ids.length === 0) return out;
+
+    const { data: profs } = await supabaseAdmin
+      .from("profiles")
+      .select("user_id, full_name, email")
+      .in("user_id", data.ids);
+    for (const p of profs ?? []) {
+      const name = (p as any).full_name || (p as any).email;
+      if (name) out[(p as any).user_id] = name;
+    }
+
+    const missing = data.ids.filter((id) => !out[id]);
+    for (const id of missing) {
+      try {
+        const { data: u } = await supabaseAdmin.auth.admin.getUserById(id);
+        const meta = (u?.user?.user_metadata ?? {}) as Record<string, unknown>;
+        const name =
+          (meta.full_name as string | undefined) ||
+          (meta.name as string | undefined) ||
+          u?.user?.email ||
+          "—";
+        out[id] = name;
+      } catch {
+        out[id] = "—";
+      }
+    }
+    return out;
+  });
+
