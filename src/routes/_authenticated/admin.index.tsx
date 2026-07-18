@@ -554,9 +554,8 @@ function AdminDashboard() {
                 <TableCell className="text-sm">
                   {c.created_by ? (creatorNames?.[c.created_by] ?? "—") : "—"}
                 </TableCell>
-                <TableCell>
-                  <StatusBadge status={c.status} />
-                </TableCell>
+
+
                 {!readOnlyCatadores && (
                 <TableCell>
                   <div className="flex items-center justify-end gap-1">
