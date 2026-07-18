@@ -331,6 +331,7 @@ function DiagnosticsDashboard() {
 
   return (
     <AdminShell>
+      <BackButton />
       <div className="mb-6 flex flex-wrap items-end justify-between gap-4 border-b border-border pb-6">
         <div>
           <p className="text-xs font-bold uppercase tracking-wider text-primary">
