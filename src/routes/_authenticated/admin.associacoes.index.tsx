@@ -583,10 +583,50 @@ function AssociationsPage() {
             </Button>
             <Button
               disabled={!selectedEntity || !pendingModulo}
-              onClick={() => {
+              onClick={async () => {
                 if (!selectedEntity || !pendingModulo) return;
                 const modulo = pendingModulo;
                 const id = selectedEntity;
+
+                if (modulo === "infraestrutura") {
+                  const { data: existing } = await supabase
+                    .from("infrastructure_assessments")
+                    .select("id")
+                    .eq("association_id", id)
+                    .maybeSingle();
+                  if (existing?.id) {
+                    toast.error("Já existe um formulário de infraestrutura para esta entidade.", {
+                      description: "Abra o formulário existente para editar.",
+                    });
+                    setPendingModulo(null);
+                    setSelectedEntity("");
+                    setEntitySearch("");
+                    navigate({ to: "/admin/associacoes/$id", params: { id } });
+                    return;
+                  }
+                } else {
+                  const { data: existing } = await supabase
+                    .from("association_assessments")
+                    .select("id")
+                    .eq("association_id", id)
+                    .eq("area", modulo)
+                    .maybeSingle();
+                  if (existing?.id) {
+                    toast.error(`Já existe um formulário ${moduloLabel[modulo]} para esta entidade.`, {
+                      description: "Abrindo o formulário existente para edição.",
+                    });
+                    setPendingModulo(null);
+                    setSelectedEntity("");
+                    setEntitySearch("");
+                    navigate({
+                      to: "/admin/associacoes/$id/diagnostico/$assessmentId",
+                      params: { id, assessmentId: existing.id },
+                      search: { mode: "edit" },
+                    });
+                    return;
+                  }
+                }
+
                 setPendingModulo(null);
                 setSelectedEntity("");
                 setEntitySearch("");
