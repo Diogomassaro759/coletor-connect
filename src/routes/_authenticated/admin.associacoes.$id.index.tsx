@@ -160,10 +160,10 @@ function AssociationDetails() {
           titulo: string;
           descricao: string;
         }> = [
-          { key: "social", titulo: "Cadastro Social", descricao: "Perfil socioeconômico e organizacional." },
-          { key: "juridico", titulo: "Cadastro Jurídico", descricao: "Documentação, estatuto e regularidade jurídica." },
-          { key: "contabil", titulo: "Cadastro Contábil", descricao: "Escrituração, tributos e obrigações fiscais." },
-          { key: "infraestrutura", titulo: "Cadastro de Infraestrutura", descricao: "Sede, equipamentos e condições operacionais." },
+          { key: "social", titulo: "Formulário Social", descricao: "Perfil socioeconômico e organizacional." },
+          { key: "juridico", titulo: "Formulário Jurídico", descricao: "Documentação, estatuto e regularidade jurídica." },
+          { key: "contabil", titulo: "Formulário Contábil", descricao: "Escrituração, tributos e obrigações fiscais." },
+          { key: "infraestrutura", titulo: "Formulário de Infraestrutura", descricao: "Sede, equipamentos e condições operacionais." },
         ];
         const visiveis = isAdmin ? modulos : modulos.filter((m) => m.key === (area ?? "social"));
         return (
@@ -173,7 +173,7 @@ function AssociationDetails() {
                 Formulários de campo
               </p>
               <h2 className="mt-1 text-xl font-bold">
-                {isAdmin ? "Cadastros por área" : "Cadastro da sua área"}
+                {isAdmin ? "Formulários por área" : "Formulário da sua área"}
               </h2>
               <p className="mt-1 text-sm text-muted-foreground">
                 {isAdmin
