@@ -367,6 +367,9 @@ function AdminDashboard() {
             primaryLabel="ACESSAR"
             stats={[
               { icon: Users, label: "Total", value: assocStats?.total ?? 0, tone: "primary" },
+              { icon: Users, label: "Cooperativa", value: assocStats?.cooperativa ?? 0, tone: "success" },
+              { icon: Users, label: "Associação", value: assocStats?.associacao ?? 0, tone: "success" },
+              { icon: Users, label: "Coletivo", value: assocStats?.coletivo ?? 0, tone: "warning" },
             ]}
 
             actions={
