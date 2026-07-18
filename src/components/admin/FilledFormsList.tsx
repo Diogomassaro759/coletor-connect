@@ -15,7 +15,7 @@ export function FilledFormsList({ associationId }: { associationId: string }) {
     area === "juridico" ? "Jurídico" : area === "contabil" ? "Contábil" : "Social";
 
   const { data: rows = [] } = useQuery({
-    queryKey: ["filled-forms", associationId, area, isAdmin, isCoordenador],
+    queryKey: ["filled-forms", associationId, area, isAdmin],
     queryFn: async () => {
       const [a, i] = await Promise.all([
         showAssessment
