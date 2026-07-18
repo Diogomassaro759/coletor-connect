@@ -389,9 +389,8 @@ function AdminDashboard() {
             onPrimaryClick={() => setShowCatadoresScreen(true)}
             stats={[
               { icon: Users, label: "Total", value: stats.total, tone: "primary" },
-              { icon: UserCheck, label: "Ativos", value: stats.ativos, tone: "success" },
-              { icon: UserCog, label: "Pendentes", value: stats.pendentes, tone: "warning" },
             ]}
+
             actions={
               <>
                 <Button variant="outline" size="sm" onClick={exportXLSX}>
