@@ -586,23 +586,8 @@ function AdminDashboard() {
                             </DropdownMenuItem>
                           </Link>
                         )}
-                      {isAdminLike && (
-                        <>
-                          <DropdownMenuSeparator />
-                          <DropdownMenuLabel className="text-xs font-normal text-muted-foreground">
-                            Status
-                          </DropdownMenuLabel>
-                          {STATUS_OPTIONS.map((s) => (
-                            <DropdownMenuItem
-                              key={s.value}
-                              disabled={c.status === s.value}
-                              onClick={() => statusMutation.mutate({ id: c.id, status: s.value })}
-                            >
-                              {s.label}
-                            </DropdownMenuItem>
-                          ))}
-                        </>
-                      )}
+
+
                       {isAdminLike && (
                         <>
                           <DropdownMenuSeparator />
