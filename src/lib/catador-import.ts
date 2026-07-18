@@ -232,7 +232,7 @@ export async function buildTemplateXLSX(): Promise<Blob> {
     "Papelão; Plástico PET; Alumínio (latinha)",
     "Não",
     "",
-    "pendente",
+
   ]);
 
   // README sheet
