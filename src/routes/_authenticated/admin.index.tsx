@@ -118,11 +118,11 @@ function AdminDashboard() {
       const { data, error } = await supabase
         .from("catadores")
         .select(
-          "id,nome_completo,cpf,genero,escolaridade,renda_media_mensal,materiais_coletados,status,data_cadastro,nome_cooperativa,contribui_inss,inscrito_cadunico,possui_bolsa_familia,created_by",
+          "id,nome_completo,cpf,genero,escolaridade,renda_media_mensal,materiais_coletados,status,data_cadastro,nome_cooperativa,contribui_inss,inscrito_cadunico,possui_bolsa_familia,created_by,association_id,associations(tipo)",
         )
         .order("data_cadastro", { ascending: false });
       if (error) throw error;
-      return data as Catador[];
+      return data as unknown as (Catador & { associations: { tipo: string | null } | null })[];
     },
   });
 
