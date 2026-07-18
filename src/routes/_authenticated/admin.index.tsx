@@ -144,14 +144,13 @@ function AdminDashboard() {
   const { data: assocStats } = useQuery({
     queryKey: ["assoc-stats"],
     queryFn: async () => {
-      const { data, error } = await supabase.from("associations").select("id,ativa");
+      const { data, error } = await supabase.from("associations").select("id");
       if (error) throw error;
-      const total = data.length;
-      const ativos = data.filter((a: any) => a.ativa).length;
-      return { total, ativos, pendentes: total - ativos };
+      return { total: data.length };
     },
     enabled: isAdminLike,
   });
+
 
   const RENDA_THRESHOLD = RENDA_REFERENCIA; // salário mínimo de referência
 
