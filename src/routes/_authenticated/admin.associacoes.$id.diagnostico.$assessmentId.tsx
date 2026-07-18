@@ -72,9 +72,28 @@ function AssessmentDetails() {
   const ctx = Route.useRouteContext() as any;
   const { isConsultant, isAdmin, area } = ctx;
   const canEditFieldData = isConsultant && mode === "edit";
-  const showSocial = isAdmin || !area || area === "social";
-  const showJuridico = isAdmin || area === "juridico";
-  const showContabil = isAdmin || area === "contabil";
+  const { data: assessmentArea } = useQuery({
+    queryKey: ["assessment-area", assessmentId],
+    queryFn: async () => {
+      const { data: a } = await supabase
+        .from("association_assessments")
+        .select("created_by")
+        .eq("id", assessmentId)
+        .maybeSingle();
+      if (!a?.created_by) return null;
+      const { data: r } = await supabase
+        .from("user_roles")
+        .select("area")
+        .eq("user_id", a.created_by)
+        .not("area", "is", null)
+        .maybeSingle();
+      return (r?.area as string) ?? null;
+    },
+  });
+  const effectiveArea = assessmentArea ?? area;
+  const showSocial = !effectiveArea || effectiveArea === "social";
+  const showJuridico = effectiveArea === "juridico";
+  const showContabil = effectiveArea === "contabil";
   const qc = useQueryClient();
   const [cameraCategory, setCameraCategory] = useState<string | null>(null);
   const [uploading, setUploading] = useState(false);
