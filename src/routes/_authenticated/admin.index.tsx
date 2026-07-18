@@ -356,7 +356,7 @@ function AdminDashboard() {
 
   return (
     <AdminShell>
-      <BackButton />
+      
       {isAdminLike && !showCatadoresScreen && (
         <div className="mb-8 space-y-5">
           <LauncherCard
