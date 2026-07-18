@@ -19,7 +19,7 @@ import {
 } from "@/components/ui/tooltip";
 import { ArrowLeft, Pencil, Trash2, ChevronDown, Check, Info, History, ShieldAlert } from "lucide-react";
 import { toast } from "sonner";
-import { GENERO_LABEL, STATUS_OPTIONS, STATUS_LABEL, STATUS_DESCRIPTION, STATUS_INATIVO_CRITERIOS } from "@/lib/catador-constants";
+import { GENERO_LABEL } from "@/lib/catador-constants";
 import {
   canViewSensitive,
   maskCPF,
