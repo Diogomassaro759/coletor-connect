@@ -610,15 +610,10 @@ function AssociationsPage() {
                     .eq("association_id", id)
                     .maybeSingle();
                   if (existing?.id) {
-                    const editar = window.confirm(
-                      "Já existe um formulário preenchido. Deseja editar?"
-                    );
                     setPendingModulo(null);
                     setSelectedEntity("");
                     setEntitySearch("");
-                    if (editar) {
-                      navigate({ to: "/admin/associacoes/$id", params: { id } });
-                    }
+                    setExistingPrompt({ modulo, associationId: id, assessmentId: null });
                     return;
                   }
                 } else {
@@ -629,19 +624,10 @@ function AssociationsPage() {
                     .eq("area", modulo)
                     .maybeSingle();
                   if (existing?.id) {
-                    const editar = window.confirm(
-                      "Já existe um formulário preenchido. Deseja editar?"
-                    );
                     setPendingModulo(null);
                     setSelectedEntity("");
                     setEntitySearch("");
-                    if (editar) {
-                      navigate({
-                        to: "/admin/associacoes/$id/diagnostico/$assessmentId",
-                        params: { id, assessmentId: existing.id },
-                        search: { mode: "edit" },
-                      });
-                    }
+                    setExistingPrompt({ modulo, associationId: id, assessmentId: existing.id });
                     return;
                   }
                 }
