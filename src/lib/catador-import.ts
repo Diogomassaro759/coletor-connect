@@ -194,7 +194,7 @@ export function validateRow(
         materiais_coletados: materiais,
         possui_carroca: toBool(get("possui_carroca")),
         tipo_carroca: toStr(get("tipo_carroca")) || null,
-        status: statusMatch?.value ?? "pendente",
+        status: "pendente",
         association_id: associationId,
       };
 
