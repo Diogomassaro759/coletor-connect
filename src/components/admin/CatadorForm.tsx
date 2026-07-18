@@ -441,23 +441,11 @@ export function CatadorForm({
                 {associationName ?? "Entidade selecionada"}
               </div>
             ) : (
-              <Select
+              <InstituicaoCombobox
                 value={v.association_id}
-                onValueChange={(value) =>
-                  form.setValue("association_id", value, { shouldValidate: true })
-                }
-              >
-                <SelectTrigger>
-                  <SelectValue placeholder="Selecione na lista oficial" />
-                </SelectTrigger>
-                <SelectContent>
-                  {associations.map((item) => (
-                    <SelectItem key={item.id} value={item.id}>
-                      {item.nome}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+                onChange={(id) => form.setValue("association_id", id, { shouldValidate: true })}
+                options={associations}
+              />
             )}
             {e.association_id?.message && (
               <p className="text-xs text-destructive">{e.association_id.message}</p>
