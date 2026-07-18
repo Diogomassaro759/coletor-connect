@@ -41,11 +41,7 @@ function EditarCatador() {
 
   return (
     <AdminShell>
-      <Link to="/admin/$id" params={{ id }}>
-        <Button variant="ghost" size="sm" className="mb-4">
-          <ArrowLeft className="size-4" /> Voltar aos detalhes
-        </Button>
-      </Link>
+      <BackButton label="Voltar aos detalhes" />
       <div className="text-center mb-8">
         <h1 className="text-3xl font-bold">Editar cadastro</h1>
         <p className="text-muted-foreground mt-1">Atualize os dados do(a) catador(a).</p>
