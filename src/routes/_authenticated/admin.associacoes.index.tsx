@@ -231,10 +231,10 @@ function AssociationsPage() {
   const areaForForm = (area ?? "social") as "social" | "juridico" | "contabil" | "infraestrutura";
 
   const moduloLabel: Record<string, string> = {
-    social: "Cadastro Social",
-    juridico: "Cadastro Jurídico",
-    contabil: "Cadastro Contábil",
-    infraestrutura: "Cadastro de Infraestrutura",
+    social: "Formulário Social",
+    juridico: "Formulário Jurídico",
+    contabil: "Formulário Contábil",
+    infraestrutura: "Formulário de Infraestrutura",
   };
 
   const areaSuffix: Record<string, string> = {
@@ -435,7 +435,7 @@ function AssociationsPage() {
             <p className="text-[11px] font-bold uppercase tracking-[0.18em] text-primary">
               Formulários de campo
             </p>
-            <h2 className="text-2xl font-bold tracking-tight text-foreground">Cadastros por área</h2>
+            <h2 className="text-2xl font-bold tracking-tight text-foreground">Formulários por área</h2>
             <p className="text-sm text-muted-foreground">
               Selecione o módulo para preenchimento dos diagnósticos institucionais.
             </p>

@@ -108,21 +108,21 @@ function NewAssessment() {
   };
   const moduleMeta: Record<typeof activeModule, { title: string; description: string }> = {
     social: {
-      title: "Cadastro Social",
+      title: "Formulário Social",
       description:
         "Perfil dos associados, saúde, renda, benefícios, cota e estrutura social.",
     },
     juridico: {
-      title: "Cadastro Jurídico",
+      title: "Formulário Jurídico",
       description: "Diretoria, atas, contratos, processos, regras internas e regulação.",
     },
     contabil: {
-      title: "Cadastro Contábil",
+      title: "Formulário Contábil",
       description:
         "Documentos, contador, livros, controles, balanços e pendências contábeis.",
     },
     infraestrutura: {
-      title: "Cadastro de Infraestrutura",
+      title: "Formulário de Infraestrutura",
       description:
         "Sede, equipamentos, veículos, EPIs e condições operacionais do galpão.",
     },
