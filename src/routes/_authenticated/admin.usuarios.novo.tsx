@@ -214,7 +214,7 @@ function NovoUsuarioPage() {
                   <SelectItem value="recenseador">Recenseador</SelectItem>
                   <SelectItem value="consultor">Consultor</SelectItem>
                   <SelectItem value="coordenador">Coordenador</SelectItem>
-                  <SelectItem value="admin">Administrador</SelectItem>
+                  <SelectItem value="admin">Administrador do Sistema</SelectItem>
                 </SelectContent>
               </Select>
             </div>

@@ -68,9 +68,9 @@ export function AdminShell({ children }: { children: React.ReactNode }) {
                   infraestrutura: "Infraestrutura",
                 };
                 const suffix = area ? ` ${areaLabel[area] ?? area}` : "";
-                if (isAdmin) return "Administrador";
+                if (isAdmin) return "Administrador do Sistema";
                 if (isRecenseador) return "Recenseador";
-                if (isCoordenadorRecenseador) return "Coordenador Recenseador";
+                if (isCoordenadorRecenseador) return "Coordenador do Recenseamento";
                 if (isCoordenador) return `Coordenador${suffix}`;
                 return `Consultor${suffix}`;
               })()}
