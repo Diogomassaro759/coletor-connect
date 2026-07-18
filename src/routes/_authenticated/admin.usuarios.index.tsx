@@ -107,11 +107,11 @@ function UsuariosPage() {
                 const areaSuffix = u.area ? ` ${areaLabel[u.area] ?? u.area}` : "";
                 const roleLabels = u.roles.map((r) =>
                   r === "admin"
-                    ? "Administrador"
+                    ? "Administrador do Sistema"
                     : r === "recenseador"
                       ? "Recenseador"
                       : r === "coordenador_recenseador"
-                        ? "Coordenador Recenseador"
+                        ? "Coordenador do Recenseamento"
                         : r === "coordenador"
                           ? `Coordenador${areaSuffix}`
                           : r === "consultor"
