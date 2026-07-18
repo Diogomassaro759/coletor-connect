@@ -1379,7 +1379,7 @@ function NewAssessment() {
           </Tabs>
           <div className="sticky bottom-4 mt-6 flex justify-end rounded-xl border border-border bg-background/95 p-4 shadow-card backdrop-blur">
             <Button type="submit" size="lg" disabled={saving}>
-              {saving && <Loader2 className="size-4 animate-spin" />} Salvar e calcular diagnóstico
+              {saving && <Loader2 className="size-4 animate-spin" />} Salvar
             </Button>
           </div>
         </form>
