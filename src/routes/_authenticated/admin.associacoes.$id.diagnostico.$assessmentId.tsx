@@ -426,11 +426,7 @@ function AssessmentDetails() {
   ] as const;
   return (
     <AdminShell>
-      <Link to="/admin/associacoes/$id" params={{ id }}>
-        <Button variant="ghost" size="sm" className="mb-5">
-          <ArrowLeft className="size-4" /> Voltar à entidade
-        </Button>
-      </Link>
+      <BackButton label="Voltar à entidade" className="mb-5" />
       <div className="mb-6 flex flex-wrap items-start justify-between gap-4 border-b border-border pb-7">
         <div>
           <div className="flex flex-wrap items-center gap-2">
