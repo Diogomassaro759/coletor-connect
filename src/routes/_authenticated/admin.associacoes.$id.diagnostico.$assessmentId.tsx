@@ -916,14 +916,11 @@ function EditableSummaryForm({
 }) {
   return (
     <form onSubmit={onSubmit} className="mt-5 space-y-5 rounded-xl border border-border bg-card p-5 shadow-card md:p-7">
-      <div className="flex flex-wrap items-center justify-between gap-3 border-b border-border pb-4">
-        <div>
-          <h2 className="text-xl font-bold">
-            Editar formulário {area === "juridico" ? "Jurídico" : area === "contabil" ? "Contábil" : "Social"}
-          </h2>
-          <p className="mt-1 text-sm text-muted-foreground">Altere os campos e salve ao final.</p>
-        </div>
-        <Button type="submit">Salvar formulário</Button>
+      <div className="border-b border-border pb-4">
+        <h2 className="text-xl font-bold">
+          Editar formulário {area === "juridico" ? "Jurídico" : area === "contabil" ? "Contábil" : "Social"}
+        </h2>
+        <p className="mt-1 text-sm text-muted-foreground">Altere os campos e salve ao final.</p>
       </div>
 
       {showSocial && (
