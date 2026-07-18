@@ -118,11 +118,11 @@ function AdminDashboard() {
       const { data, error } = await supabase
         .from("catadores")
         .select(
-          "id,nome_completo,cpf,genero,escolaridade,renda_media_mensal,materiais_coletados,status,data_cadastro,nome_cooperativa,contribui_inss,inscrito_cadunico,possui_bolsa_familia,created_by",
+          "id,nome_completo,cpf,genero,escolaridade,renda_media_mensal,materiais_coletados,status,data_cadastro,nome_cooperativa,contribui_inss,inscrito_cadunico,possui_bolsa_familia,created_by,association_id,associations(tipo)",
         )
         .order("data_cadastro", { ascending: false });
       if (error) throw error;
-      return data as Catador[];
+      return data as unknown as (Catador & { associations: { tipo: string | null } | null })[];
     },
   });
 
@@ -172,8 +172,18 @@ function AdminDashboard() {
   }, [catadores, materialFilter, rendaFilter, search]);
 
   const stats = useMemo(() => {
-    const total = catadores?.length ?? 0;
-    return { total };
+    const list = catadores ?? [];
+    const total = list.length;
+    let cooperativa = 0;
+    let associacao = 0;
+    let coletivo = 0;
+    for (const c of list) {
+      const tipo = (c as { associations?: { tipo?: string | null } | null }).associations?.tipo;
+      if (tipo === "cooperativa") cooperativa++;
+      else if (tipo === "associacao") associacao++;
+      else if (tipo === "coletivo") coletivo++;
+    }
+    return { total, cooperativa, associacao, coletivo };
   }, [catadores]);
 
 
@@ -426,8 +436,11 @@ function AdminDashboard() {
             )}
           </div>
 
-          <div className="grid gap-4 sm:grid-cols-1 mb-6">
+          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4 mb-6">
             <StatCard icon={Users} label="Total" value={stats.total} tone="primary" />
+            <StatCard icon={Users} label="Cooperativa" value={stats.cooperativa} tone="success" />
+            <StatCard icon={Users} label="Associação" value={stats.associacao} tone="success" />
+            <StatCard icon={Users} label="Coletivo" value={stats.coletivo} tone="warning" />
           </div>
 
         </>
