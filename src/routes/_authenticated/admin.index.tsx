@@ -253,10 +253,10 @@ function AdminDashboard() {
       { header: "Conta bancária digital", key: "conta_bancaria_digital" },
       { header: "Cadastro gov.br", key: "cadastro_gov_br" },
       { header: "Nível gov.br", key: "nivel_cadastro_gov_br" },
-      { header: "Status", key: "status" },
       { header: "Data de cadastro", key: "data_cadastro", numFmt: "dd/mm/yyyy hh:mm" },
       { header: "Última atualização", key: "updated_at", numFmt: "dd/mm/yyyy hh:mm" },
     ];
+
     ws.columns = columns.map((c) => ({
       header: c.header,
       key: c.key,
