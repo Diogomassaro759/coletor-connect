@@ -420,7 +420,13 @@ function AdminDashboard() {
 
       {isCatadoresScreen && (
         <>
+          {isAdminLike && showCatadoresScreen && (
+            <div className="mb-4">
+              <BackButton />
+            </div>
+          )}
           <div className="flex flex-wrap items-end justify-between gap-4 mb-8">
+
             <div>
               <h1 className="text-3xl font-bold tracking-tight">Catadores</h1>
               <p className="text-muted-foreground">Gerencie cadastros, filtre e exporte dados.</p>
