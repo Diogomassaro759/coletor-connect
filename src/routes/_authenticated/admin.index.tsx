@@ -452,19 +452,7 @@ function AdminDashboard() {
         </div>
         <div className="flex items-center gap-2">
           <Filter className="size-4 text-muted-foreground" />
-          <Select value={statusFilter} onValueChange={setStatusFilter}>
-            <SelectTrigger className="w-[150px]">
-              <SelectValue placeholder="Status" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="todos">Todos status</SelectItem>
-              {STATUS_OPTIONS.map((s) => (
-                <SelectItem key={s.value} value={s.value}>
-                  {s.label}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
+
           <Select value={materialFilter} onValueChange={setMaterialFilter}>
             <SelectTrigger className="w-[170px]">
               <SelectValue placeholder="Material" />
