@@ -717,7 +717,7 @@ function LauncherCard({
           {actions}
         </div>
       </div>
-      <div className="mt-5 grid gap-3 sm:grid-cols-3">
+      <div className="mt-5 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
         {stats.map((s) => (
           <StatCard key={s.label} icon={s.icon} label={s.label} value={s.value} tone={s.tone} />
         ))}
