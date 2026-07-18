@@ -67,6 +67,7 @@ export type Database = {
           apoio_instituicoes: boolean | null
           apoio_instituicoes_quais: string | null
           apoio_poder_publico: string | null
+          area: Database["public"]["Enums"]["operational_area"] | null
           assessoria_juridica: boolean | null
           association_id: string
           ata_registrada_cartorio: string | null
@@ -224,6 +225,7 @@ export type Database = {
           apoio_instituicoes?: boolean | null
           apoio_instituicoes_quais?: string | null
           apoio_poder_publico?: string | null
+          area?: Database["public"]["Enums"]["operational_area"] | null
           assessoria_juridica?: boolean | null
           association_id: string
           ata_registrada_cartorio?: string | null
@@ -381,6 +383,7 @@ export type Database = {
           apoio_instituicoes?: boolean | null
           apoio_instituicoes_quais?: string | null
           apoio_poder_publico?: string | null
+          area?: Database["public"]["Enums"]["operational_area"] | null
           assessoria_juridica?: boolean | null
           association_id?: string
           ata_registrada_cartorio?: string | null
