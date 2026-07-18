@@ -222,6 +222,7 @@ function CatadorDetails() {
           <Field k="Autodeclaração racial" v={c.autodeclaracao_racial ?? "—"} />
           <Field k="Escolaridade" v={c.escolaridade ?? "—"} />
           <Field k="Cooperativa / Grupo" v={c.nome_cooperativa ?? "—"} />
+          <Field k="Recenseador" v={<RecenseadorName userId={c.created_by} />} />
         </Section>
 
         <Section title="Contato">
@@ -274,6 +275,24 @@ function CatadorDetails() {
       </div>
     </AdminShell>
   );
+}
+
+function RecenseadorName({ userId }: { userId: string | null | undefined }) {
+  const { data } = useQuery({
+    queryKey: ["profile-name", userId],
+    enabled: !!userId,
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("profiles")
+        .select("full_name, email")
+        .eq("user_id", userId as string)
+        .maybeSingle();
+      if (error) throw error;
+      return data?.full_name || data?.email || "—";
+    },
+  });
+  if (!userId) return <>—</>;
+  return <>{data ?? "…"}</>;
 }
 
 function StatusPill({ status }: { status: string }) {

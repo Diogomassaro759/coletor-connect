@@ -124,6 +124,26 @@ function AdminDashboard() {
     },
   });
 
+  const creatorIds = useMemo(
+    () => Array.from(new Set((catadores ?? []).map((c) => c.created_by).filter(Boolean) as string[])),
+    [catadores],
+  );
+
+  const { data: creatorNames } = useQuery({
+    queryKey: ["catador-creators", creatorIds],
+    enabled: creatorIds.length > 0,
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("profiles")
+        .select("user_id, full_name, email")
+        .in("user_id", creatorIds);
+      if (error) throw error;
+      const map: Record<string, string> = {};
+      for (const p of data ?? []) map[p.user_id] = p.full_name || p.email || "—";
+      return map;
+    },
+  });
+
   const { data: assocStats } = useQuery({
     queryKey: ["assoc-stats"],
     queryFn: async () => {
@@ -502,6 +522,7 @@ function AdminDashboard() {
               <TableHead className="hidden md:table-cell">CPF</TableHead>
               <TableHead className="hidden lg:table-cell">Cooperativa</TableHead>
               <TableHead className="hidden md:table-cell">Materiais</TableHead>
+              <TableHead className="hidden lg:table-cell">Recenseador</TableHead>
               <TableHead>Status</TableHead>
               {!readOnlyCatadores && <TableHead className="w-12"></TableHead>}
             </TableRow>
@@ -509,14 +530,14 @@ function AdminDashboard() {
           <TableBody>
             {isLoading && (
               <TableRow>
-                <TableCell colSpan={readOnlyCatadores ? 5 : 6} className="text-center py-12 text-muted-foreground">
+                <TableCell colSpan={readOnlyCatadores ? 6 : 7} className="text-center py-12 text-muted-foreground">
                   Carregando...
                 </TableCell>
               </TableRow>
             )}
             {!isLoading && filtered.length === 0 && (
               <TableRow>
-                <TableCell colSpan={readOnlyCatadores ? 5 : 6} className="text-center py-16">
+                <TableCell colSpan={readOnlyCatadores ? 6 : 7} className="text-center py-16">
                   <p className="text-muted-foreground">Nenhum catador encontrado.</p>
                   {isRecenseador && (
                     <Link to="/admin/novo" className="inline-block mt-4">
@@ -561,6 +582,9 @@ function AdminDashboard() {
                       </Badge>
                     )}
                   </div>
+                </TableCell>
+                <TableCell className="hidden lg:table-cell text-sm">
+                  {c.created_by ? (creatorNames?.[c.created_by] ?? "—") : "—"}
                 </TableCell>
                 <TableCell>
                   <StatusBadge status={c.status} />
