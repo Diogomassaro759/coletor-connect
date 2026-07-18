@@ -30,6 +30,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Textarea } from "@/components/ui/textarea";
 import { supabase } from "@/integrations/supabase/client";
 
 export const Route = createFileRoute(
@@ -70,8 +71,7 @@ function AssessmentDetails() {
   const { id, assessmentId } = Route.useParams();
   const { mode } = Route.useSearch();
   const ctx = Route.useRouteContext() as any;
-  const { isConsultant, area } = ctx;
-  const canEditFieldData = isConsultant && mode === "edit";
+  const { isAdmin, isConsultant, isCoordenador, area } = ctx;
   const { data: assessmentArea } = useQuery({
     queryKey: ["assessment-area", assessmentId],
     queryFn: async () => {
@@ -94,6 +94,11 @@ function AssessmentDetails() {
   const showSocial = !effectiveArea || effectiveArea === "social";
   const showJuridico = effectiveArea === "juridico";
   const showContabil = effectiveArea === "contabil";
+  const canEditFieldData =
+    mode === "edit" &&
+    (isAdmin ||
+      (isCoordenador && (!effectiveArea || area === effectiveArea)) ||
+      (isConsultant && (!effectiveArea || area === effectiveArea)));
   const qc = useQueryClient();
   const [cameraCategory, setCameraCategory] = useState<string | null>(null);
   const [uploading, setUploading] = useState(false);
@@ -204,6 +209,20 @@ function AssessmentDetails() {
           .insert({ assessment_id: assessmentId, tipo, ...changes });
     if (result.error) toast.error("Erro ao atualizar livro", { description: result.error.message });
     else refresh();
+  }
+
+  async function saveSummary(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    const form = new FormData(event.currentTarget);
+    const payload = buildAssessmentUpdatePayload(form, effectiveArea ?? "social");
+    const { error } = await supabase
+      .from("association_assessments")
+      .update(payload)
+      .eq("id", assessmentId);
+
+    if (error) return toast.error("Não foi possível salvar", { description: error.message });
+    toast.success("Formulário atualizado.");
+    refresh();
   }
 
   async function uploadEvidence(file: File, category: string) {
@@ -525,85 +544,96 @@ function AssessmentDetails() {
           <TabsTrigger value="evidencias">Evidências</TabsTrigger>
         </TabsList>
         <TabsContent value="resumo">
-          <div className="mt-5 grid gap-5 md:grid-cols-3">
-            {showSocial && (<Summary
-              title="Social / Cadastral"
-              rows={[
-                ["Presidente", a.presidente_nome],
-                ["Telefone", a.presidente_telefone],
-                ["Vice-presidente", a.vice_presidente_nome],
-                ["Homens", a.homens],
-                ["Mulheres", a.mulheres],
-                ["Faixa etária", a.faixa_etaria_predominante],
-                ["Escolaridade", a.escolaridade_predominante],
-                ["Dependentes", yes(a.criancas_adolescentes_dependentes)],
-                ["INSS", a.contribuicao_inss],
-                ["CadÚnico", a.inscritos_cadunico],
-                ["Uso de EPIs", a.uso_epis],
-                ["Fornecimento de EPIs", a.cooperativa_fornece_epis],
-                ["Jornada", a.media_horas_trabalhadas],
-                ["Beneficiários", a.quantidade_beneficiarios],
-                ["Preconceito", yes(a.relatos_preconceito)],
-                ["Trabalho infantil", yes(a.historico_trabalho_infantil)],
-                ["Capacitação", yes(a.interesse_capacitacao)],
-                ["Coleta", a.tipo_coleta],
-                ["Triagem", yes(a.realiza_triagem)],
-                ["Materiais", a.materiais_coletados.join(", ")],
-                ["Volumetria", `${a.volumetria_toneladas_mes ?? 0} t/mês`],
-                ["Parcerias", a.possui_parcerias],
-                ["Destino da venda", a.destino_venda],
-                ["Galpão", a.tipo_galpao],
-                ["Movimento/rede", a.movimento_qual],
-                ["Consentimento", yes(a.consentimento_dados)],
-              ]}
-            />)}
-            {showJuridico && (<Summary
-              title="Jurídico"
-              rows={[
-                ["Mandato em dia", a.mandato_em_dia],
-                ["Ata registrada", a.ata_registrada_cartorio],
-                ["Registro de atas", a.possui_registro_atas],
-                ["Conselho fiscal", a.conselho_fiscal],
-                ["Assessoria jurídica", yes(a.assessoria_juridica)],
-                ["Apoio institucional", yes(a.apoio_instituicoes)],
-                ["Instituições", a.apoio_instituicoes_quais],
-                ["Lista de cooperados", a.lista_cooperados_atualizada],
-                ["Lista de não cooperados", a.lista_nao_cooperados_atualizada],
-                ["Regras de entrada", a.regras_entrada],
-                ["Regras de saída", a.regras_saida_exclusao],
-                ["Divisão de tarefas", a.divisao_tarefas],
-                ["Coordenação/gerência", a.coordenacao_gerencia],
-                ["Contrato remunerado", yes(a.contrato_remunerado)],
-                ["Tipo de contrato", a.contrato_tipo],
-                ["Pendências", a.pendencias_juridicas],
-                ["Classificação", a.classificacao_juridica],
-              ]}
-            />)}
-            {showContabil && (<Summary
-              title="Contábil"
-              rows={[
-                ["Estatuto", a.estatuto_registrado],
-                ["Alvará", a.alvara_funcionamento],
-                ["Licença", a.licenca_ambiental_status],
-                ["Ficha/livro de trabalho", yes(a.livro_ficha_trabalho)],
-                ["Livro de inspeção", yes(a.livro_inspecao_trabalho)],
-                ["Sindicato", yes(a.filiacao_sindical)],
-                ["SST", a.contrato_sst],
-                ["Controle de frequência", a.controle_frequencia_tipo],
-                ["Tipo de contador", a.contador_tipo],
-                ["Nome do contador", a.contador_nome],
-                ["Telefone", a.contador_telefone],
-                ["E-mail", a.contador_email],
-                ["Contabilidade", a.contabilidade_regular],
-                ["Notas fiscais", a.emite_notas_fiscais],
-                ["Estoque", a.controle_estoque],
-                ["Divisão — critério", a.divisao_resultados_criterio],
-                ["Divisão — procedimento", a.divisao_resultados_procedimento],
-                ["Pendências", a.pendencias_contabeis],
-                ["Classificação", a.classificacao_contabil],
-              ]}
-            />)}
-          </div>
+          {canEditFieldData ? (
+            <EditableSummaryForm
+              assessment={a}
+              area={effectiveArea ?? "social"}
+              showSocial={showSocial}
+              showJuridico={showJuridico}
+              showContabil={showContabil}
+              onSubmit={saveSummary}
+            />
+          ) : (
+            <div className="mt-5 grid gap-5 md:grid-cols-3">
+              {showSocial && (<Summary
+                title="Social / Cadastral"
+                rows={[
+                  ["Presidente", a.presidente_nome],
+                  ["Telefone", a.presidente_telefone],
+                  ["Vice-presidente", a.vice_presidente_nome],
+                  ["Homens", a.homens],
+                  ["Mulheres", a.mulheres],
+                  ["Faixa etária", a.faixa_etaria_predominante],
+                  ["Escolaridade", a.escolaridade_predominante],
+                  ["Dependentes", yes(a.criancas_adolescentes_dependentes)],
+                  ["INSS", a.contribuicao_inss],
+                  ["CadÚnico", a.inscritos_cadunico],
+                  ["Uso de EPIs", a.uso_epis],
+                  ["Fornecimento de EPIs", a.cooperativa_fornece_epis],
+                  ["Jornada", a.media_horas_trabalhadas],
+                  ["Beneficiários", a.quantidade_beneficiarios],
+                  ["Preconceito", yes(a.relatos_preconceito)],
+                  ["Trabalho infantil", yes(a.historico_trabalho_infantil)],
+                  ["Capacitação", yes(a.interesse_capacitacao)],
+                  ["Coleta", a.tipo_coleta],
+                  ["Triagem", yes(a.realiza_triagem)],
+                  ["Materiais", a.materiais_coletados.join(", ")],
+                  ["Volumetria", `${a.volumetria_toneladas_mes ?? 0} t/mês`],
+                  ["Parcerias", a.possui_parcerias],
+                  ["Destino da venda", a.destino_venda],
+                  ["Galpão", a.tipo_galpao],
+                  ["Movimento/rede", a.movimento_qual],
+                  ["Consentimento", yes(a.consentimento_dados)],
+                ]}
+              />)}
+              {showJuridico && (<Summary
+                title="Jurídico"
+                rows={[
+                  ["Mandato em dia", a.mandato_em_dia],
+                  ["Ata registrada", a.ata_registrada_cartorio],
+                  ["Registro de atas", a.possui_registro_atas],
+                  ["Conselho fiscal", a.conselho_fiscal],
+                  ["Assessoria jurídica", yes(a.assessoria_juridica)],
+                  ["Apoio institucional", yes(a.apoio_instituicoes)],
+                  ["Instituições", a.apoio_instituicoes_quais],
+                  ["Lista de cooperados", a.lista_cooperados_atualizada],
+                  ["Lista de não cooperados", a.lista_nao_cooperados_atualizada],
+                  ["Regras de entrada", a.regras_entrada],
+                  ["Regras de saída", a.regras_saida_exclusao],
+                  ["Divisão de tarefas", a.divisao_tarefas],
+                  ["Coordenação/gerência", a.coordenacao_gerencia],
+                  ["Contrato remunerado", yes(a.contrato_remunerado)],
+                  ["Tipo de contrato", a.contrato_tipo],
+                  ["Pendências", a.pendencias_juridicas],
+                  ["Classificação", a.classificacao_juridica],
+                ]}
+              />)}
+              {showContabil && (<Summary
+                title="Contábil"
+                rows={[
+                  ["Estatuto", a.estatuto_registrado],
+                  ["Alvará", a.alvara_funcionamento],
+                  ["Licença", a.licenca_ambiental_status],
+                  ["Ficha/livro de trabalho", yes(a.livro_ficha_trabalho)],
+                  ["Livro de inspeção", yes(a.livro_inspecao_trabalho)],
+                  ["Sindicato", yes(a.filiacao_sindical)],
+                  ["SST", a.contrato_sst],
+                  ["Controle de frequência", a.controle_frequencia_tipo],
+                  ["Tipo de contador", a.contador_tipo],
+                  ["Nome do contador", a.contador_nome],
+                  ["Telefone", a.contador_telefone],
+                  ["E-mail", a.contador_email],
+                  ["Contabilidade", a.contabilidade_regular],
+                  ["Notas fiscais", a.emite_notas_fiscais],
+                  ["Estoque", a.controle_estoque],
+                  ["Divisão — critério", a.divisao_resultados_criterio],
+                  ["Divisão — procedimento", a.divisao_resultados_procedimento],
+                  ["Pendências", a.pendencias_contabeis],
+                  ["Classificação", a.classificacao_contabil],
+                ]}
+              />)}
+            </div>
+          )}
         </TabsContent>
         <TabsContent value="precos">
           <Collection title="Compradores e preços por quilograma">
@@ -868,6 +898,225 @@ function Summary({ title, rows }: { title: string; rows: Array<[string, unknown]
     </section>
   );
 }
+
+function EditableSummaryForm({
+  assessment,
+  area,
+  showSocial,
+  showJuridico,
+  showContabil,
+  onSubmit,
+}: {
+  assessment: any;
+  area: string;
+  showSocial: boolean;
+  showJuridico: boolean;
+  showContabil: boolean;
+  onSubmit: (event: FormEvent<HTMLFormElement>) => void;
+}) {
+  return (
+    <form onSubmit={onSubmit} className="mt-5 space-y-5 rounded-xl border border-border bg-card p-5 shadow-card md:p-7">
+      <div className="flex flex-wrap items-center justify-between gap-3 border-b border-border pb-4">
+        <div>
+          <h2 className="text-xl font-bold">
+            Editar formulário {area === "juridico" ? "Jurídico" : area === "contabil" ? "Contábil" : "Social"}
+          </h2>
+          <p className="mt-1 text-sm text-muted-foreground">Altere os campos e salve ao final.</p>
+        </div>
+        <Button type="submit">Salvar formulário</Button>
+      </div>
+
+      {showSocial && (
+        <div className="grid gap-4 md:grid-cols-2">
+          <EditField label="Presidente"><Input name="presidente_nome" defaultValue={assessment.presidente_nome ?? ""} /></EditField>
+          <EditField label="Telefone"><Input name="presidente_telefone" defaultValue={assessment.presidente_telefone ?? ""} /></EditField>
+          <EditField label="Vice-presidente"><Input name="vice_presidente_nome" defaultValue={assessment.vice_presidente_nome ?? ""} /></EditField>
+          <EditField label="Homens"><Input name="homens" type="number" min="0" defaultValue={assessment.homens ?? 0} /></EditField>
+          <EditField label="Mulheres"><Input name="mulheres" type="number" min="0" defaultValue={assessment.mulheres ?? 0} /></EditField>
+          <EditField label="Faixa etária"><Input name="faixa_etaria_predominante" defaultValue={assessment.faixa_etaria_predominante ?? ""} /></EditField>
+          <EditField label="Escolaridade"><Input name="escolaridade_predominante" defaultValue={assessment.escolaridade_predominante ?? ""} /></EditField>
+          <EditField label="INSS"><Input name="contribuicao_inss" defaultValue={assessment.contribuicao_inss ?? ""} /></EditField>
+          <EditField label="CadÚnico"><Input name="inscritos_cadunico" defaultValue={assessment.inscritos_cadunico ?? ""} /></EditField>
+          <EditField label="Uso de EPIs"><Input name="uso_epis" defaultValue={assessment.uso_epis ?? ""} /></EditField>
+          <EditField label="Fornecimento de EPIs"><Input name="cooperativa_fornece_epis" defaultValue={assessment.cooperativa_fornece_epis ?? ""} /></EditField>
+          <EditField label="Jornada"><Input name="media_horas_trabalhadas" defaultValue={assessment.media_horas_trabalhadas ?? ""} /></EditField>
+          <EditField label="Beneficiários"><Input name="quantidade_beneficiarios" type="number" min="0" defaultValue={assessment.quantidade_beneficiarios ?? 0} /></EditField>
+          <EditField label="Coleta"><Input name="tipo_coleta" defaultValue={assessment.tipo_coleta ?? ""} /></EditField>
+          <EditField label="Volumetria"><Input name="volumetria_toneladas_mes" type="number" min="0" step="0.01" defaultValue={assessment.volumetria_toneladas_mes ?? 0} /></EditField>
+          <EditField label="Parcerias"><Input name="possui_parcerias" defaultValue={assessment.possui_parcerias ?? ""} /></EditField>
+          <EditField label="Destino da venda"><Input name="destino_venda" defaultValue={assessment.destino_venda ?? ""} /></EditField>
+          <EditField label="Galpão"><Input name="tipo_galpao" defaultValue={assessment.tipo_galpao ?? ""} /></EditField>
+          <EditField label="Materiais" wide><Input name="materiais_coletados" defaultValue={(assessment.materiais_coletados ?? []).join(", ")} /></EditField>
+          <EditField label="Movimento/rede" wide><Textarea name="movimento_qual" defaultValue={assessment.movimento_qual ?? ""} /></EditField>
+          <CheckEdit name="criancas_adolescentes_dependentes" label="Dependentes" checked={assessment.criancas_adolescentes_dependentes} />
+          <CheckEdit name="relatos_preconceito" label="Preconceito" checked={assessment.relatos_preconceito} />
+          <CheckEdit name="historico_trabalho_infantil" label="Trabalho infantil" checked={assessment.historico_trabalho_infantil} />
+          <CheckEdit name="interesse_capacitacao" label="Capacitação" checked={assessment.interesse_capacitacao} />
+          <CheckEdit name="realiza_triagem" label="Triagem" checked={assessment.realiza_triagem} />
+        </div>
+      )}
+
+      {showJuridico && (
+        <div className="grid gap-4 md:grid-cols-2">
+          <EditField label="Mandato em dia"><Input name="mandato_em_dia" defaultValue={assessment.mandato_em_dia ?? ""} /></EditField>
+          <EditField label="Ata registrada"><Input name="ata_registrada_cartorio" defaultValue={assessment.ata_registrada_cartorio ?? ""} /></EditField>
+          <EditField label="Registro de atas"><Input name="possui_registro_atas" defaultValue={assessment.possui_registro_atas ?? ""} /></EditField>
+          <EditField label="Conselho fiscal"><Input name="conselho_fiscal" defaultValue={assessment.conselho_fiscal ?? ""} /></EditField>
+          <EditField label="Instituições" wide><Textarea name="apoio_instituicoes_quais" defaultValue={assessment.apoio_instituicoes_quais ?? ""} /></EditField>
+          <EditField label="Lista de cooperados"><Input name="lista_cooperados_atualizada" defaultValue={assessment.lista_cooperados_atualizada ?? ""} /></EditField>
+          <EditField label="Lista de não cooperados"><Input name="lista_nao_cooperados_atualizada" defaultValue={assessment.lista_nao_cooperados_atualizada ?? ""} /></EditField>
+          <EditField label="Regras de entrada"><Input name="regras_entrada" defaultValue={assessment.regras_entrada ?? ""} /></EditField>
+          <EditField label="Regras de saída"><Input name="regras_saida_exclusao" defaultValue={assessment.regras_saida_exclusao ?? ""} /></EditField>
+          <EditField label="Divisão de tarefas"><Input name="divisao_tarefas" defaultValue={assessment.divisao_tarefas ?? ""} /></EditField>
+          <EditField label="Coordenação/gerência"><Input name="coordenacao_gerencia" defaultValue={assessment.coordenacao_gerencia ?? ""} /></EditField>
+          <EditField label="Tipo de contrato"><Input name="contrato_tipo" defaultValue={assessment.contrato_tipo ?? ""} /></EditField>
+          <EditField label="Pendências" wide><Textarea name="pendencias_juridicas" defaultValue={assessment.pendencias_juridicas ?? ""} /></EditField>
+          <EditField label="Classificação"><Input name="classificacao_juridica" defaultValue={assessment.classificacao_juridica ?? ""} /></EditField>
+          <CheckEdit name="assessoria_juridica" label="Assessoria jurídica" checked={assessment.assessoria_juridica} />
+          <CheckEdit name="apoio_instituicoes" label="Apoio institucional" checked={assessment.apoio_instituicoes} />
+          <CheckEdit name="contrato_remunerado" label="Contrato remunerado" checked={assessment.contrato_remunerado} />
+        </div>
+      )}
+
+      {showContabil && (
+        <div className="grid gap-4 md:grid-cols-2">
+          <EditField label="Estatuto"><Input name="estatuto_registrado" defaultValue={assessment.estatuto_registrado ?? ""} /></EditField>
+          <EditField label="Alvará"><Input name="alvara_funcionamento" defaultValue={assessment.alvara_funcionamento ?? ""} /></EditField>
+          <EditField label="Licença"><Input name="licenca_ambiental_status" defaultValue={assessment.licenca_ambiental_status ?? ""} /></EditField>
+          <EditField label="SST"><Input name="contrato_sst" defaultValue={assessment.contrato_sst ?? ""} /></EditField>
+          <EditField label="Controle de frequência"><Input name="controle_frequencia_tipo" defaultValue={assessment.controle_frequencia_tipo ?? ""} /></EditField>
+          <EditField label="Tipo de contador"><Input name="contador_tipo" defaultValue={assessment.contador_tipo ?? ""} /></EditField>
+          <EditField label="Nome do contador"><Input name="contador_nome" defaultValue={assessment.contador_nome ?? ""} /></EditField>
+          <EditField label="Telefone"><Input name="contador_telefone" defaultValue={assessment.contador_telefone ?? ""} /></EditField>
+          <EditField label="E-mail"><Input name="contador_email" defaultValue={assessment.contador_email ?? ""} /></EditField>
+          <EditField label="Contabilidade"><Input name="contabilidade_regular" defaultValue={assessment.contabilidade_regular ?? ""} /></EditField>
+          <EditField label="Notas fiscais"><Input name="emite_notas_fiscais" defaultValue={assessment.emite_notas_fiscais ?? ""} /></EditField>
+          <EditField label="Estoque"><Input name="controle_estoque" defaultValue={assessment.controle_estoque ?? ""} /></EditField>
+          <EditField label="Divisão — critério" wide><Textarea name="divisao_resultados_criterio" defaultValue={assessment.divisao_resultados_criterio ?? ""} /></EditField>
+          <EditField label="Divisão — procedimento" wide><Textarea name="divisao_resultados_procedimento" defaultValue={assessment.divisao_resultados_procedimento ?? ""} /></EditField>
+          <EditField label="Pendências" wide><Textarea name="pendencias_contabeis" defaultValue={assessment.pendencias_contabeis ?? ""} /></EditField>
+          <EditField label="Classificação"><Input name="classificacao_contabil" defaultValue={assessment.classificacao_contabil ?? ""} /></EditField>
+          <CheckEdit name="livro_ficha_trabalho" label="Ficha/livro de trabalho" checked={assessment.livro_ficha_trabalho} />
+          <CheckEdit name="livro_inspecao_trabalho" label="Livro de inspeção" checked={assessment.livro_inspecao_trabalho} />
+          <CheckEdit name="filiacao_sindical" label="Sindicato" checked={assessment.filiacao_sindical} />
+        </div>
+      )}
+
+      <div className="flex justify-end border-t border-border pt-4">
+        <Button type="submit">Salvar formulário</Button>
+      </div>
+    </form>
+  );
+}
+
+function EditField({ label, wide, children }: { label: string; wide?: boolean; children: React.ReactNode }) {
+  return (
+    <div className={wide ? "md:col-span-2" : undefined}>
+      <Label className="mb-2 block">{label}</Label>
+      {children}
+    </div>
+  );
+}
+
+function CheckEdit({ name, label, checked }: { name: string; label: string; checked: boolean | null }) {
+  return (
+    <label className="flex min-h-10 items-center gap-2 rounded-md border border-border px-3 text-sm">
+      <Checkbox name={name} defaultChecked={!!checked} /> {label}
+    </label>
+  );
+}
+
+function buildAssessmentUpdatePayload(form: FormData, area: string) {
+  const base =
+    area === "juridico"
+      ? {
+          mandato_em_dia: formText(form, "mandato_em_dia"),
+          ata_registrada_cartorio: formText(form, "ata_registrada_cartorio"),
+          possui_registro_atas: formText(form, "possui_registro_atas"),
+          conselho_fiscal: formText(form, "conselho_fiscal"),
+          assessoria_juridica: formBool(form, "assessoria_juridica"),
+          apoio_instituicoes: formBool(form, "apoio_instituicoes"),
+          apoio_instituicoes_quais: formText(form, "apoio_instituicoes_quais"),
+          lista_cooperados_atualizada: formText(form, "lista_cooperados_atualizada"),
+          lista_nao_cooperados_atualizada: formText(form, "lista_nao_cooperados_atualizada"),
+          regras_entrada: formText(form, "regras_entrada"),
+          regras_saida_exclusao: formText(form, "regras_saida_exclusao"),
+          divisao_tarefas: formText(form, "divisao_tarefas"),
+          coordenacao_gerencia: formText(form, "coordenacao_gerencia"),
+          contrato_remunerado: formBool(form, "contrato_remunerado"),
+          contrato_tipo: formText(form, "contrato_tipo"),
+          pendencias_juridicas: formText(form, "pendencias_juridicas"),
+          classificacao_juridica: formText(form, "classificacao_juridica"),
+        }
+      : area === "contabil"
+        ? {
+            estatuto_registrado: formText(form, "estatuto_registrado"),
+            alvara_funcionamento: formText(form, "alvara_funcionamento"),
+            licenca_ambiental_status: formText(form, "licenca_ambiental_status"),
+            livro_ficha_trabalho: formBool(form, "livro_ficha_trabalho"),
+            livro_inspecao_trabalho: formBool(form, "livro_inspecao_trabalho"),
+            filiacao_sindical: formBool(form, "filiacao_sindical"),
+            contrato_sst: formText(form, "contrato_sst"),
+            controle_frequencia_tipo: formText(form, "controle_frequencia_tipo"),
+            contador_tipo: formText(form, "contador_tipo"),
+            contador_nome: formText(form, "contador_nome"),
+            contador_telefone: formText(form, "contador_telefone"),
+            contador_email: formText(form, "contador_email"),
+            contabilidade_regular: formText(form, "contabilidade_regular"),
+            emite_notas_fiscais: formText(form, "emite_notas_fiscais"),
+            controle_estoque: formText(form, "controle_estoque"),
+            divisao_resultados_criterio: formText(form, "divisao_resultados_criterio"),
+            divisao_resultados_procedimento: formText(form, "divisao_resultados_procedimento"),
+            pendencias_contabeis: formText(form, "pendencias_contabeis"),
+            classificacao_contabil: formText(form, "classificacao_contabil"),
+          }
+        : {
+            presidente_nome: formText(form, "presidente_nome"),
+            presidente_telefone: formText(form, "presidente_telefone"),
+            vice_presidente_nome: formText(form, "vice_presidente_nome"),
+            homens: formNumber(form, "homens") ?? 0,
+            mulheres: formNumber(form, "mulheres") ?? 0,
+            faixa_etaria_predominante: formText(form, "faixa_etaria_predominante"),
+            escolaridade_predominante: formText(form, "escolaridade_predominante"),
+            criancas_adolescentes_dependentes: formBool(form, "criancas_adolescentes_dependentes"),
+            contribuicao_inss: formText(form, "contribuicao_inss"),
+            inscritos_cadunico: formText(form, "inscritos_cadunico"),
+            uso_epis: formText(form, "uso_epis"),
+            cooperativa_fornece_epis: formText(form, "cooperativa_fornece_epis"),
+            media_horas_trabalhadas: formText(form, "media_horas_trabalhadas"),
+            quantidade_beneficiarios: formNumber(form, "quantidade_beneficiarios"),
+            relatos_preconceito: formBool(form, "relatos_preconceito"),
+            historico_trabalho_infantil: formBool(form, "historico_trabalho_infantil"),
+            interesse_capacitacao: formBool(form, "interesse_capacitacao"),
+            tipo_coleta: formText(form, "tipo_coleta"),
+            realiza_triagem: formBool(form, "realiza_triagem"),
+            materiais_coletados: String(form.get("materiais_coletados") ?? "")
+              .split(",")
+              .map((item) => item.trim())
+              .filter(Boolean),
+            volumetria_toneladas_mes: formNumber(form, "volumetria_toneladas_mes"),
+            possui_parcerias: formText(form, "possui_parcerias"),
+            destino_venda: formText(form, "destino_venda"),
+            tipo_galpao: formText(form, "tipo_galpao"),
+            movimento_qual: formText(form, "movimento_qual"),
+          };
+
+  return base;
+}
+
+function formText(form: FormData, name: string) {
+  return String(form.get(name) ?? "").trim() || null;
+}
+
+function formNumber(form: FormData, name: string) {
+  const value = String(form.get(name) ?? "").trim();
+  return value === "" ? null : Number(value);
+}
+
+function formBool(form: FormData, name: string) {
+  return form.has(name);
+}
+
 function Collection({ title, children }: { title: string; children: React.ReactNode }) {
   return (
     <section className="mt-5 rounded-xl border border-border bg-card p-5 shadow-card md:p-7">
