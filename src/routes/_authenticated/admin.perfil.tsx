@@ -242,7 +242,7 @@ function PerfilPage() {
               </div>
               <div className="flex justify-end">
                 <Button type="submit" disabled={saveProfile.isPending}>
-                  {saveProfile.isPending ? "Salvando…" : "Salvar alterações"}
+                  {saveProfile.isPending ? "Salvando…" : "Salvar"}
                 </Button>
               </div>
             </form>
