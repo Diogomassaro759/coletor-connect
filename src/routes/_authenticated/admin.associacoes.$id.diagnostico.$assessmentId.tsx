@@ -69,8 +69,12 @@ const EVIDENCE = [
 function AssessmentDetails() {
   const { id, assessmentId } = Route.useParams();
   const { mode } = Route.useSearch();
-  const { isConsultant } = Route.useRouteContext();
+  const ctx = Route.useRouteContext() as any;
+  const { isConsultant, isAdmin, area } = ctx;
   const canEditFieldData = isConsultant && mode === "edit";
+  const showSocial = isAdmin || !area || area === "social";
+  const showJuridico = isAdmin || area === "juridico";
+  const showContabil = isAdmin || area === "contabil";
   const qc = useQueryClient();
   const [cameraCategory, setCameraCategory] = useState<string | null>(null);
   const [uploading, setUploading] = useState(false);
