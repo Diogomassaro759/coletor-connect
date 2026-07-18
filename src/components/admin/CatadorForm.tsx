@@ -497,7 +497,7 @@ export function CatadorForm({
             description="Vincule o cadastro à entidade correspondente."
             tone="red"
           />
-          <Linha label="Cooperativa / Associação / Grupo">
+          <Linha label="Entidades">
             {associationId ? (
               <div className="flex min-h-10 items-center rounded-md border border-input bg-muted px-3 text-sm font-medium">
                 {associationName ?? "Entidade selecionada"}
