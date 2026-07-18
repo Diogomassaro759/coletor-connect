@@ -530,14 +530,14 @@ function AdminDashboard() {
           <TableBody>
             {isLoading && (
               <TableRow>
-                <TableCell colSpan={readOnlyCatadores ? 5 : 6} className="text-center py-12 text-muted-foreground">
+                <TableCell colSpan={readOnlyCatadores ? 6 : 7} className="text-center py-12 text-muted-foreground">
                   Carregando...
                 </TableCell>
               </TableRow>
             )}
             {!isLoading && filtered.length === 0 && (
               <TableRow>
-                <TableCell colSpan={readOnlyCatadores ? 5 : 6} className="text-center py-16">
+                <TableCell colSpan={readOnlyCatadores ? 6 : 7} className="text-center py-16">
                   <p className="text-muted-foreground">Nenhum catador encontrado.</p>
                   {isRecenseador && (
                     <Link to="/admin/novo" className="inline-block mt-4">
