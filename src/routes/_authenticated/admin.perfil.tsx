@@ -92,13 +92,16 @@ function PerfilPage() {
     mutationFn: async () => {
       const { error: pErr } = await supabase
         .from("profiles")
-        .update({
-          full_name: form.full_name,
-          email: form.email,
-          municipio_referencia: form.municipio_referencia || null,
-          identificacao_profissional: form.identificacao_profissional || null,
-        })
-        .eq("user_id", user.id);
+        .upsert(
+          {
+            user_id: user.id,
+            full_name: form.full_name,
+            email: form.email,
+            municipio_referencia: form.municipio_referencia || null,
+            identificacao_profissional: form.identificacao_profissional || null,
+          },
+          { onConflict: "user_id" },
+        );
       if (pErr) throw new Error(pErr.message);
       if (form.email && form.email !== user.email) {
         const { error: aErr } = await supabase.auth.updateUser({ email: form.email });
