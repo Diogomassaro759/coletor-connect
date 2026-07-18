@@ -108,11 +108,7 @@ function EditAssociationPage() {
 
   return (
     <AdminShell>
-      <Link to="/admin/associacoes/$id" params={{ id }}>
-        <Button variant="ghost" size="sm" className="mb-5">
-          <ArrowLeft className="size-4" /> Voltar aos detalhes
-        </Button>
-      </Link>
+      <BackButton label="Voltar aos detalhes" className="mb-5" />
       <div className="mx-auto max-w-3xl">
         <h1 className="mb-2 text-3xl font-bold">
           {readOnly ? "Visualizar entidade" : "Editar entidade"}
