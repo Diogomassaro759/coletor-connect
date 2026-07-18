@@ -160,11 +160,8 @@ export function validateRow(
     if (!nivelGovMatched) errors.push(`nivel_cadastro_gov_br inválido (${NIVEL_GOV_BR_OPTIONS.join(", ")})`);
   }
 
-  const statusRaw = toStr(get("status")).toLowerCase() || "pendente";
-  const statusMatch = STATUS_OPTIONS.find(
-    (s) => s.value === statusRaw || s.label.toLowerCase() === statusRaw,
-  );
-  if (!statusMatch) errors.push("status inválido (pendente, ativo, inativo)");
+
+
 
   const emailRaw = toStr(get("email"));
   if (emailRaw && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(emailRaw))
