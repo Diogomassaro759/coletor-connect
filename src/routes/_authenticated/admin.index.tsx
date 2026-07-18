@@ -583,7 +583,7 @@ function AdminDashboard() {
                     )}
                   </div>
                 </TableCell>
-                <TableCell className="hidden lg:table-cell text-sm">
+                <TableCell className="text-sm">
                   {c.created_by ? (creatorNames?.[c.created_by] ?? "—") : "—"}
                 </TableCell>
                 <TableCell>
