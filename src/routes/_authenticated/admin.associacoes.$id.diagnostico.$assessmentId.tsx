@@ -507,7 +507,7 @@ function AssessmentDetails() {
         </TabsList>
         <TabsContent value="resumo">
           <div className="mt-5 grid gap-5 md:grid-cols-3">
-            <Summary
+            {showSocial && <Summary
               title="Social / Cadastral"
               rows={[
                 ["Presidente", a.presidente_nome],
