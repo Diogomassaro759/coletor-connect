@@ -159,7 +159,6 @@ function AdminDashboard() {
   const filtered = useMemo(() => {
     if (!catadores) return [];
     return catadores.filter((c) => {
-      if (statusFilter !== "todos" && c.status !== statusFilter) return false;
       if (materialFilter !== "todos" && !c.materiais_coletados.includes(materialFilter))
         return false;
       if (rendaFilter === "menor" && !(c.renda_media_mensal < RENDA_THRESHOLD)) return false;
@@ -171,14 +170,13 @@ function AdminDashboard() {
       }
       return true;
     });
-  }, [catadores, statusFilter, materialFilter, rendaFilter, search]);
+  }, [catadores, materialFilter, rendaFilter, search]);
 
   const stats = useMemo(() => {
     const total = catadores?.length ?? 0;
-    const ativos = catadores?.filter((c) => c.status === "ativo").length ?? 0;
-    const pendentes = catadores?.filter((c) => c.status === "pendente").length ?? 0;
-    return { total, ativos, pendentes };
+    return { total };
   }, [catadores]);
+
 
   const deleteMutation = useMutation({
     mutationFn: async (id: string) => {
