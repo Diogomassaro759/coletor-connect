@@ -397,6 +397,9 @@ function AdminDashboard() {
             onPrimaryClick={() => setShowCatadoresScreen(true)}
             stats={[
               { icon: Users, label: "Total", value: stats.total, tone: "primary" },
+              { icon: Users, label: "Cooperativa", value: stats.cooperativa, tone: "success" },
+              { icon: Users, label: "Associação", value: stats.associacao, tone: "success" },
+              { icon: Users, label: "Coletivo", value: stats.coletivo, tone: "warning" },
             ]}
 
             actions={
