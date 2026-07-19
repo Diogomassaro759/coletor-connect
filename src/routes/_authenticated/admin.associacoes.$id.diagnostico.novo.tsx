@@ -514,9 +514,8 @@ function NewAssessment() {
                 if (!existingForm) return;
                 if (existingForm.kind === "infra") {
                   navigate({
-                    to: "/admin/associacoes/$id/diagnostico/novo",
+                    to: "/admin/associacoes/$id",
                     params: { id },
-                    search: { modulo: "infraestrutura" },
                   });
                 } else {
                   navigate({
