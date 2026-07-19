@@ -68,6 +68,7 @@ const EVIDENCE = [
 ];
 
 function AssessmentDetails() {
+  const router = useRouter();
   const { id, assessmentId } = Route.useParams();
   const { mode } = Route.useSearch();
   const ctx = Route.useRouteContext() as any;
