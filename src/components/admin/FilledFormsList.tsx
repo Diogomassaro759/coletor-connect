@@ -7,6 +7,8 @@ export function FilledFormsList({ associationId }: { associationId: string }) {
   const ctx = useRouteContext({ from: "/_authenticated" }) as any;
   const area = ctx?.area as "social" | "juridico" | "contabil" | "infraestrutura" | null;
   const isAdmin = !!ctx?.isAdmin;
+  const isConsultant = !!ctx?.isConsultant;
+  const canEdit = !isConsultant;
   const areaLabels: Record<string, string> = {
     social: "Social",
     juridico: "Jurídico",
@@ -127,13 +129,15 @@ export function FilledFormsList({ associationId }: { associationId: string }) {
                         >
                           <Button size="sm" variant="outline">Visualizar</Button>
                         </Link>
-                        <Link
-                          to="/admin/associacoes/$id/diagnostico/$assessmentId"
-                          params={{ id: associationId, assessmentId: r.id }}
-                          search={{ mode: "edit" as const }}
-                        >
-                          <Button size="sm">Editar</Button>
-                        </Link>
+                        {canEdit && (
+                          <Link
+                            to="/admin/associacoes/$id/diagnostico/$assessmentId"
+                            params={{ id: associationId, assessmentId: r.id }}
+                            search={{ mode: "edit" as const }}
+                          >
+                            <Button size="sm">Editar</Button>
+                          </Link>
+                        )}
                       </div>
                     ) : (
                       <div className="flex justify-end gap-2">
