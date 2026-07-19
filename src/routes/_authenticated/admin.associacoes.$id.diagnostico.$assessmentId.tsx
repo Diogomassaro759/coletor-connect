@@ -1,4 +1,4 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute, Link, useRouter } from "@tanstack/react-router";
 import { BackButton } from "@/components/ui/back-button";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useState, type FormEvent } from "react";
@@ -68,6 +68,7 @@ const EVIDENCE = [
 ];
 
 function AssessmentDetails() {
+  const router = useRouter();
   const { id, assessmentId } = Route.useParams();
   const { mode } = Route.useSearch();
   const ctx = Route.useRouteContext() as any;
@@ -222,7 +223,7 @@ function AssessmentDetails() {
 
     if (error) return toast.error("Não foi possível salvar", { description: error.message });
     toast.success("Formulário atualizado.");
-    refresh();
+    router.history.back();
   }
 
   async function uploadEvidence(file: File, category: string) {
