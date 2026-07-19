@@ -223,7 +223,7 @@ function AssessmentDetails() {
 
     if (error) return toast.error("Não foi possível salvar", { description: error.message });
     toast.success("Formulário atualizado.");
-    refresh();
+    router.history.back();
   }
 
   async function uploadEvidence(file: File, category: string) {
