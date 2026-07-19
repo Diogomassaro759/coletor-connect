@@ -268,7 +268,7 @@ function AssociationsPage() {
 
   return (
     <AdminShell>
-      <BackButton />
+      
       {!isAdminLike && (() => {
         const MODULE_STYLES = {
           social: {
