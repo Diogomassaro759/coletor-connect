@@ -129,13 +129,15 @@ export function FilledFormsList({ associationId }: { associationId: string }) {
                         >
                           <Button size="sm" variant="outline">Visualizar</Button>
                         </Link>
-                        <Link
-                          to="/admin/associacoes/$id/diagnostico/$assessmentId"
-                          params={{ id: associationId, assessmentId: r.id }}
-                          search={{ mode: "edit" as const }}
-                        >
-                          <Button size="sm">Editar</Button>
-                        </Link>
+                        {canEdit && (
+                          <Link
+                            to="/admin/associacoes/$id/diagnostico/$assessmentId"
+                            params={{ id: associationId, assessmentId: r.id }}
+                            search={{ mode: "edit" as const }}
+                          >
+                            <Button size="sm">Editar</Button>
+                          </Link>
+                        )}
                       </div>
                     ) : (
                       <div className="flex justify-end gap-2">
