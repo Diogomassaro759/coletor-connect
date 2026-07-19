@@ -12,6 +12,7 @@ import {
 } from "lucide-react";
 import { AdminShell } from "@/components/admin/AdminShell";
 import { Badge } from "@/components/ui/badge";
+import { BackButton } from "@/components/ui/back-button";
 import { Button } from "@/components/ui/button";
 import {
   loadNotifications,
@@ -73,6 +74,7 @@ function NotificationsPage() {
 
   return (
     <AdminShell>
+      <BackButton className="mb-4" />
       <div className="mb-8 flex flex-wrap items-end justify-between gap-4">
         <div>
           <p className="text-xs font-bold uppercase tracking-[0.16em] text-primary">
