@@ -469,8 +469,70 @@ function NewAssessment() {
     navigate({ to: "/admin/associacoes/$id", params: { id } });
   }
 
+  const { data: existingForm } = useQuery({
+    queryKey: ["existing-form-for-area", id, activeModule],
+    queryFn: async () => {
+      if (isInfrastructure) {
+        const { data } = await supabase
+          .from("infrastructure_assessments")
+          .select("id")
+          .eq("association_id", id)
+          .maybeSingle();
+        return data ? { id: data.id, kind: "infra" as const } : null;
+      }
+      const { data } = await supabase
+        .from("association_assessments")
+        .select("id")
+        .eq("association_id", id)
+        .eq("area", activeModule)
+        .maybeSingle();
+      return data ? { id: data.id, kind: "assessment" as const } : null;
+    },
+  });
+
   return (
     <AdminShell>
+      <AlertDialog open={!!existingForm}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Formulário já preenchido</AlertDialogTitle>
+            <AlertDialogDescription>
+              Já existe um formulário {currentMeta.title.toLowerCase()} para esta entidade.
+              Deseja editar o formulário existente?
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel
+              onClick={() =>
+                navigate({ to: "/admin/associacoes" })
+              }
+            >
+              Não
+            </AlertDialogCancel>
+            <AlertDialogAction
+              onClick={() => {
+                if (!existingForm) return;
+                if (existingForm.kind === "infra") {
+                  navigate({
+                    to: "/admin/associacoes/$id/diagnostico/novo",
+                    params: { id },
+                    search: { modulo: "infraestrutura" },
+                  });
+                } else {
+                  navigate({
+                    to: "/admin/associacoes/$id/diagnostico/$assessmentId",
+                    params: { id, assessmentId: existingForm.id },
+                    search: { mode: "edit" },
+                  });
+                }
+              }}
+            >
+              Sim, editar
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
       <BackButton label="Voltar à entidade" className="mb-5" />
       <div className="mx-auto max-w-5xl">
         <p className="text-xs font-bold uppercase tracking-[0.16em] text-primary">
