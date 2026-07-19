@@ -39,6 +39,15 @@ export const Route = createFileRoute(
   validateSearch: (search: Record<string, unknown>) => ({
     mode: search.mode === "edit" ? ("edit" as const) : ("view" as const),
   }),
+  beforeLoad: ({ context, search, params }) => {
+    if (search.mode === "edit" && (context as any).isConsultant) {
+      throw redirect({
+        to: "/admin/associacoes/$id/diagnostico/$assessmentId",
+        params,
+        search: { mode: "view" as const },
+      });
+    }
+  },
   head: () => ({ meta: [{ title: "Diagnóstico institucional — PROCATE" }] }),
   component: AssessmentDetails,
 });
