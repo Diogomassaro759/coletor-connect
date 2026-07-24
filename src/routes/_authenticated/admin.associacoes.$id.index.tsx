@@ -133,24 +133,6 @@ function AssociationDetails() {
               </Button>
             </Link>
           )}
-          {isRecenseador && (
-            <Link to="/admin/associacoes/$id/catadores/novo" params={{ id }}>
-              <Button size="lg">
-                <UserPlus className="size-4" /> Cadastrar catador
-              </Button>
-            </Link>
-          )}
-          {isConsultant && area !== "infraestrutura" && (
-            <Link
-              to="/admin/associacoes/$id/diagnostico/novo"
-              params={{ id }}
-              search={{ modulo: (area ?? "social") as "social" | "juridico" | "contabil" }}
-            >
-              <Button size="lg" variant="outline">
-                <ClipboardPlus className="size-4" /> Novo cadastro de campo
-              </Button>
-            </Link>
-          )}
         </div>
       </div>
 
