@@ -315,27 +315,34 @@ function NewAssessment() {
       return toast.error("Confirme o consentimento e a veracidade das informações.");
     }
     const assessmentArea = activeModule as "social" | "juridico" | "contabil";
-    const { data: existing } = await supabase
-      .from("association_assessments")
-      .select("id")
-      .eq("association_id", id)
-      .eq("area", assessmentArea)
-      .maybeSingle();
-    if (existing?.id) {
-      toast.error(`Já existe um formulário ${assessmentArea} para esta entidade.`, {
-        description: "Abra o formulário existente para editar.",
-      });
-      navigate({
-        to: "/admin/associacoes/$id/diagnostico/$assessmentId",
-        params: { id, assessmentId: existing.id },
-        search: { mode: "edit" },
-      });
-      return;
+    if (!isEditing) {
+      const { data: existingRec } = await supabase
+        .from("association_assessments")
+        .select("id")
+        .eq("association_id", id)
+        .eq("area", assessmentArea)
+        .maybeSingle();
+      if (existingRec?.id) {
+        toast.error(`Já existe um formulário ${assessmentArea} para esta entidade.`, {
+          description: "Abra o formulário existente para editar.",
+        });
+        navigate({
+          to: "/admin/associacoes/$id/diagnostico/novo",
+          params: { id },
+          search: { modulo: assessmentArea, assessmentId: existingRec.id, mode: "edit" },
+        });
+        return;
+      }
     }
     setSaving(true);
-    const { data: assessment, error } = await supabase
-      .from("association_assessments")
-      .insert({
+    const assessmentQuery = isEditing
+      ? supabase.from("association_assessments").update
+      : supabase.from("association_assessments").insert;
+    const assessmentBuilder = isEditing
+      ? supabase.from("association_assessments").update
+      : supabase.from("association_assessments").insert;
+    void assessmentQuery; void assessmentBuilder;
+    const record = {
         association_id: id,
         area: assessmentArea,
         consultant_id: auth.user.id,
