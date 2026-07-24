@@ -259,17 +259,19 @@ function NewAssessment() {
     if (!auth.user) return toast.error("Sua sessão expirou.");
 
     if (isInfrastructure) {
-      const { data: existingInfra } = await supabase
-        .from("infrastructure_assessments")
-        .select("id")
-        .eq("association_id", id)
-        .maybeSingle();
-      if (existingInfra?.id) {
-        toast.error("Já existe um formulário de infraestrutura para esta entidade.", {
-          description: "Abra o formulário existente para editar.",
-        });
-        navigate({ to: "/admin/associacoes/$id", params: { id } });
-        return;
+      if (!isEditing) {
+        const { data: existingInfra } = await supabase
+          .from("infrastructure_assessments")
+          .select("id")
+          .eq("association_id", id)
+          .maybeSingle();
+        if (existingInfra?.id) {
+          toast.error("Já existe um formulário de infraestrutura para esta entidade.", {
+            description: "Abra o formulário existente para editar.",
+          });
+          navigate({ to: "/admin/associacoes/$id", params: { id } });
+          return;
+        }
       }
       setSaving(true);
       const payload: Record<string, unknown> = {};
@@ -279,7 +281,7 @@ function NewAssessment() {
       for (const [k, v] of Object.entries(choices)) {
         if (k.startsWith("infra_")) payload[k.slice(6)] = v;
       }
-      const { error: infraError } = await supabase.from("infrastructure_assessments").insert({
+      const infraRecord = {
         association_id: id,
         consultant_id: auth.user.id,
         consultant_name: String(values.get("consultant_name") ?? "").trim(),
@@ -295,7 +297,13 @@ function NewAssessment() {
         pessoas_mulheres: numberOrNull(values, "infra_pessoas_mulheres"),
         pessoas_especifique: text(values, "infra_pessoas_especifique"),
         payload: payload as any,
-      });
+      };
+      const { error: infraError } = isEditing
+        ? await supabase
+            .from("infrastructure_assessments")
+            .update(infraRecord)
+            .eq("id", assessmentId!)
+        : await supabase.from("infrastructure_assessments").insert(infraRecord);
       setSaving(false);
       if (infraError) return toast.error("Erro ao salvar diagnóstico de infraestrutura", { description: infraError.message });
       toast.success("Diagnóstico de infraestrutura salvo.");
