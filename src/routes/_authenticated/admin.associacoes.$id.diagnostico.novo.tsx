@@ -670,7 +670,8 @@ function NewAssessment() {
         <p className="mt-2 text-muted-foreground">
           Selecione o tipo de cadastro e preencha o formulário correspondente ao documento de campo.
         </p>
-        <form onSubmit={submit} className="mt-7">
+        <form ref={formRef} onSubmit={submit} className="mt-7" key={existing ? "loaded" : "empty"}>
+          <fieldset disabled={readOnly} className="contents">
           <div className="mb-6 grid gap-4 rounded-xl border border-border bg-card p-5 shadow-card md:grid-cols-4">
             <Field label="Nome do consultor">
               <Input
