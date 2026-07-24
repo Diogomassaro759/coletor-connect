@@ -259,25 +259,36 @@ function AssociationDetails() {
                     <h3 className="mb-2 text-lg font-bold text-foreground">{m.titulo}</h3>
                     <p className="mb-8 text-sm leading-relaxed text-muted-foreground">{m.descricao}</p>
                     <div className="mt-auto">
-                      <button
-                        type="button"
-                        onClick={() => {
-                          const existingId = existingByArea[k];
-                          if (existingId !== undefined) {
-                            setExistingPrompt({ modulo: k, assessmentId: k === "infraestrutura" ? null : existingId });
-                            return;
-                          }
-                          navigate({
-                            to: "/admin/associacoes/$id/diagnostico/novo",
-                            params: { id },
-                            search: { modulo: k },
-                          });
-                        }}
-                        className={`inline-flex w-full items-center justify-center gap-2 rounded-xl px-4 py-2.5 text-sm font-semibold text-white shadow-sm transition-all duration-200 hover:shadow-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 ${m.button}`}
-                      >
-                        Abrir formulário <ArrowRight className="size-4 transition-transform group-hover:translate-x-0.5" />
-                      </button>
+                      {(() => {
+                        const jaExiste = existingByArea[k] !== undefined;
+                        return (
+                          <button
+                            type="button"
+                            disabled={jaExiste}
+                            onClick={() => {
+                              if (jaExiste) return;
+                              navigate({
+                                to: "/admin/associacoes/$id/diagnostico/novo",
+                                params: { id },
+                                search: { modulo: k },
+                              });
+                            }}
+                            className={`inline-flex w-full items-center justify-center gap-2 rounded-xl px-4 py-2.5 text-sm font-semibold text-white shadow-sm transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 ${
+                              jaExiste
+                                ? "cursor-not-allowed bg-muted text-muted-foreground opacity-70"
+                                : `hover:shadow-md ${m.button}`
+                            }`}
+                          >
+                            {jaExiste ? "Formulário já preenchido" : (
+                              <>
+                                Abrir formulário <ArrowRight className="size-4 transition-transform group-hover:translate-x-0.5" />
+                              </>
+                            )}
+                          </button>
+                        );
+                      })()}
                     </div>
+
                   </div>
                 );
               })}
