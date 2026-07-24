@@ -8,7 +8,7 @@ export function FilledFormsList({ associationId }: { associationId: string }) {
   const area = ctx?.area as "social" | "juridico" | "contabil" | "infraestrutura" | null;
   const isAdmin = !!ctx?.isAdmin;
   const isConsultant = !!ctx?.isConsultant;
-  const canEdit = !isConsultant;
+  const canEdit = isAdmin || !isConsultant;
   const areaLabels: Record<string, string> = {
     social: "Social",
     juridico: "Jurídico",
