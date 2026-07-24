@@ -362,7 +362,7 @@ function AssociationsPage() {
           <div>
             <h1 className="mt-1 text-3xl font-bold tracking-tight">{pageTitle}</h1>
             <p className="mt-1 text-muted-foreground">
-              Base oficial de entidades vinculadas ao PROCATE.
+              Gerencie cadastros, filtre e exporte dados.
             </p>
           </div>
           {isAdmin && (
