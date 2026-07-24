@@ -313,6 +313,8 @@ function NewAssessment() {
   async function submit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     const values = new FormData(event.currentTarget);
+    const nowSave = new Date();
+    const currentTime = `${pad(nowSave.getHours())}:${pad(nowSave.getMinutes())}`;
     const { data: auth } = await supabase.auth.getUser();
     if (!auth.user) return toast.error("Sua sessão expirou.");
 
