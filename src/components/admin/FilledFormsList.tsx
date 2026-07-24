@@ -108,15 +108,18 @@ export function FilledFormsList({ associationId }: { associationId: string }) {
           const formArea = creatorAreas[r.created_by] ?? "social";
           return {
           ...r,
+          consultant_name: r.consultant_name ?? creatorNames[r.created_by] ?? null,
           formulario: areaLabels[formArea] ?? "Social",
           kind: "assessment" as const,
           };
         }),
-        ...(((i as any).data ?? []) as any[]).map((r) => ({
+        ...infraRows.map((r: any) => ({
           ...r,
+          consultant_name: r.consultant_name ?? creatorNames[r.created_by] ?? null,
           formulario: "Infraestrutura",
           kind: "infra" as const,
         })),
+
       ];
       list.sort((x, y) =>
         String(y.data_visita ?? "").localeCompare(String(x.data_visita ?? "")),
