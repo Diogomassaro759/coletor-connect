@@ -48,16 +48,19 @@ export function FilledFormsList({ associationId }: { associationId: string }) {
       ]);
       const assessmentRows = (((a as any).data ?? []) as any[]);
       const assocRow = (assoc as any).data as any;
+      const infraRows = (((i as any).data ?? []) as any[]);
       const creatorIds = [
         ...new Set(
           [
             ...assessmentRows.map((r) => r.created_by),
+            ...infraRows.map((r: any) => r.created_by),
             assocRow?.created_by,
           ].filter(Boolean),
         ),
       ];
       let creatorAreas: Record<string, string> = {};
       let creatorNames: Record<string, string> = {};
+
 
       if (creatorIds.length > 0) {
         const [{ data: roleRows }, { data: profileRows }] = await Promise.all([
