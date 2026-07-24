@@ -835,14 +835,6 @@ function NewAssessment() {
                 entityId={id}
                 onEntityChange={onEntityChange}
               />
-              {!readOnly && (
-                <div className="flex justify-end">
-                  <Button type="submit" size="lg" disabled={saving}>
-                    {saving && <Loader2 className="mr-2 size-4 animate-spin" />}
-                    Salvar
-                  </Button>
-                </div>
-              )}
             </div>
           )}
           <Tabs
