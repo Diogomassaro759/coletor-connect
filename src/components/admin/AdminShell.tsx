@@ -88,22 +88,10 @@ export function AdminShell({ children }: { children: React.ReactNode }) {
             )}
             {(isAdmin || isViewer) && (
               <Button variant="ghost" size="sm" asChild>
-                {isConsultant && area === "social" ? (
-                  <Link to="/admin/associacoes/nova">
-                    <Building2 className="size-4" />{" "}
-                    <span className="hidden md:inline">Entidades</span>
-                  </Link>
-                ) : isConsultant && (area === "juridico" || area === "contabil" || area === "infraestrutura") ? (
-                  <Link to="/admin/associacoes" search={{ abrir: "1" as const }}>
-                    <Building2 className="size-4" />{" "}
-                    <span className="hidden md:inline">Entidades</span>
-                  </Link>
-                ) : (
-                  <Link to="/admin/associacoes">
-                    <Building2 className="size-4" />{" "}
-                    <span className="hidden md:inline">Entidades</span>
-                  </Link>
-                )}
+                <Link to="/admin/associacoes">
+                  <Building2 className="size-4" />{" "}
+                  <span className="hidden md:inline">Entidades</span>
+                </Link>
               </Button>
             )}
             {(isAdmin || isCoordenador) && (
