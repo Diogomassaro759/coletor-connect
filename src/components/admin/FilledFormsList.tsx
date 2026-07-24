@@ -22,7 +22,8 @@ export function FilledFormsList({ associationId }: { associationId: string }) {
   const { data: rows = [] } = useQuery({
     queryKey: ["filled-forms", associationId, area, isAdmin],
     queryFn: async () => {
-      const [a, i] = await Promise.all([
+      const showSocial = isAdmin || !area || area === "social";
+      const [a, i, assoc] = await Promise.all([
         showAssessment
           ? supabase
               .from("association_assessments")
@@ -37,20 +38,46 @@ export function FilledFormsList({ associationId }: { associationId: string }) {
               .eq("association_id", associationId)
               .order("data_visita", { ascending: false })
           : Promise.resolve({ data: [] as any[] }),
+        showSocial
+          ? supabase
+              .from("associations")
+              .select("id,data_visita,horario_visita,created_at,created_by")
+              .eq("id", associationId)
+              .maybeSingle()
+          : Promise.resolve({ data: null as any }),
       ]);
       const assessmentRows = (((a as any).data ?? []) as any[]);
-      const creatorIds = [...new Set(assessmentRows.map((r) => r.created_by).filter(Boolean))];
+      const assocRow = (assoc as any).data as any;
+      const creatorIds = [
+        ...new Set(
+          [
+            ...assessmentRows.map((r) => r.created_by),
+            assocRow?.created_by,
+          ].filter(Boolean),
+        ),
+      ];
       let creatorAreas: Record<string, string> = {};
+      let creatorNames: Record<string, string> = {};
 
       if (creatorIds.length > 0) {
-        const { data: roleRows } = await supabase
-          .from("user_roles")
-          .select("user_id,area")
-          .in("user_id", creatorIds)
-          .not("area", "is", null);
+        const [{ data: roleRows }, { data: profileRows }] = await Promise.all([
+          supabase
+            .from("user_roles")
+            .select("user_id,area")
+            .in("user_id", creatorIds)
+            .not("area", "is", null),
+          supabase
+            .from("profiles")
+            .select("id,full_name")
+            .in("id", creatorIds),
+        ]);
 
         creatorAreas = ((roleRows ?? []) as any[]).reduce((acc, role) => {
           if (!acc[role.user_id]) acc[role.user_id] = role.area;
+          return acc;
+        }, {} as Record<string, string>);
+        creatorNames = ((profileRows ?? []) as any[]).reduce((acc, p) => {
+          acc[p.id] = p.full_name;
           return acc;
         }, {} as Record<string, string>);
       }
@@ -61,6 +88,18 @@ export function FilledFormsList({ associationId }: { associationId: string }) {
       });
 
       const list = [
+        ...(showSocial && assocRow
+          ? [{
+              id: assocRow.id,
+              data_visita: assocRow.data_visita,
+              horario_visita: assocRow.horario_visita,
+              consultant_name: creatorNames[assocRow.created_by] ?? null,
+              created_at: assocRow.created_at,
+              created_by: assocRow.created_by,
+              formulario: "Social",
+              kind: "social-entity" as const,
+            }]
+          : []),
         ...visibleAssessmentRows.map((r) => {
           const formArea = creatorAreas[r.created_by] ?? "social";
           return {
@@ -81,6 +120,7 @@ export function FilledFormsList({ associationId }: { associationId: string }) {
       return list;
     },
   });
+
 
   return (
     <section className="mt-8 rounded-xl border border-border bg-card p-6 shadow-card md:p-8">
