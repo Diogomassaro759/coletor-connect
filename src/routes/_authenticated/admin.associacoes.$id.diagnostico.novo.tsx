@@ -1578,11 +1578,14 @@ function NewAssessment() {
               </fieldset>
             </TabsContent>
           </Tabs>
-          <div className="sticky bottom-4 mt-6 flex justify-end rounded-xl border border-border bg-background/95 p-4 shadow-card backdrop-blur">
-            <Button type="submit" size="lg" disabled={saving}>
-              {saving && <Loader2 className="size-4 animate-spin" />} Salvar
-            </Button>
-          </div>
+          </fieldset>
+          {!readOnly && (
+            <div className="sticky bottom-4 mt-6 flex justify-end rounded-xl border border-border bg-background/95 p-4 shadow-card backdrop-blur">
+              <Button type="submit" size="lg" disabled={saving}>
+                {saving && <Loader2 className="size-4 animate-spin" />} Salvar
+              </Button>
+            </div>
+          )}
         </form>
       </div>
     </AdminShell>
