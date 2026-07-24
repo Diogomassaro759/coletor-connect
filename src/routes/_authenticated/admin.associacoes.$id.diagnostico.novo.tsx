@@ -648,9 +648,9 @@ function NewAssessment() {
                   });
                 } else {
                   navigate({
-                    to: "/admin/associacoes/$id/diagnostico/$assessmentId",
-                    params: { id, assessmentId: existingForm.id },
-                    search: { mode: "edit" },
+                    to: "/admin/associacoes/$id/diagnostico/novo",
+                    params: { id },
+                    search: { modulo: activeModule as any, assessmentId: existingForm.id, mode: "edit" },
                   });
                 }
               }}
