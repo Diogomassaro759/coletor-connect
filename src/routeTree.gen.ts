@@ -9,44 +9,44 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
-import { Route as AuthRouteImport } from './routes/auth'
-import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
+import { Route as AuthRouteImport } from './routes/auth'
 import { Route as AuthenticatedAdminRouteImport } from './routes/_authenticated/admin'
 import { Route as AuthenticatedAdminIndexRouteImport } from './routes/_authenticated/admin.index'
-import { Route as AuthenticatedAdminTrocarSenhaRouteImport } from './routes/_authenticated/admin.trocar-senha'
-import { Route as AuthenticatedAdminPerfilRouteImport } from './routes/_authenticated/admin.perfil'
-import { Route as AuthenticatedAdminNovoRouteImport } from './routes/_authenticated/admin.novo'
-import { Route as AuthenticatedAdminNotificacoesRouteImport } from './routes/_authenticated/admin.notificacoes'
-import { Route as AuthenticatedAdminImportarRouteImport } from './routes/_authenticated/admin.importar'
-import { Route as AuthenticatedAdminDiagnosticosRouteImport } from './routes/_authenticated/admin.diagnosticos'
 import { Route as AuthenticatedAdminAssociacoesRouteImport } from './routes/_authenticated/admin.associacoes'
-import { Route as AuthenticatedAdminUsuariosIndexRouteImport } from './routes/_authenticated/admin.usuarios.index'
-import { Route as AuthenticatedAdminAssociacoesIndexRouteImport } from './routes/_authenticated/admin.associacoes.index'
+import { Route as AuthenticatedAdminDiagnosticosRouteImport } from './routes/_authenticated/admin.diagnosticos'
+import { Route as AuthenticatedAdminImportarRouteImport } from './routes/_authenticated/admin.importar'
+import { Route as AuthenticatedAdminNotificacoesRouteImport } from './routes/_authenticated/admin.notificacoes'
+import { Route as AuthenticatedAdminNovoRouteImport } from './routes/_authenticated/admin.novo'
+import { Route as AuthenticatedAdminPerfilRouteImport } from './routes/_authenticated/admin.perfil'
+import { Route as AuthenticatedAdminTrocarSenhaRouteImport } from './routes/_authenticated/admin.trocar-senha'
 import { Route as AuthenticatedAdminIdIndexRouteImport } from './routes/_authenticated/admin.$id.index'
-import { Route as AuthenticatedAdminUsuariosNovoRouteImport } from './routes/_authenticated/admin.usuarios.novo'
-import { Route as AuthenticatedAdminAssociacoesNovaRouteImport } from './routes/_authenticated/admin.associacoes.nova'
 import { Route as AuthenticatedAdminIdEditarRouteImport } from './routes/_authenticated/admin.$id.editar'
+import { Route as AuthenticatedAdminAssociacoesIndexRouteImport } from './routes/_authenticated/admin.associacoes.index'
+import { Route as AuthenticatedAdminAssociacoesNovaRouteImport } from './routes/_authenticated/admin.associacoes.nova'
+import { Route as AuthenticatedAdminUsuariosIndexRouteImport } from './routes/_authenticated/admin.usuarios.index'
+import { Route as AuthenticatedAdminUsuariosNovoRouteImport } from './routes/_authenticated/admin.usuarios.novo'
 import { Route as AuthenticatedAdminAssociacoesIdIndexRouteImport } from './routes/_authenticated/admin.associacoes.$id.index'
-import { Route as AuthenticatedAdminUsuariosUserIdEditarRouteImport } from './routes/_authenticated/admin.usuarios.$userId.editar'
-import { Route as AuthenticatedAdminAssociacoesIdEditarRouteImport } from './routes/_authenticated/admin.associacoes.$id.editar'
 import { Route as AuthenticatedAdminAssociacoesIdDocumentosRouteImport } from './routes/_authenticated/admin.associacoes.$id.documentos'
-import { Route as AuthenticatedAdminAssociacoesIdDiagnosticoNovoRouteImport } from './routes/_authenticated/admin.associacoes.$id.diagnostico.novo'
-import { Route as AuthenticatedAdminAssociacoesIdDiagnosticoAssessmentIdRouteImport } from './routes/_authenticated/admin.associacoes.$id.diagnostico.$assessmentId'
+import { Route as AuthenticatedAdminAssociacoesIdEditarRouteImport } from './routes/_authenticated/admin.associacoes.$id.editar'
+import { Route as AuthenticatedAdminUsuariosUserIdEditarRouteImport } from './routes/_authenticated/admin.usuarios.$userId.editar'
 import { Route as AuthenticatedAdminAssociacoesIdCatadoresNovoRouteImport } from './routes/_authenticated/admin.associacoes.$id.catadores.novo'
+import { Route as AuthenticatedAdminAssociacoesIdDiagnosticoAssessmentIdRouteImport } from './routes/_authenticated/admin.associacoes.$id.diagnostico.$assessmentId'
+import { Route as AuthenticatedAdminAssociacoesIdDiagnosticoNovoRouteImport } from './routes/_authenticated/admin.associacoes.$id.diagnostico.novo'
 
-const AuthRoute = AuthRouteImport.update({
-  id: '/auth',
-  path: '/auth',
+const IndexRoute = IndexRouteImport.update({
+  id: '/',
+  path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AuthenticatedRouteRoute = AuthenticatedRouteRouteImport.update({
   id: '/_authenticated',
   getParentRoute: () => rootRouteImport,
 } as any)
-const IndexRoute = IndexRouteImport.update({
-  id: '/',
-  path: '/',
+const AuthRoute = AuthRouteImport.update({
+  id: '/auth',
+  path: '/auth',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AuthenticatedAdminRoute = AuthenticatedAdminRouteImport.update({
@@ -59,33 +59,10 @@ const AuthenticatedAdminIndexRoute = AuthenticatedAdminIndexRouteImport.update({
   path: '/',
   getParentRoute: () => AuthenticatedAdminRoute,
 } as any)
-const AuthenticatedAdminTrocarSenhaRoute =
-  AuthenticatedAdminTrocarSenhaRouteImport.update({
-    id: '/trocar-senha',
-    path: '/trocar-senha',
-    getParentRoute: () => AuthenticatedAdminRoute,
-  } as any)
-const AuthenticatedAdminPerfilRoute =
-  AuthenticatedAdminPerfilRouteImport.update({
-    id: '/perfil',
-    path: '/perfil',
-    getParentRoute: () => AuthenticatedAdminRoute,
-  } as any)
-const AuthenticatedAdminNovoRoute = AuthenticatedAdminNovoRouteImport.update({
-  id: '/novo',
-  path: '/novo',
-  getParentRoute: () => AuthenticatedAdminRoute,
-} as any)
-const AuthenticatedAdminNotificacoesRoute =
-  AuthenticatedAdminNotificacoesRouteImport.update({
-    id: '/notificacoes',
-    path: '/notificacoes',
-    getParentRoute: () => AuthenticatedAdminRoute,
-  } as any)
-const AuthenticatedAdminImportarRoute =
-  AuthenticatedAdminImportarRouteImport.update({
-    id: '/importar',
-    path: '/importar',
+const AuthenticatedAdminAssociacoesRoute =
+  AuthenticatedAdminAssociacoesRouteImport.update({
+    id: '/associacoes',
+    path: '/associacoes',
     getParentRoute: () => AuthenticatedAdminRoute,
   } as any)
 const AuthenticatedAdminDiagnosticosRoute =
@@ -94,16 +71,45 @@ const AuthenticatedAdminDiagnosticosRoute =
     path: '/diagnosticos',
     getParentRoute: () => AuthenticatedAdminRoute,
   } as any)
-const AuthenticatedAdminAssociacoesRoute =
-  AuthenticatedAdminAssociacoesRouteImport.update({
-    id: '/associacoes',
-    path: '/associacoes',
+const AuthenticatedAdminImportarRoute =
+  AuthenticatedAdminImportarRouteImport.update({
+    id: '/importar',
+    path: '/importar',
     getParentRoute: () => AuthenticatedAdminRoute,
   } as any)
-const AuthenticatedAdminUsuariosIndexRoute =
-  AuthenticatedAdminUsuariosIndexRouteImport.update({
-    id: '/usuarios/',
-    path: '/usuarios/',
+const AuthenticatedAdminNotificacoesRoute =
+  AuthenticatedAdminNotificacoesRouteImport.update({
+    id: '/notificacoes',
+    path: '/notificacoes',
+    getParentRoute: () => AuthenticatedAdminRoute,
+  } as any)
+const AuthenticatedAdminNovoRoute = AuthenticatedAdminNovoRouteImport.update({
+  id: '/novo',
+  path: '/novo',
+  getParentRoute: () => AuthenticatedAdminRoute,
+} as any)
+const AuthenticatedAdminPerfilRoute =
+  AuthenticatedAdminPerfilRouteImport.update({
+    id: '/perfil',
+    path: '/perfil',
+    getParentRoute: () => AuthenticatedAdminRoute,
+  } as any)
+const AuthenticatedAdminTrocarSenhaRoute =
+  AuthenticatedAdminTrocarSenhaRouteImport.update({
+    id: '/trocar-senha',
+    path: '/trocar-senha',
+    getParentRoute: () => AuthenticatedAdminRoute,
+  } as any)
+const AuthenticatedAdminIdIndexRoute =
+  AuthenticatedAdminIdIndexRouteImport.update({
+    id: '/$id/',
+    path: '/$id/',
+    getParentRoute: () => AuthenticatedAdminRoute,
+  } as any)
+const AuthenticatedAdminIdEditarRoute =
+  AuthenticatedAdminIdEditarRouteImport.update({
+    id: '/$id/editar',
+    path: '/$id/editar',
     getParentRoute: () => AuthenticatedAdminRoute,
   } as any)
 const AuthenticatedAdminAssociacoesIndexRoute =
@@ -112,10 +118,16 @@ const AuthenticatedAdminAssociacoesIndexRoute =
     path: '/',
     getParentRoute: () => AuthenticatedAdminAssociacoesRoute,
   } as any)
-const AuthenticatedAdminIdIndexRoute =
-  AuthenticatedAdminIdIndexRouteImport.update({
-    id: '/$id/',
-    path: '/$id/',
+const AuthenticatedAdminAssociacoesNovaRoute =
+  AuthenticatedAdminAssociacoesNovaRouteImport.update({
+    id: '/nova',
+    path: '/nova',
+    getParentRoute: () => AuthenticatedAdminAssociacoesRoute,
+  } as any)
+const AuthenticatedAdminUsuariosIndexRoute =
+  AuthenticatedAdminUsuariosIndexRouteImport.update({
+    id: '/usuarios/',
+    path: '/usuarios/',
     getParentRoute: () => AuthenticatedAdminRoute,
   } as any)
 const AuthenticatedAdminUsuariosNovoRoute =
@@ -124,34 +136,10 @@ const AuthenticatedAdminUsuariosNovoRoute =
     path: '/usuarios/novo',
     getParentRoute: () => AuthenticatedAdminRoute,
   } as any)
-const AuthenticatedAdminAssociacoesNovaRoute =
-  AuthenticatedAdminAssociacoesNovaRouteImport.update({
-    id: '/nova',
-    path: '/nova',
-    getParentRoute: () => AuthenticatedAdminAssociacoesRoute,
-  } as any)
-const AuthenticatedAdminIdEditarRoute =
-  AuthenticatedAdminIdEditarRouteImport.update({
-    id: '/$id/editar',
-    path: '/$id/editar',
-    getParentRoute: () => AuthenticatedAdminRoute,
-  } as any)
 const AuthenticatedAdminAssociacoesIdIndexRoute =
   AuthenticatedAdminAssociacoesIdIndexRouteImport.update({
     id: '/$id/',
     path: '/$id/',
-    getParentRoute: () => AuthenticatedAdminAssociacoesRoute,
-  } as any)
-const AuthenticatedAdminUsuariosUserIdEditarRoute =
-  AuthenticatedAdminUsuariosUserIdEditarRouteImport.update({
-    id: '/usuarios/$userId/editar',
-    path: '/usuarios/$userId/editar',
-    getParentRoute: () => AuthenticatedAdminRoute,
-  } as any)
-const AuthenticatedAdminAssociacoesIdEditarRoute =
-  AuthenticatedAdminAssociacoesIdEditarRouteImport.update({
-    id: '/$id/editar',
-    path: '/$id/editar',
     getParentRoute: () => AuthenticatedAdminAssociacoesRoute,
   } as any)
 const AuthenticatedAdminAssociacoesIdDocumentosRoute =
@@ -160,10 +148,22 @@ const AuthenticatedAdminAssociacoesIdDocumentosRoute =
     path: '/$id/documentos',
     getParentRoute: () => AuthenticatedAdminAssociacoesRoute,
   } as any)
-const AuthenticatedAdminAssociacoesIdDiagnosticoNovoRoute =
-  AuthenticatedAdminAssociacoesIdDiagnosticoNovoRouteImport.update({
-    id: '/$id/diagnostico/novo',
-    path: '/$id/diagnostico/novo',
+const AuthenticatedAdminAssociacoesIdEditarRoute =
+  AuthenticatedAdminAssociacoesIdEditarRouteImport.update({
+    id: '/$id/editar',
+    path: '/$id/editar',
+    getParentRoute: () => AuthenticatedAdminAssociacoesRoute,
+  } as any)
+const AuthenticatedAdminUsuariosUserIdEditarRoute =
+  AuthenticatedAdminUsuariosUserIdEditarRouteImport.update({
+    id: '/usuarios/$userId/editar',
+    path: '/usuarios/$userId/editar',
+    getParentRoute: () => AuthenticatedAdminRoute,
+  } as any)
+const AuthenticatedAdminAssociacoesIdCatadoresNovoRoute =
+  AuthenticatedAdminAssociacoesIdCatadoresNovoRouteImport.update({
+    id: '/$id/catadores/novo',
+    path: '/$id/catadores/novo',
     getParentRoute: () => AuthenticatedAdminAssociacoesRoute,
   } as any)
 const AuthenticatedAdminAssociacoesIdDiagnosticoAssessmentIdRoute =
@@ -172,10 +172,10 @@ const AuthenticatedAdminAssociacoesIdDiagnosticoAssessmentIdRoute =
     path: '/$id/diagnostico/$assessmentId',
     getParentRoute: () => AuthenticatedAdminAssociacoesRoute,
   } as any)
-const AuthenticatedAdminAssociacoesIdCatadoresNovoRoute =
-  AuthenticatedAdminAssociacoesIdCatadoresNovoRouteImport.update({
-    id: '/$id/catadores/novo',
-    path: '/$id/catadores/novo',
+const AuthenticatedAdminAssociacoesIdDiagnosticoNovoRoute =
+  AuthenticatedAdminAssociacoesIdDiagnosticoNovoRouteImport.update({
+    id: '/$id/diagnostico/novo',
+    path: '/$id/diagnostico/novo',
     getParentRoute: () => AuthenticatedAdminAssociacoesRoute,
   } as any)
 
@@ -345,11 +345,11 @@ export interface RootRouteChildren {
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
-    '/auth': {
-      id: '/auth'
-      path: '/auth'
-      fullPath: '/auth'
-      preLoaderRoute: typeof AuthRouteImport
+    '/': {
+      id: '/'
+      path: '/'
+      fullPath: '/'
+      preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/_authenticated': {
@@ -359,11 +359,11 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedRouteRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/': {
-      id: '/'
-      path: '/'
-      fullPath: '/'
-      preLoaderRoute: typeof IndexRouteImport
+    '/auth': {
+      id: '/auth'
+      path: '/auth'
+      fullPath: '/auth'
+      preLoaderRoute: typeof AuthRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/_authenticated/admin': {
@@ -380,39 +380,11 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAdminIndexRouteImport
       parentRoute: typeof AuthenticatedAdminRoute
     }
-    '/_authenticated/admin/trocar-senha': {
-      id: '/_authenticated/admin/trocar-senha'
-      path: '/trocar-senha'
-      fullPath: '/admin/trocar-senha'
-      preLoaderRoute: typeof AuthenticatedAdminTrocarSenhaRouteImport
-      parentRoute: typeof AuthenticatedAdminRoute
-    }
-    '/_authenticated/admin/perfil': {
-      id: '/_authenticated/admin/perfil'
-      path: '/perfil'
-      fullPath: '/admin/perfil'
-      preLoaderRoute: typeof AuthenticatedAdminPerfilRouteImport
-      parentRoute: typeof AuthenticatedAdminRoute
-    }
-    '/_authenticated/admin/novo': {
-      id: '/_authenticated/admin/novo'
-      path: '/novo'
-      fullPath: '/admin/novo'
-      preLoaderRoute: typeof AuthenticatedAdminNovoRouteImport
-      parentRoute: typeof AuthenticatedAdminRoute
-    }
-    '/_authenticated/admin/notificacoes': {
-      id: '/_authenticated/admin/notificacoes'
-      path: '/notificacoes'
-      fullPath: '/admin/notificacoes'
-      preLoaderRoute: typeof AuthenticatedAdminNotificacoesRouteImport
-      parentRoute: typeof AuthenticatedAdminRoute
-    }
-    '/_authenticated/admin/importar': {
-      id: '/_authenticated/admin/importar'
-      path: '/importar'
-      fullPath: '/admin/importar'
-      preLoaderRoute: typeof AuthenticatedAdminImportarRouteImport
+    '/_authenticated/admin/associacoes': {
+      id: '/_authenticated/admin/associacoes'
+      path: '/associacoes'
+      fullPath: '/admin/associacoes'
+      preLoaderRoute: typeof AuthenticatedAdminAssociacoesRouteImport
       parentRoute: typeof AuthenticatedAdminRoute
     }
     '/_authenticated/admin/diagnosticos': {
@@ -422,18 +394,53 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAdminDiagnosticosRouteImport
       parentRoute: typeof AuthenticatedAdminRoute
     }
-    '/_authenticated/admin/associacoes': {
-      id: '/_authenticated/admin/associacoes'
-      path: '/associacoes'
-      fullPath: '/admin/associacoes'
-      preLoaderRoute: typeof AuthenticatedAdminAssociacoesRouteImport
+    '/_authenticated/admin/importar': {
+      id: '/_authenticated/admin/importar'
+      path: '/importar'
+      fullPath: '/admin/importar'
+      preLoaderRoute: typeof AuthenticatedAdminImportarRouteImport
       parentRoute: typeof AuthenticatedAdminRoute
     }
-    '/_authenticated/admin/usuarios/': {
-      id: '/_authenticated/admin/usuarios/'
-      path: '/usuarios'
-      fullPath: '/admin/usuarios/'
-      preLoaderRoute: typeof AuthenticatedAdminUsuariosIndexRouteImport
+    '/_authenticated/admin/notificacoes': {
+      id: '/_authenticated/admin/notificacoes'
+      path: '/notificacoes'
+      fullPath: '/admin/notificacoes'
+      preLoaderRoute: typeof AuthenticatedAdminNotificacoesRouteImport
+      parentRoute: typeof AuthenticatedAdminRoute
+    }
+    '/_authenticated/admin/novo': {
+      id: '/_authenticated/admin/novo'
+      path: '/novo'
+      fullPath: '/admin/novo'
+      preLoaderRoute: typeof AuthenticatedAdminNovoRouteImport
+      parentRoute: typeof AuthenticatedAdminRoute
+    }
+    '/_authenticated/admin/perfil': {
+      id: '/_authenticated/admin/perfil'
+      path: '/perfil'
+      fullPath: '/admin/perfil'
+      preLoaderRoute: typeof AuthenticatedAdminPerfilRouteImport
+      parentRoute: typeof AuthenticatedAdminRoute
+    }
+    '/_authenticated/admin/trocar-senha': {
+      id: '/_authenticated/admin/trocar-senha'
+      path: '/trocar-senha'
+      fullPath: '/admin/trocar-senha'
+      preLoaderRoute: typeof AuthenticatedAdminTrocarSenhaRouteImport
+      parentRoute: typeof AuthenticatedAdminRoute
+    }
+    '/_authenticated/admin/$id/': {
+      id: '/_authenticated/admin/$id/'
+      path: '/$id'
+      fullPath: '/admin/$id/'
+      preLoaderRoute: typeof AuthenticatedAdminIdIndexRouteImport
+      parentRoute: typeof AuthenticatedAdminRoute
+    }
+    '/_authenticated/admin/$id/editar': {
+      id: '/_authenticated/admin/$id/editar'
+      path: '/$id/editar'
+      fullPath: '/admin/$id/editar'
+      preLoaderRoute: typeof AuthenticatedAdminIdEditarRouteImport
       parentRoute: typeof AuthenticatedAdminRoute
     }
     '/_authenticated/admin/associacoes/': {
@@ -443,11 +450,18 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAdminAssociacoesIndexRouteImport
       parentRoute: typeof AuthenticatedAdminAssociacoesRoute
     }
-    '/_authenticated/admin/$id/': {
-      id: '/_authenticated/admin/$id/'
-      path: '/$id'
-      fullPath: '/admin/$id/'
-      preLoaderRoute: typeof AuthenticatedAdminIdIndexRouteImport
+    '/_authenticated/admin/associacoes/nova': {
+      id: '/_authenticated/admin/associacoes/nova'
+      path: '/nova'
+      fullPath: '/admin/associacoes/nova'
+      preLoaderRoute: typeof AuthenticatedAdminAssociacoesNovaRouteImport
+      parentRoute: typeof AuthenticatedAdminAssociacoesRoute
+    }
+    '/_authenticated/admin/usuarios/': {
+      id: '/_authenticated/admin/usuarios/'
+      path: '/usuarios'
+      fullPath: '/admin/usuarios/'
+      preLoaderRoute: typeof AuthenticatedAdminUsuariosIndexRouteImport
       parentRoute: typeof AuthenticatedAdminRoute
     }
     '/_authenticated/admin/usuarios/novo': {
@@ -457,39 +471,11 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAdminUsuariosNovoRouteImport
       parentRoute: typeof AuthenticatedAdminRoute
     }
-    '/_authenticated/admin/associacoes/nova': {
-      id: '/_authenticated/admin/associacoes/nova'
-      path: '/nova'
-      fullPath: '/admin/associacoes/nova'
-      preLoaderRoute: typeof AuthenticatedAdminAssociacoesNovaRouteImport
-      parentRoute: typeof AuthenticatedAdminAssociacoesRoute
-    }
-    '/_authenticated/admin/$id/editar': {
-      id: '/_authenticated/admin/$id/editar'
-      path: '/$id/editar'
-      fullPath: '/admin/$id/editar'
-      preLoaderRoute: typeof AuthenticatedAdminIdEditarRouteImport
-      parentRoute: typeof AuthenticatedAdminRoute
-    }
     '/_authenticated/admin/associacoes/$id/': {
       id: '/_authenticated/admin/associacoes/$id/'
       path: '/$id'
       fullPath: '/admin/associacoes/$id/'
       preLoaderRoute: typeof AuthenticatedAdminAssociacoesIdIndexRouteImport
-      parentRoute: typeof AuthenticatedAdminAssociacoesRoute
-    }
-    '/_authenticated/admin/usuarios/$userId/editar': {
-      id: '/_authenticated/admin/usuarios/$userId/editar'
-      path: '/usuarios/$userId/editar'
-      fullPath: '/admin/usuarios/$userId/editar'
-      preLoaderRoute: typeof AuthenticatedAdminUsuariosUserIdEditarRouteImport
-      parentRoute: typeof AuthenticatedAdminRoute
-    }
-    '/_authenticated/admin/associacoes/$id/editar': {
-      id: '/_authenticated/admin/associacoes/$id/editar'
-      path: '/$id/editar'
-      fullPath: '/admin/associacoes/$id/editar'
-      preLoaderRoute: typeof AuthenticatedAdminAssociacoesIdEditarRouteImport
       parentRoute: typeof AuthenticatedAdminAssociacoesRoute
     }
     '/_authenticated/admin/associacoes/$id/documentos': {
@@ -499,11 +485,25 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAdminAssociacoesIdDocumentosRouteImport
       parentRoute: typeof AuthenticatedAdminAssociacoesRoute
     }
-    '/_authenticated/admin/associacoes/$id/diagnostico/novo': {
-      id: '/_authenticated/admin/associacoes/$id/diagnostico/novo'
-      path: '/$id/diagnostico/novo'
-      fullPath: '/admin/associacoes/$id/diagnostico/novo'
-      preLoaderRoute: typeof AuthenticatedAdminAssociacoesIdDiagnosticoNovoRouteImport
+    '/_authenticated/admin/associacoes/$id/editar': {
+      id: '/_authenticated/admin/associacoes/$id/editar'
+      path: '/$id/editar'
+      fullPath: '/admin/associacoes/$id/editar'
+      preLoaderRoute: typeof AuthenticatedAdminAssociacoesIdEditarRouteImport
+      parentRoute: typeof AuthenticatedAdminAssociacoesRoute
+    }
+    '/_authenticated/admin/usuarios/$userId/editar': {
+      id: '/_authenticated/admin/usuarios/$userId/editar'
+      path: '/usuarios/$userId/editar'
+      fullPath: '/admin/usuarios/$userId/editar'
+      preLoaderRoute: typeof AuthenticatedAdminUsuariosUserIdEditarRouteImport
+      parentRoute: typeof AuthenticatedAdminRoute
+    }
+    '/_authenticated/admin/associacoes/$id/catadores/novo': {
+      id: '/_authenticated/admin/associacoes/$id/catadores/novo'
+      path: '/$id/catadores/novo'
+      fullPath: '/admin/associacoes/$id/catadores/novo'
+      preLoaderRoute: typeof AuthenticatedAdminAssociacoesIdCatadoresNovoRouteImport
       parentRoute: typeof AuthenticatedAdminAssociacoesRoute
     }
     '/_authenticated/admin/associacoes/$id/diagnostico/$assessmentId': {
@@ -513,11 +513,11 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAdminAssociacoesIdDiagnosticoAssessmentIdRouteImport
       parentRoute: typeof AuthenticatedAdminAssociacoesRoute
     }
-    '/_authenticated/admin/associacoes/$id/catadores/novo': {
-      id: '/_authenticated/admin/associacoes/$id/catadores/novo'
-      path: '/$id/catadores/novo'
-      fullPath: '/admin/associacoes/$id/catadores/novo'
-      preLoaderRoute: typeof AuthenticatedAdminAssociacoesIdCatadoresNovoRouteImport
+    '/_authenticated/admin/associacoes/$id/diagnostico/novo': {
+      id: '/_authenticated/admin/associacoes/$id/diagnostico/novo'
+      path: '/$id/diagnostico/novo'
+      fullPath: '/admin/associacoes/$id/diagnostico/novo'
+      preLoaderRoute: typeof AuthenticatedAdminAssociacoesIdDiagnosticoNovoRouteImport
       parentRoute: typeof AuthenticatedAdminAssociacoesRoute
     }
   }
