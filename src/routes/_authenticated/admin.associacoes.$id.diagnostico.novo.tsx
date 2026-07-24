@@ -85,7 +85,7 @@ function NewAssessment() {
   const [materials, setMaterials] = useState<string[]>([]);
   const [choices, setChoices] = useState<Record<string, string>>({});
 
-  // Load existing assessment/infra for edit or view mode.
+  // Load existing assessment/infra + related tables for edit or view mode.
   const { data: existing } = useQuery({
     queryKey: ["assessment-prefill", assessmentId, modulo],
     enabled: !!assessmentId,
@@ -103,11 +103,21 @@ function NewAssessment() {
         .select("*")
         .eq("id", assessmentId!)
         .maybeSingle();
-      return { kind: "assessment" as const, assessment: data };
+      const [pricesRes, equipmentRes, booksRes] = await Promise.all([
+        supabase.from("material_prices").select("*").eq("assessment_id", assessmentId!),
+        supabase.from("association_equipment").select("*").eq("assessment_id", assessmentId!),
+        supabase.from("accounting_books").select("*").eq("assessment_id", assessmentId!),
+      ]);
+      return {
+        kind: "assessment" as const,
+        assessment: data,
+        prices: pricesRes.data ?? [],
+        equipment: equipmentRes.data ?? [],
+        books: booksRes.data ?? [],
+      };
     },
   });
 
-  // Force active module to match loaded record when editing.
   useEffect(() => {
     if (!existing) return;
     if (existing.kind === "infra") {
@@ -131,7 +141,6 @@ function NewAssessment() {
       else if (typeof v === "string") nextChoices[k] = v;
       else if (typeof v === "number") nextChoices[k] = String(v);
     }
-    // Prefix infra keys so infra Choice components (which use "infra_" prefix) resolve.
     if (existing.kind === "infra") {
       for (const [k, v] of Object.entries(source)) {
         if (v === null || v === undefined) continue;
@@ -141,34 +150,76 @@ function NewAssessment() {
         else if (typeof v === "number") nextChoices[prefKey] = String(v);
       }
     }
+    // Seed accounting-book choices.
+    if (existing.kind === "assessment") {
+      for (const book of ((existing as any).books ?? []) as any[]) {
+        const entry = ACCOUNTING_BOOKS.find((b) => b.label === book.tipo);
+        if (!entry) continue;
+        const implantadoVal = book.nao_sabe
+          ? "Não sabe informar"
+          : book.nao_possui
+            ? "Não"
+            : book.implantado
+              ? "Sim"
+              : "";
+        if (implantadoVal) nextChoices[`livro_${entry.key}_implantado`] = implantadoVal;
+        if (book.atualizado !== null && book.atualizado !== undefined) {
+          nextChoices[`livro_${entry.key}_atualizado`] = book.atualizado ? "Sim" : "Não";
+        }
+      }
+    }
     setChoices(nextChoices);
     if (existing.kind === "assessment" && Array.isArray(existing.assessment?.materiais_coletados)) {
       setMaterials(existing.assessment.materiais_coletados as string[]);
     }
   }, [existing]);
 
-  // Prefill uncontrolled inputs/textareas via DOM after form remounts with loaded data.
+  // Prefill uncontrolled inputs/textareas via DOM.
   useEffect(() => {
     if (!existing || !formRef.current) return;
     const source: Record<string, any> =
       existing.kind === "infra"
         ? { ...(existing.infra ?? {}), ...((existing.infra as any)?.payload ?? {}) }
         : (existing.assessment ?? {});
-    const elements = formRef.current.querySelectorAll<HTMLInputElement | HTMLTextAreaElement>(
-      "input[name], textarea[name]",
-    );
-    elements.forEach((el) => {
-      const name = el.name;
-      if (!name) return;
-      // Handle checkboxes via choices state instead.
-      if ((el as HTMLInputElement).type === "checkbox") return;
-      const direct = source[name];
-      const infraStripped = name.startsWith("infra_") ? source[name.slice(6)] : undefined;
-      const value = direct ?? infraStripped;
-      if (value === null || value === undefined) return;
-      el.value = typeof value === "string" ? value : String(value);
+    const extras: Record<string, any> = {};
+    if (existing.kind === "assessment") {
+      for (const price of ((existing as any).prices ?? []) as any[]) {
+        const mat = SOCIAL_MATERIALS.find((m) => m.label === price.material);
+        if (!mat) continue;
+        if (price.comprador != null) extras[`comprador_${mat.key}`] = price.comprador;
+        if (price.preco_por_kg != null) extras[`preco_${mat.key}`] = String(price.preco_por_kg);
+      }
+      for (const eq of ((existing as any).equipment ?? []) as any[]) {
+        const item = SOCIAL_EQUIPMENT.find((e) => e.label === eq.tipo);
+        if (item && eq.quantidade != null)
+          extras[`equipamento_${item.key}`] = String(eq.quantidade);
+      }
+      for (const book of ((existing as any).books ?? []) as any[]) {
+        const entry = ACCOUNTING_BOOKS.find((b) => b.label === book.tipo);
+        if (entry && book.observacao) extras[`livro_${entry.key}_observacao`] = book.observacao;
+      }
+    }
+    const raf = requestAnimationFrame(() => {
+      if (!formRef.current) return;
+      const elements = formRef.current.querySelectorAll<HTMLInputElement | HTMLTextAreaElement>(
+        "input[name], textarea[name]",
+      );
+      elements.forEach((el) => {
+        const name = el.name;
+        if (!name) return;
+        if ((el as HTMLInputElement).type === "checkbox") return;
+        const direct = source[name];
+        const infraStripped = name.startsWith("infra_") ? source[name.slice(6)] : undefined;
+        let value = direct ?? infraStripped ?? extras[name];
+        if (value === null || value === undefined) return;
+        if ((el as HTMLInputElement).type === "time" && typeof value === "string") {
+          value = value.slice(0, 5);
+        }
+        el.value = typeof value === "string" ? value : String(value);
+      });
     });
-  }, [existing, activeModule]);
+    return () => cancelAnimationFrame(raf);
+  }, [existing, activeModule, association]);
   const now = new Date();
   const pad = (n: number) => String(n).padStart(2, "0");
   const defaultDate = `${now.getFullYear()}-${pad(now.getMonth() + 1)}-${pad(now.getDate())}`;
