@@ -34,7 +34,7 @@ export function FilledFormsList({ associationId }: { associationId: string }) {
         showInfra
           ? supabase
               .from("infrastructure_assessments")
-              .select("id,data_visita,horario_visita,consultant_name,created_at,created_by")
+              .select("id,data_visita,horario_visita,consultant_name,created_at,consultant_id")
               .eq("association_id", associationId)
               .order("data_visita", { ascending: false })
           : Promise.resolve({ data: [] as any[] }),
