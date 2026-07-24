@@ -582,6 +582,9 @@ function NewAssessment() {
         nao_sabe: choice(`livro_${book.key}_implantado`) === "Não sabe informar",
         observacao: text(values, `livro_${book.key}_observacao`),
       }));
+      if (isEditing) {
+        await supabase.from("accounting_books").delete().eq("assessment_id", assessment.id);
+      }
       const { error: booksError } = await supabase.from("accounting_books").insert(bookRows);
       if (associationError || booksError) {
         setSaving(false);
