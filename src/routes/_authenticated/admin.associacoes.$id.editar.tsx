@@ -231,7 +231,7 @@ function EditAssociationPage() {
             )}
           </div>
         </form>
-        <FilledFormsList associationId={id} />
+        
       </div>
     </AdminShell>
   );
