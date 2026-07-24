@@ -344,7 +344,7 @@ function NewAssessment() {
         consultant_id: auth.user.id,
         consultant_name: String(values.get("consultant_name") ?? "").trim(),
         data_visita: String(values.get("data_visita") ?? ""),
-        horario_visita: String(values.get("horario_visita") ?? ""),
+        horario_visita: isEditing ? defaultTime : String(values.get("horario_visita") ?? ""),
         entrevistador: text(values, "infra_entrevistador"),
         organizacao_nome: text(values, "infra_organizacao_nome"),
         cidade: text(values, "infra_cidade"),
