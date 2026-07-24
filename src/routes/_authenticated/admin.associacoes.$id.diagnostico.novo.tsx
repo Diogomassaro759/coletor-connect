@@ -219,7 +219,7 @@ function NewAssessment() {
       });
     });
     return () => cancelAnimationFrame(raf);
-  }, [existing, activeModule, association]);
+  }, [existing, activeModule]);
   const now = new Date();
   const pad = (n: number) => String(n).padStart(2, "0");
   const defaultDate = `${now.getFullYear()}-${pad(now.getMonth() + 1)}-${pad(now.getDate())}`;
