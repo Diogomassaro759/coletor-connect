@@ -207,10 +207,17 @@ function NewAssessment() {
       elements.forEach((el) => {
         const name = el.name;
         if (!name) return;
-        if ((el as HTMLInputElement).type === "checkbox") return;
         const direct = source[name];
         const infraStripped = name.startsWith("infra_") ? source[name.slice(6)] : undefined;
         let value = direct ?? infraStripped ?? extras[name];
+        if ((el as HTMLInputElement).type === "checkbox") {
+          if (value === null || value === undefined) return;
+          const checked =
+            value === true || value === "true" || value === "on" ||
+            value === "Sim" || value === 1 || value === "1";
+          (el as HTMLInputElement).checked = checked;
+          return;
+        }
         if (value === null || value === undefined) return;
         if ((el as HTMLInputElement).type === "time" && typeof value === "string") {
           value = value.slice(0, 5);
@@ -306,6 +313,8 @@ function NewAssessment() {
   async function submit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     const values = new FormData(event.currentTarget);
+    const nowSave = new Date();
+    const currentTime = `${pad(nowSave.getHours())}:${pad(nowSave.getMinutes())}`;
     const { data: auth } = await supabase.auth.getUser();
     if (!auth.user) return toast.error("Sua sessão expirou.");
 
@@ -337,7 +346,7 @@ function NewAssessment() {
         consultant_id: auth.user.id,
         consultant_name: String(values.get("consultant_name") ?? "").trim(),
         data_visita: String(values.get("data_visita") ?? ""),
-        horario_visita: String(values.get("horario_visita") ?? ""),
+        horario_visita: isEditing ? currentTime : String(values.get("horario_visita") ?? ""),
         entrevistador: text(values, "infra_entrevistador"),
         organizacao_nome: text(values, "infra_organizacao_nome"),
         cidade: text(values, "infra_cidade"),
@@ -392,7 +401,7 @@ function NewAssessment() {
         consultant_id: auth.user.id,
         consultant_name: String(values.get("consultant_name") ?? "").trim(),
         data_visita: String(values.get("data_visita") ?? ""),
-        horario_visita: String(values.get("horario_visita") ?? ""),
+        horario_visita: isEditing ? currentTime : String(values.get("horario_visita") ?? ""),
         homens: Number(values.get("homens") ?? 0),
         mulheres: Number(values.get("mulheres") ?? 0),
         possui_pessoas_trans: bool("possui_pessoas_trans"),
