@@ -335,13 +335,6 @@ function NewAssessment() {
       }
     }
     setSaving(true);
-    const assessmentQuery = isEditing
-      ? supabase.from("association_assessments").update
-      : supabase.from("association_assessments").insert;
-    const assessmentBuilder = isEditing
-      ? supabase.from("association_assessments").update
-      : supabase.from("association_assessments").insert;
-    void assessmentQuery; void assessmentBuilder;
     const record = {
         association_id: id,
         area: assessmentArea,
