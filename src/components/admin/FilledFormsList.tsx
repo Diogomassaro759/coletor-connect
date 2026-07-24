@@ -27,7 +27,7 @@ export function FilledFormsList({ associationId }: { associationId: string }) {
         showAssessment
           ? supabase
               .from("association_assessments")
-              .select("id,data_visita,horario_visita,consultant_name,created_at,created_by")
+              .select("id,data_visita,horario_visita,consultant_name,created_at,created_by,area")
               .eq("association_id", associationId)
               .order("data_visita", { ascending: false })
           : Promise.resolve({ data: [] as any[] }),
@@ -87,7 +87,7 @@ export function FilledFormsList({ associationId }: { associationId: string }) {
       }
 
       const visibleAssessmentRows = assessmentRows.filter((r) => {
-        const formArea = creatorAreas[r.created_by] ?? "social";
+        const formArea = r.area ?? creatorAreas[r.created_by] ?? "social";
         return isAdmin || !area || formArea === area;
       });
 
@@ -105,7 +105,7 @@ export function FilledFormsList({ associationId }: { associationId: string }) {
             }]
           : []),
         ...visibleAssessmentRows.map((r) => {
-          const formArea = creatorAreas[r.created_by] ?? "social";
+          const formArea = r.area ?? creatorAreas[r.created_by] ?? "social";
           return {
           ...r,
           consultant_name: r.consultant_name ?? creatorNames[r.created_by] ?? null,
