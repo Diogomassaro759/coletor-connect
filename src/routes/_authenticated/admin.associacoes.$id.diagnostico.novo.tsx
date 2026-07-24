@@ -621,7 +621,7 @@ function NewAssessment() {
 
   return (
     <AdminShell>
-      <AlertDialog open={!!existingForm}>
+      <AlertDialog open={!isEditing && !!existingForm}>
         <AlertDialogContent>
           <AlertDialogHeader>
             <AlertDialogTitle>Formulário já preenchido</AlertDialogTitle>
