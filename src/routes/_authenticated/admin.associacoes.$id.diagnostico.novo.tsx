@@ -473,9 +473,19 @@ function NewAssessment() {
         evidencia_livro_trabalho_confirmada: values.has("evidencia_livro_trabalho_confirmada"),
         consentimento_dados: true,
         declaracao_veracidade: true,
-      })
-      .select("id")
-      .single();
+      };
+    const { data: assessment, error } = isEditing
+      ? await supabase
+          .from("association_assessments")
+          .update(record)
+          .eq("id", assessmentId!)
+          .select("id")
+          .single()
+      : await supabase
+          .from("association_assessments")
+          .insert(record)
+          .select("id")
+          .single();
     if (error) {
       setSaving(false);
       return toast.error("Erro ao salvar diagnóstico", { description: error.message });
