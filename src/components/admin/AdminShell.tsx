@@ -90,24 +90,18 @@ export function AdminShell({ children }: { children: React.ReactNode }) {
               <Button variant="ghost" size="sm" asChild>
                 {isConsultant && area === "social" ? (
                   <Link to="/admin/associacoes/nova">
-                    <ClipboardPenLine className="size-4" />{" "}
-                    <span className="hidden md:inline">Cadastros de campo</span>
+                    <Building2 className="size-4" />{" "}
+                    <span className="hidden md:inline">Entidades</span>
                   </Link>
                 ) : isConsultant && (area === "juridico" || area === "contabil" || area === "infraestrutura") ? (
                   <Link to="/admin/associacoes" search={{ abrir: "1" as const }}>
-                    <ClipboardPenLine className="size-4" />{" "}
-                    <span className="hidden md:inline">Cadastros de campo</span>
+                    <Building2 className="size-4" />{" "}
+                    <span className="hidden md:inline">Entidades</span>
                   </Link>
                 ) : (
                   <Link to="/admin/associacoes">
-                    {isAdmin || isCoordenador ? (
-                      <Building2 className="size-4" />
-                    ) : (
-                      <ClipboardPenLine className="size-4" />
-                    )}{" "}
-                    <span className="hidden md:inline">
-                      {isAdmin || isCoordenador ? "Entidades" : "Cadastros de campo"}
-                    </span>
+                    <Building2 className="size-4" />{" "}
+                    <span className="hidden md:inline">Entidades</span>
                   </Link>
                 )}
               </Button>
