@@ -122,7 +122,7 @@ function AssociationDetails() {
 
   return (
     <AdminShell>
-      <BackButton label="Voltar às entidades" className="mb-5" />
+      <BackButton label="Voltar às entidades" fallbackTo="/admin/associacoes" forceTo="/admin/associacoes" className="mb-5" />
       <div className="mb-8 flex flex-wrap items-start justify-between gap-5 border-b border-border pb-8">
         <div>
           <div className="mb-3 flex items-center gap-2">
