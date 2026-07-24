@@ -95,6 +95,7 @@ function NewAssessment() {
   const isInfrastructure = activeModule === "infraestrutura";
   const [materials, setMaterials] = useState<string[]>([]);
   const [choices, setChoices] = useState<Record<string, string>>({});
+  const choicesRef = useRef<Record<string, string>>({});
 
   // Load existing assessment/infra + related tables for edit or view mode.
   const { data: existing } = useQuery({
@@ -179,6 +180,7 @@ function NewAssessment() {
         }
       }
     }
+    choicesRef.current = nextChoices;
     setChoices(nextChoices);
     if (existing.kind === "assessment" && Array.isArray(existing.assessment?.materiais_coletados)) {
       setMaterials(existing.assessment.materiais_coletados as string[]);
@@ -326,7 +328,7 @@ function NewAssessment() {
   }
 
   function choice(name: string, fallback = "") {
-    return normalizeChoiceValue(name, choices[name] ?? fallback);
+    return normalizeChoiceValue(name, choicesRef.current[name] ?? choices[name] ?? fallback);
   }
 
   function dbChoice(name: string, fallback = "") {
@@ -334,6 +336,7 @@ function NewAssessment() {
   }
   function setChoice(name: string, value: string) {
     if (readOnly) return;
+    choicesRef.current = { ...choicesRef.current, [name]: value };
     setChoices((current) => ({ ...current, [name]: value }));
   }
   function bool(name: string) {
@@ -356,6 +359,11 @@ function NewAssessment() {
     const currentTime = `${pad(nowSave.getHours())}:${pad(nowSave.getMinutes())}`;
     const { data: auth } = await supabase.auth.getUser();
     if (!auth.user) return toast.error("Sua sessão expirou.");
+    const submittedChoices = { ...choicesRef.current };
+    for (const [key, value] of values.entries()) {
+      if (typeof value === "string") submittedChoices[key] = value;
+    }
+    choicesRef.current = submittedChoices;
 
     if (isInfrastructure) {
       if (!isEditing) {
@@ -377,7 +385,7 @@ function NewAssessment() {
       for (const [k, v] of values.entries()) {
         if (k.startsWith("infra_")) payload[k.slice(6)] = v;
       }
-      for (const [k, v] of Object.entries(choices)) {
+      for (const [k, v] of Object.entries(submittedChoices)) {
         if (k.startsWith("infra_")) payload[k.slice(6)] = v;
       }
       const infraRecord = {
@@ -2428,19 +2436,28 @@ function CompactChoice({
   onChange: (name: string, value: string) => void;
 }) {
   const readOnly = useContext(FormReadOnlyContext);
+  const [localValue, setLocalValue] = useState(value);
+  useEffect(() => setLocalValue(value), [value]);
   return (
-    <Select disabled={readOnly} value={value} onValueChange={(next) => onChange(name, next)}>
-      <SelectTrigger className="min-w-36">
-        <SelectValue />
-      </SelectTrigger>
-      <SelectContent>
+    <>
+      <select
+        name={name}
+        disabled={readOnly}
+        value={localValue}
+        onChange={(event) => {
+          const next = event.currentTarget.value;
+          setLocalValue(next);
+          onChange(name, next);
+        }}
+        className="min-w-36 flex h-9 rounded-md border border-input bg-transparent px-3 py-2 text-sm shadow-sm ring-offset-background focus:outline-none focus:ring-1 focus:ring-ring disabled:cursor-not-allowed disabled:opacity-50"
+      >
         {options.map((option) => (
-          <SelectItem key={option} value={option}>
+          <option key={option} value={option}>
             {option}
-          </SelectItem>
+          </option>
         ))}
-      </SelectContent>
-    </Select>
+      </select>
+    </>
   );
 }
 function Evidence({ name, label }: { name: string; label: string }) {
@@ -2997,26 +3014,30 @@ function Choice({
   placeholder?: string;
 }) {
   const readOnly = useContext(FormReadOnlyContext);
+  const [localValue, setLocalValue] = useState(value);
+  useEffect(() => setLocalValue(value), [value]);
   const hasOutro = options.some((o) => o.toLowerCase() === "outro");
-  const isOutro = value.toLowerCase() === "outro";
+  const isOutro = localValue.toLowerCase() === "outro";
   return (
     <Field label={label}>
-      <Select
+      <select
+        name={name}
         disabled={readOnly}
-        value={value || undefined}
-        onValueChange={(next) => onChange(name, next)}
+        value={localValue}
+        onChange={(event) => {
+          const next = event.currentTarget.value;
+          setLocalValue(next);
+          onChange(name, next);
+        }}
+        className="flex h-9 w-full rounded-md border border-input bg-transparent px-3 py-2 text-sm shadow-sm ring-offset-background focus:outline-none focus:ring-1 focus:ring-ring disabled:cursor-not-allowed disabled:opacity-50"
       >
-        <SelectTrigger>
-          <SelectValue placeholder={placeholder} />
-        </SelectTrigger>
-        <SelectContent>
-          {options.map((option) => (
-            <SelectItem key={option} value={option}>
-              {option}
-            </SelectItem>
-          ))}
-        </SelectContent>
-      </Select>
+        <option value="">{placeholder}</option>
+        {options.map((option) => (
+          <option key={option} value={option}>
+            {option}
+          </option>
+        ))}
+      </select>
       {hasOutro && isOutro && (
         <Input
           name={`${name}_outro`}
