@@ -95,6 +95,7 @@ function NewAssessment() {
   const isInfrastructure = activeModule === "infraestrutura";
   const [materials, setMaterials] = useState<string[]>([]);
   const [choices, setChoices] = useState<Record<string, string>>({});
+  const choicesRef = useRef<Record<string, string>>({});
 
   // Load existing assessment/infra + related tables for edit or view mode.
   const { data: existing } = useQuery({
@@ -179,6 +180,7 @@ function NewAssessment() {
         }
       }
     }
+    choicesRef.current = nextChoices;
     setChoices(nextChoices);
     if (existing.kind === "assessment" && Array.isArray(existing.assessment?.materiais_coletados)) {
       setMaterials(existing.assessment.materiais_coletados as string[]);
@@ -326,7 +328,7 @@ function NewAssessment() {
   }
 
   function choice(name: string, fallback = "") {
-    return normalizeChoiceValue(name, choices[name] ?? fallback);
+    return normalizeChoiceValue(name, choicesRef.current[name] ?? choices[name] ?? fallback);
   }
 
   function dbChoice(name: string, fallback = "") {
@@ -334,6 +336,7 @@ function NewAssessment() {
   }
   function setChoice(name: string, value: string) {
     if (readOnly) return;
+    choicesRef.current = { ...choicesRef.current, [name]: value };
     setChoices((current) => ({ ...current, [name]: value }));
   }
   function bool(name: string) {
