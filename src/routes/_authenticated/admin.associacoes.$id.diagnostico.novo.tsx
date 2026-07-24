@@ -385,7 +385,7 @@ function NewAssessment() {
       for (const [k, v] of values.entries()) {
         if (k.startsWith("infra_")) payload[k.slice(6)] = v;
       }
-      for (const [k, v] of Object.entries(choices)) {
+      for (const [k, v] of Object.entries(submittedChoices)) {
         if (k.startsWith("infra_")) payload[k.slice(6)] = v;
       }
       const infraRecord = {
@@ -2443,7 +2443,7 @@ function CompactChoice({
       <input type="hidden" name={name} value={localValue} disabled={readOnly} />
       <Select
         disabled={readOnly}
-        value={localValue || undefined}
+        value={localValue}
         onValueChange={(next) => {
           setLocalValue(next);
           onChange(name, next);
@@ -2454,7 +2454,14 @@ function CompactChoice({
         </SelectTrigger>
         <SelectContent>
           {options.map((option) => (
-            <SelectItem key={option} value={option}>
+            <SelectItem
+              key={option}
+              value={option}
+              onClick={() => {
+                setLocalValue(option);
+                onChange(name, option);
+              }}
+            >
               {option}
             </SelectItem>
           ))}
@@ -3026,7 +3033,7 @@ function Choice({
       <input type="hidden" name={name} value={localValue} disabled={readOnly} />
       <Select
         disabled={readOnly}
-        value={localValue || undefined}
+        value={localValue}
         onValueChange={(next) => {
           setLocalValue(next);
           onChange(name, next);
@@ -3037,7 +3044,14 @@ function Choice({
         </SelectTrigger>
         <SelectContent>
           {options.map((option) => (
-            <SelectItem key={option} value={option}>
+            <SelectItem
+              key={option}
+              value={option}
+              onClick={() => {
+                setLocalValue(option);
+                onChange(name, option);
+              }}
+            >
               {option}
             </SelectItem>
           ))}
