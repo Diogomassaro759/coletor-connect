@@ -1,7 +1,15 @@
 import { createFileRoute, Link, redirect, useNavigate } from "@tanstack/react-router";
 import { BackButton } from "@/components/ui/back-button";
-import { useQuery } from "@tanstack/react-query";
-import { useEffect, useRef, useState, type FormEvent, type ReactNode } from "react";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
+import {
+  createContext,
+  useContext,
+  useEffect,
+  useRef,
+  useState,
+  type FormEvent,
+  type ReactNode,
+} from "react";
 import { ArrowLeft, Calculator, Loader2, Scale, Users } from "lucide-react";
 import {
   AlertDialog,
@@ -30,6 +38,8 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Textarea } from "@/components/ui/textarea";
 import { supabase } from "@/integrations/supabase/client";
 import { MATERIAIS_OPTIONS } from "@/lib/catador-constants";
+
+const FormReadOnlyContext = createContext(false);
 
 export const Route = createFileRoute("/_authenticated/admin/associacoes/$id/diagnostico/novo")({
   beforeLoad: ({ context }) => {
@@ -64,6 +74,7 @@ function NewAssessment() {
   const { modulo, assessmentId, mode } = Route.useSearch();
   const { area, user, isAdmin, isCoordenador } = Route.useRouteContext() as any;
   const navigate = useNavigate();
+  const queryClient = useQueryClient();
   const [saving, setSaving] = useState(false);
   const isEditing = !!assessmentId;
   const readOnly = mode === "view";
@@ -300,14 +311,42 @@ function NewAssessment() {
   const currentMeta = moduleMeta[activeModule];
 
 
+  function normalizeChoiceValue(name: string, value: string) {
+    if (name !== "licenca_ambiental_status") return value;
+    if (value === "Licença") return "Licença ambiental";
+    if (value === "Dispensa") return "Certificado de Dispensa";
+    return value;
+  }
+
+  function storedChoiceValue(name: string, value: string) {
+    if (name !== "licenca_ambiental_status") return value;
+    if (value === "Licença ambiental") return "Licença";
+    if (value === "Certificado de Dispensa") return "Dispensa";
+    return value;
+  }
+
   function choice(name: string, fallback = "") {
-    return choices[name] ?? fallback;
+    return normalizeChoiceValue(name, choices[name] ?? fallback);
+  }
+
+  function dbChoice(name: string, fallback = "") {
+    return storedChoiceValue(name, choice(name, fallback));
   }
   function setChoice(name: string, value: string) {
+    if (readOnly) return;
     setChoices((current) => ({ ...current, [name]: value }));
   }
   function bool(name: string) {
     return choice(name) === "Sim";
+  }
+
+  async function refreshFormCaches() {
+    await Promise.all([
+      queryClient.invalidateQueries({ queryKey: ["assessment-prefill"] }),
+      queryClient.invalidateQueries({ queryKey: ["filled-forms", id] }),
+      queryClient.invalidateQueries({ queryKey: ["existing-form-for-area", id] }),
+      queryClient.invalidateQueries({ queryKey: ["association-social-form", id] }),
+    ]);
   }
 
   async function submit(event: FormEvent<HTMLFormElement>) {
@@ -366,6 +405,7 @@ function NewAssessment() {
         : await supabase.from("infrastructure_assessments").insert(infraRecord);
       setSaving(false);
       if (infraError) return toast.error("Erro ao salvar diagnóstico de infraestrutura", { description: infraError.message });
+      await refreshFormCaches();
       toast.success("Diagnóstico de infraestrutura salvo.");
       navigate({ to: "/admin/associacoes/$id", params: { id } });
       return;
@@ -491,7 +531,7 @@ function NewAssessment() {
         classificacao_juridica: choice("classificacao_juridica", "Irregular"),
         estatuto_registrado: choice("estatuto_registrado"),
         alvara_funcionamento: choice("alvara_funcionamento"),
-        licenca_ambiental_status: choice("licenca_ambiental_status", "Nenhum"),
+        licenca_ambiental_status: dbChoice("licenca_ambiental_status", "Nenhum"),
         avcb: choice("avcb"),
         extintores: choice("extintores"),
         registro_ocb: choice("registro_ocb"),
@@ -654,6 +694,7 @@ function NewAssessment() {
       }
     }
     setSaving(false);
+    await refreshFormCaches();
     toast.success("Diagnóstico salvo e classificação calculada.");
     navigate({ to: "/admin/associacoes/$id", params: { id } });
   }
@@ -730,6 +771,7 @@ function NewAssessment() {
         <p className="mt-2 text-muted-foreground">
           Selecione o tipo de cadastro e preencha o formulário correspondente ao documento de campo.
         </p>
+        <FormReadOnlyContext.Provider value={readOnly}>
         <form ref={formRef} onSubmit={submit} className="mt-7" key={existing ? "loaded" : "empty"}>
           <fieldset disabled={readOnly} className="contents">
           <div className="mb-6 grid gap-4 rounded-xl border border-border bg-card p-5 shadow-card md:grid-cols-4">
@@ -749,6 +791,7 @@ function NewAssessment() {
             </Field>
             <Field label="Escolha entidade">
               <Select
+                disabled={readOnly}
                 value={id}
                 onValueChange={(newId) => {
                   if (newId && newId !== id) {
@@ -1649,6 +1692,7 @@ function NewAssessment() {
             </div>
           )}
         </form>
+        </FormReadOnlyContext.Provider>
       </div>
     </AdminShell>
   );
@@ -1722,12 +1766,14 @@ function EntitySelectField({
   onEntityChange?: (id: string) => void;
   fallbackName?: string;
 }) {
+  const readOnly = useContext(FormReadOnlyContext);
   const currentName =
     entidades?.find((e) => e.id === entityId)?.nome ?? fallbackName ?? "";
   return (
     <>
       <input type="hidden" name={name} value={currentName} />
       <Select
+        disabled={readOnly}
         value={entityId}
         onValueChange={(newId) => {
           if (newId && newId !== entityId) onEntityChange?.(newId);
@@ -2381,8 +2427,9 @@ function CompactChoice({
   value: string;
   onChange: (name: string, value: string) => void;
 }) {
+  const readOnly = useContext(FormReadOnlyContext);
   return (
-    <Select value={value} onValueChange={(next) => onChange(name, next)}>
+    <Select disabled={readOnly} value={value} onValueChange={(next) => onChange(name, next)}>
       <SelectTrigger className="min-w-36">
         <SelectValue />
       </SelectTrigger>
@@ -2949,11 +2996,16 @@ function Choice({
   onChange: (name: string, value: string) => void;
   placeholder?: string;
 }) {
+  const readOnly = useContext(FormReadOnlyContext);
   const hasOutro = options.some((o) => o.toLowerCase() === "outro");
   const isOutro = value.toLowerCase() === "outro";
   return (
     <Field label={label}>
-      <Select value={value || undefined} onValueChange={(next) => onChange(name, next)}>
+      <Select
+        disabled={readOnly}
+        value={value || undefined}
+        onValueChange={(next) => onChange(name, next)}
+      >
         <SelectTrigger>
           <SelectValue placeholder={placeholder} />
         </SelectTrigger>
@@ -2970,6 +3022,7 @@ function Choice({
           name={`${name}_outro`}
           placeholder="Especifique"
           maxLength={200}
+          disabled={readOnly}
           className="mt-2"
         />
       )}
