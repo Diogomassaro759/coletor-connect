@@ -52,11 +52,15 @@ export const Route = createFileRoute("/_authenticated/admin/associacoes/$id/diag
 function NewAssessment() {
   const { id } = Route.useParams();
   const { modulo } = Route.useSearch();
-  const { area, user } = Route.useRouteContext() as any;
+  const { area, user, isAdmin, isCoordenador } = Route.useRouteContext() as any;
   const navigate = useNavigate();
   const [saving, setSaving] = useState(false);
-  const forcedModule =
-    area === "juridico" || area === "contabil" || area === "social"
+  // Admins/coordenadores podem escolher qualquer módulo via URL.
+  // Consultores são restritos à sua própria área.
+  const canChooseModule = isAdmin || isCoordenador;
+  const forcedModule = canChooseModule
+    ? (modulo as "social" | "juridico" | "contabil" | "infraestrutura" | undefined)
+    : area === "juridico" || area === "contabil" || area === "social"
       ? (area as "social" | "juridico" | "contabil" | "infraestrutura")
       : area === "infraestrutura"
         ? ("infraestrutura" as const)
