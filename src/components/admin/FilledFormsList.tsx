@@ -72,8 +72,8 @@ export function FilledFormsList({ associationId }: { associationId: string }) {
             .not("area", "is", null),
           supabase
             .from("profiles")
-            .select("id,full_name")
-            .in("id", creatorIds),
+            .select("user_id,full_name")
+            .in("user_id", creatorIds),
         ]);
 
         creatorAreas = ((roleRows ?? []) as any[]).reduce((acc, role) => {
@@ -81,7 +81,7 @@ export function FilledFormsList({ associationId }: { associationId: string }) {
           return acc;
         }, {} as Record<string, string>);
         creatorNames = ((profileRows ?? []) as any[]).reduce((acc, p) => {
-          acc[p.id] = p.full_name;
+          acc[p.user_id] = p.full_name;
           return acc;
         }, {} as Record<string, string>);
       }
