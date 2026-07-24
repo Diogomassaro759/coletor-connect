@@ -1,23 +1,39 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { BackButton } from "@/components/ui/back-button";
 import { useQuery } from "@tanstack/react-query";
 import {
   ArrowLeft,
+  ArrowRight,
   Calculator,
   CalendarDays,
   ClipboardPlus,
+  FileCheck2,
   FileDown,
   FolderOpen,
+  HardHat,
   MapPin,
   Pencil,
   Scale,
   UserPlus,
   Users,
+  Users2,
+  Wallet,
 } from "lucide-react";
+import { useState } from "react";
 import { toast } from "sonner";
 import { AdminShell } from "@/components/admin/AdminShell";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 import { supabase } from "@/integrations/supabase/client";
 import { buildAssociationReportPDF } from "@/lib/association-report";
 import { FilledFormsList } from "@/components/admin/FilledFormsList";
@@ -26,6 +42,7 @@ export const Route = createFileRoute("/_authenticated/admin/associacoes/$id/")({
   head: () => ({ meta: [{ title: "Detalhes da associação — PROCATE" }] }),
   component: AssociationDetails,
 });
+
 
 const STATUS_LABEL = {
   regular: "Regular",
@@ -38,7 +55,13 @@ function AssociationDetails() {
   const { isAdmin, isConsultant, isCoordenador, isRecenseador, area } = Route.useRouteContext() as any;
   const isAdminLike = isAdmin || isCoordenador; // for edit/documents buttons
   const showAllModules = isAdmin; // only Admin sees 4 cards
+  const navigate = useNavigate();
+  const [existingPrompt, setExistingPrompt] = useState<
+    | { modulo: "social" | "juridico" | "contabil" | "infraestrutura"; assessmentId: string | null }
+    | null
+  >(null);
   const { data: association, isLoading } = useQuery({
+
     queryKey: ["association", id],
     queryFn: async () => {
       const { data, error } = await supabase.from("associations").select("*").eq("id", id).single();
@@ -60,6 +83,29 @@ function AssociationDetails() {
       return data;
     },
   });
+  const { data: existingByArea = {} } = useQuery({
+    queryKey: ["association-existing-forms", id],
+    queryFn: async () => {
+      const [{ data: rows }, { data: infra }] = await Promise.all([
+        supabase
+          .from("association_assessments")
+          .select("id, area")
+          .eq("association_id", id),
+        supabase
+          .from("infrastructure_assessments")
+          .select("id")
+          .eq("association_id", id)
+          .maybeSingle(),
+      ]);
+      const map: Record<string, string | null> = {};
+      (rows ?? []).forEach((r: any) => {
+        if (r.area) map[r.area] = r.id;
+      });
+      if (infra?.id) map.infraestrutura = infra.id;
+      return map;
+    },
+  });
+
 
   if (isLoading)
     return (
@@ -137,58 +183,167 @@ function AssociationDetails() {
       </div>
 
       {(isConsultant || isAdmin) && (() => {
-        const modulos: Array<{
-          key: "social" | "juridico" | "contabil" | "infraestrutura";
-          titulo: string;
-          descricao: string;
-        }> = [
-          { key: "social", titulo: "Formulário Social", descricao: "Perfil socioeconômico e organizacional." },
-          { key: "juridico", titulo: "Formulário Jurídico", descricao: "Documentação, estatuto e regularidade jurídica." },
-          { key: "contabil", titulo: "Formulário Contábil", descricao: "Escrituração, tributos e obrigações fiscais." },
-          { key: "infraestrutura", titulo: "Formulário de Infraestrutura", descricao: "Sede, equipamentos e condições operacionais." },
-        ];
-        const visiveis = isAdmin ? modulos : modulos.filter((m) => m.key === (area ?? "social"));
+        const MODULE_STYLES = {
+          social: {
+            titulo: "Social",
+            descricao: "Perfil socioeconômico, composição e vulnerabilidades da entidade.",
+            Icon: Users2,
+            accent: "bg-[hsl(217_91%_55%)]",
+            iconBg: "bg-[hsl(217_91%_96%)]",
+            iconText: "text-[hsl(217_91%_45%)]",
+            iconHover: "group-hover:bg-[hsl(217_91%_55%)] group-hover:text-white",
+            button: "bg-[hsl(217_91%_50%)] hover:bg-[hsl(217_91%_42%)] focus-visible:ring-[hsl(217_91%_85%)]",
+          },
+          juridico: {
+            titulo: "Jurídico",
+            descricao: "Documentação legal, estatutos e regularidade institucional.",
+            Icon: Scale,
+            accent: "bg-[hsl(243_75%_60%)]",
+            iconBg: "bg-[hsl(243_75%_96%)]",
+            iconText: "text-[hsl(243_75%_50%)]",
+            iconHover: "group-hover:bg-[hsl(243_75%_60%)] group-hover:text-white",
+            button: "bg-[hsl(243_75%_58%)] hover:bg-[hsl(243_75%_50%)] focus-visible:ring-[hsl(243_75%_88%)]",
+          },
+          contabil: {
+            titulo: "Contábil",
+            descricao: "Escrituração, tributos, fluxo financeiro e obrigações fiscais.",
+            Icon: Wallet,
+            accent: "bg-[hsl(173_68%_39%)]",
+            iconBg: "bg-[hsl(173_68%_94%)]",
+            iconText: "text-[hsl(173_68%_32%)]",
+            iconHover: "group-hover:bg-[hsl(173_68%_39%)] group-hover:text-white",
+            button: "bg-[hsl(173_68%_36%)] hover:bg-[hsl(173_68%_30%)] focus-visible:ring-[hsl(173_60%_85%)]",
+          },
+          infraestrutura: {
+            titulo: "Infraestrutura",
+            descricao: "Sede, equipamentos, veículos e condições operacionais.",
+            Icon: HardHat,
+            accent: "bg-[hsl(38_92%_50%)]",
+            iconBg: "bg-[hsl(38_92%_95%)]",
+            iconText: "text-[hsl(32_95%_44%)]",
+            iconHover: "group-hover:bg-[hsl(38_92%_50%)] group-hover:text-white",
+            button: "bg-[hsl(32_95%_48%)] hover:bg-[hsl(28_92%_42%)] focus-visible:ring-[hsl(38_92%_85%)]",
+          },
+        } as const;
+        const chaves: Array<"social" | "juridico" | "contabil" | "infraestrutura"> = isAdmin
+          ? ["social", "juridico", "contabil", "infraestrutura"]
+          : [((area ?? "social") as any)];
         return (
           <section className="mb-8">
-            <div className="mb-4">
-              <p className="text-xs font-bold uppercase tracking-[0.16em] text-primary">
+            <div className="mb-6 flex flex-col gap-1">
+              <p className="text-[11px] font-bold uppercase tracking-[0.18em] text-primary">
                 Formulários de campo
               </p>
-              <h2 className="mt-1 text-xl font-bold">
+              <h2 className="text-2xl font-bold tracking-tight text-foreground">
                 {isAdmin ? "Formulários por área" : "Formulário da sua área"}
               </h2>
-              <p className="mt-1 text-sm text-muted-foreground">
+              <p className="text-sm text-muted-foreground">
                 {isAdmin
                   ? "Abra o formulário de qualquer área desta entidade."
                   : "Abre diretamente o formulário da sua área de atuação."}
               </p>
             </div>
-            <div className={isAdmin ? "grid gap-4 sm:grid-cols-2 lg:grid-cols-4" : "grid gap-4"}>
-              {visiveis.map((m) => (
-                <div
-                  key={m.key}
-                  className="flex flex-col justify-between rounded-2xl border border-border bg-card p-5 shadow-card"
-                >
-                  <div>
-                    <h3 className="text-base font-semibold">{m.titulo}</h3>
-                    <p className="mt-1 text-xs text-muted-foreground">{m.descricao}</p>
-                  </div>
-                  <Link
-                    to="/admin/associacoes/$id/diagnostico/novo"
-                    params={{ id }}
-                    search={{ modulo: m.key }}
-                    className="mt-4"
+            <div className={isAdmin ? "grid gap-6 sm:grid-cols-2 lg:grid-cols-4" : "grid gap-6 sm:grid-cols-2 lg:grid-cols-4"}>
+              {chaves.map((k) => {
+                const m = MODULE_STYLES[k];
+                const Icon = m.Icon;
+                return (
+                  <div
+                    key={k}
+                    className="group relative flex flex-col overflow-hidden rounded-2xl border border-border bg-card p-6 shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-xl"
                   >
-                    <Button size="sm" className="w-full">
-                      <ClipboardPlus className="size-4" /> Abrir formulário
-                    </Button>
-                  </Link>
-                </div>
-              ))}
+                    <span className={`absolute inset-x-0 top-0 h-1 ${m.accent}`} aria-hidden />
+                    <div className={`mb-4 flex size-12 items-center justify-center rounded-xl transition-colors ${m.iconBg} ${m.iconText} ${m.iconHover}`}>
+                      <Icon className="size-6" />
+                    </div>
+                    <h3 className="mb-2 text-lg font-bold text-foreground">{m.titulo}</h3>
+                    <p className="mb-8 text-sm leading-relaxed text-muted-foreground">{m.descricao}</p>
+                    <div className="mt-auto">
+                      <button
+                        type="button"
+                        onClick={() => {
+                          const existingId = existingByArea[k];
+                          if (existingId !== undefined) {
+                            setExistingPrompt({ modulo: k, assessmentId: k === "infraestrutura" ? null : existingId });
+                            return;
+                          }
+                          navigate({
+                            to: "/admin/associacoes/$id/diagnostico/novo",
+                            params: { id },
+                            search: { modulo: k },
+                          });
+                        }}
+                        className={`inline-flex w-full items-center justify-center gap-2 rounded-xl px-4 py-2.5 text-sm font-semibold text-white shadow-sm transition-all duration-200 hover:shadow-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 ${m.button}`}
+                      >
+                        Abrir formulário <ArrowRight className="size-4 transition-transform group-hover:translate-x-0.5" />
+                      </button>
+                    </div>
+                  </div>
+                );
+              })}
             </div>
           </section>
         );
       })()}
+
+      <AlertDialog
+        open={!!existingPrompt}
+        onOpenChange={(open) => {
+          if (!open) setExistingPrompt(null);
+        }}
+      >
+        <AlertDialogContent className="max-w-md">
+          <AlertDialogHeader>
+            <div className="mx-auto mb-2 flex h-12 w-12 items-center justify-center rounded-full bg-primary/10 text-primary">
+              <FileCheck2 className="h-6 w-6" aria-hidden="true" />
+            </div>
+            <AlertDialogTitle className="text-center text-lg">
+              Formulário já preenchido
+            </AlertDialogTitle>
+            <AlertDialogDescription className="text-center">
+              Já existe um formulário{" "}
+              <span className="font-medium text-foreground">
+                {existingPrompt
+                  ? existingPrompt.modulo === "infraestrutura"
+                    ? "de Infraestrutura"
+                    : existingPrompt.modulo === "social"
+                      ? "Social"
+                      : existingPrompt.modulo === "juridico"
+                        ? "Jurídico"
+                        : "Contábil"
+                  : ""}
+              </span>{" "}
+              para esta entidade. Deseja editar o formulário existente?
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter className="sm:justify-center gap-2">
+            <AlertDialogCancel className="mt-0">Não, voltar</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={() => {
+                if (!existingPrompt) return;
+                const { modulo, assessmentId } = existingPrompt;
+                setExistingPrompt(null);
+                if (modulo === "infraestrutura") {
+                  navigate({
+                    to: "/admin/associacoes/$id/diagnostico/novo",
+                    params: { id },
+                    search: { modulo },
+                  });
+                } else if (assessmentId) {
+                  navigate({
+                    to: "/admin/associacoes/$id/diagnostico/$assessmentId",
+                    params: { id, assessmentId },
+                    search: { mode: "edit" },
+                  });
+                }
+              }}
+            >
+              Sim, editar
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
 
       <div className="mb-10 grid gap-4 sm:grid-cols-3">
         <Info
