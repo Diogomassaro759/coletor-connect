@@ -528,6 +528,12 @@ function NewAssessment() {
           ? [{ assessment_id: assessment.id, tipo: equipment.label, quantidade }]
           : [];
       });
+      if (isEditing) {
+        await Promise.all([
+          supabase.from("material_prices").delete().eq("assessment_id", assessment.id),
+          supabase.from("association_equipment").delete().eq("assessment_id", assessment.id),
+        ]);
+      }
       const [associationResult, pricesResult, equipmentResult] = await Promise.all([
         associationUpdate,
         priceRows.length
