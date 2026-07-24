@@ -55,7 +55,13 @@ function AssociationDetails() {
   const { isAdmin, isConsultant, isCoordenador, isRecenseador, area } = Route.useRouteContext() as any;
   const isAdminLike = isAdmin || isCoordenador; // for edit/documents buttons
   const showAllModules = isAdmin; // only Admin sees 4 cards
+  const navigate = useNavigate();
+  const [existingPrompt, setExistingPrompt] = useState<
+    | { modulo: "social" | "juridico" | "contabil" | "infraestrutura"; assessmentId: string | null }
+    | null
+  >(null);
   const { data: association, isLoading } = useQuery({
+
     queryKey: ["association", id],
     queryFn: async () => {
       const { data, error } = await supabase.from("associations").select("*").eq("id", id).single();
