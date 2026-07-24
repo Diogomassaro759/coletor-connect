@@ -142,7 +142,7 @@ export function FilledFormsList({ associationId }: { associationId: string }) {
               <th className="py-2 pr-4">Formulário</th>
               <th className="py-2 pr-4">Data</th>
               <th className="py-2 pr-4">Hora</th>
-              <th className="py-2 pr-4">Consultor</th>
+              <th className="py-2 pr-4">Usuário</th>
               <th className="py-2 pr-4 text-right">Ação</th>
             </tr>
           </thead>
