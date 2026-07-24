@@ -359,6 +359,11 @@ function NewAssessment() {
     const currentTime = `${pad(nowSave.getHours())}:${pad(nowSave.getMinutes())}`;
     const { data: auth } = await supabase.auth.getUser();
     if (!auth.user) return toast.error("Sua sessão expirou.");
+    const submittedChoices = { ...choicesRef.current };
+    for (const [key, value] of values.entries()) {
+      if (typeof value === "string") submittedChoices[key] = value;
+    }
+    choicesRef.current = submittedChoices;
 
     if (isInfrastructure) {
       if (!isEditing) {
@@ -2431,10 +2436,19 @@ function CompactChoice({
   onChange: (name: string, value: string) => void;
 }) {
   const readOnly = useContext(FormReadOnlyContext);
+  const [localValue, setLocalValue] = useState(value);
+  useEffect(() => setLocalValue(value), [value]);
   return (
     <>
-      <input type="hidden" name={name} value={value} disabled={readOnly} />
-      <Select disabled={readOnly} value={value} onValueChange={(next) => onChange(name, next)}>
+      <input type="hidden" name={name} value={localValue} disabled={readOnly} />
+      <Select
+        disabled={readOnly}
+        value={localValue || undefined}
+        onValueChange={(next) => {
+          setLocalValue(next);
+          onChange(name, next);
+        }}
+      >
         <SelectTrigger className="min-w-36">
           <SelectValue />
         </SelectTrigger>
@@ -3003,15 +3017,20 @@ function Choice({
   placeholder?: string;
 }) {
   const readOnly = useContext(FormReadOnlyContext);
+  const [localValue, setLocalValue] = useState(value);
+  useEffect(() => setLocalValue(value), [value]);
   const hasOutro = options.some((o) => o.toLowerCase() === "outro");
-  const isOutro = value.toLowerCase() === "outro";
+  const isOutro = localValue.toLowerCase() === "outro";
   return (
     <Field label={label}>
-      <input type="hidden" name={name} value={value} disabled={readOnly} />
+      <input type="hidden" name={name} value={localValue} disabled={readOnly} />
       <Select
         disabled={readOnly}
-        value={value || undefined}
-        onValueChange={(next) => onChange(name, next)}
+        value={localValue || undefined}
+        onValueChange={(next) => {
+          setLocalValue(next);
+          onChange(name, next);
+        }}
       >
         <SelectTrigger>
           <SelectValue placeholder={placeholder} />
