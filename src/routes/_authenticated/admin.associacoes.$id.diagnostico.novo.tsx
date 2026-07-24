@@ -399,7 +399,7 @@ function NewAssessment() {
         consultant_id: auth.user.id,
         consultant_name: String(values.get("consultant_name") ?? "").trim(),
         data_visita: String(values.get("data_visita") ?? ""),
-        horario_visita: String(values.get("horario_visita") ?? ""),
+        horario_visita: isEditing ? defaultTime : String(values.get("horario_visita") ?? ""),
         homens: Number(values.get("homens") ?? 0),
         mulheres: Number(values.get("mulheres") ?? 0),
         possui_pessoas_trans: bool("possui_pessoas_trans"),
