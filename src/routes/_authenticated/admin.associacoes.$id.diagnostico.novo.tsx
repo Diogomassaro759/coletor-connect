@@ -2432,18 +2432,21 @@ function CompactChoice({
 }) {
   const readOnly = useContext(FormReadOnlyContext);
   return (
-    <Select disabled={readOnly} value={value} onValueChange={(next) => onChange(name, next)}>
-      <SelectTrigger className="min-w-36">
-        <SelectValue />
-      </SelectTrigger>
-      <SelectContent>
-        {options.map((option) => (
-          <SelectItem key={option} value={option}>
-            {option}
-          </SelectItem>
-        ))}
-      </SelectContent>
-    </Select>
+    <>
+      <input type="hidden" name={name} value={value} disabled={readOnly} />
+      <Select disabled={readOnly} value={value} onValueChange={(next) => onChange(name, next)}>
+        <SelectTrigger className="min-w-36">
+          <SelectValue />
+        </SelectTrigger>
+        <SelectContent>
+          {options.map((option) => (
+            <SelectItem key={option} value={option}>
+              {option}
+            </SelectItem>
+          ))}
+        </SelectContent>
+      </Select>
+    </>
   );
 }
 function Evidence({ name, label }: { name: string; label: string }) {
@@ -3004,6 +3007,7 @@ function Choice({
   const isOutro = value.toLowerCase() === "outro";
   return (
     <Field label={label}>
+      <input type="hidden" name={name} value={value} disabled={readOnly} />
       <Select
         disabled={readOnly}
         value={value || undefined}
