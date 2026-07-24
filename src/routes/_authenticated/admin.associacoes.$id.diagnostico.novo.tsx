@@ -61,10 +61,13 @@ export const Route = createFileRoute("/_authenticated/admin/associacoes/$id/diag
 
 function NewAssessment() {
   const { id } = Route.useParams();
-  const { modulo } = Route.useSearch();
+  const { modulo, assessmentId, mode } = Route.useSearch();
   const { area, user, isAdmin, isCoordenador } = Route.useRouteContext() as any;
   const navigate = useNavigate();
   const [saving, setSaving] = useState(false);
+  const isEditing = !!assessmentId;
+  const readOnly = mode === "view";
+  const formRef = useRef<HTMLFormElement | null>(null);
   // Admins/coordenadores podem escolher qualquer módulo via URL.
   // Consultores são restritos à sua própria área.
   const canChooseModule = isAdmin || isCoordenador;
@@ -81,6 +84,91 @@ function NewAssessment() {
   const isInfrastructure = activeModule === "infraestrutura";
   const [materials, setMaterials] = useState<string[]>([]);
   const [choices, setChoices] = useState<Record<string, string>>({});
+
+  // Load existing assessment/infra for edit or view mode.
+  const { data: existing } = useQuery({
+    queryKey: ["assessment-prefill", assessmentId, modulo],
+    enabled: !!assessmentId,
+    queryFn: async () => {
+      if (modulo === "infraestrutura") {
+        const { data } = await supabase
+          .from("infrastructure_assessments")
+          .select("*")
+          .eq("id", assessmentId!)
+          .maybeSingle();
+        return { kind: "infra" as const, infra: data };
+      }
+      const { data } = await supabase
+        .from("association_assessments")
+        .select("*")
+        .eq("id", assessmentId!)
+        .maybeSingle();
+      return { kind: "assessment" as const, assessment: data };
+    },
+  });
+
+  // Force active module to match loaded record when editing.
+  useEffect(() => {
+    if (!existing) return;
+    if (existing.kind === "infra") {
+      setActiveModule("infraestrutura");
+    } else if (existing.assessment?.area) {
+      setActiveModule(existing.assessment.area as any);
+    }
+  }, [existing]);
+
+  // Seed choices/materials state from existing record.
+  useEffect(() => {
+    if (!existing) return;
+    const source: Record<string, any> =
+      existing.kind === "infra"
+        ? { ...(existing.infra ?? {}), ...((existing.infra as any)?.payload ?? {}) }
+        : (existing.assessment ?? {});
+    const nextChoices: Record<string, string> = {};
+    for (const [k, v] of Object.entries(source)) {
+      if (v === null || v === undefined) continue;
+      if (typeof v === "boolean") nextChoices[k] = v ? "Sim" : "Não";
+      else if (typeof v === "string") nextChoices[k] = v;
+      else if (typeof v === "number") nextChoices[k] = String(v);
+    }
+    // Prefix infra keys so infra Choice components (which use "infra_" prefix) resolve.
+    if (existing.kind === "infra") {
+      for (const [k, v] of Object.entries(source)) {
+        if (v === null || v === undefined) continue;
+        const prefKey = k.startsWith("infra_") ? k : `infra_${k}`;
+        if (typeof v === "boolean") nextChoices[prefKey] = v ? "Sim" : "Não";
+        else if (typeof v === "string") nextChoices[prefKey] = v;
+        else if (typeof v === "number") nextChoices[prefKey] = String(v);
+      }
+    }
+    setChoices(nextChoices);
+    if (existing.kind === "assessment" && Array.isArray(existing.assessment?.materiais_coletados)) {
+      setMaterials(existing.assessment.materiais_coletados as string[]);
+    }
+  }, [existing]);
+
+  // Prefill uncontrolled inputs/textareas via DOM after form remounts with loaded data.
+  useEffect(() => {
+    if (!existing || !formRef.current) return;
+    const source: Record<string, any> =
+      existing.kind === "infra"
+        ? { ...(existing.infra ?? {}), ...((existing.infra as any)?.payload ?? {}) }
+        : (existing.assessment ?? {});
+    const elements = formRef.current.querySelectorAll<HTMLInputElement | HTMLTextAreaElement>(
+      "input[name], textarea[name]",
+    );
+    elements.forEach((el) => {
+      const name = el.name;
+      if (!name) return;
+      // Handle checkboxes via choices state instead.
+      if ((el as HTMLInputElement).type === "checkbox") return;
+      const direct = source[name];
+      const infraStripped = name.startsWith("infra_") ? source[name.slice(6)] : undefined;
+      const value = direct ?? infraStripped;
+      if (value === null || value === undefined) return;
+      el.value = typeof value === "string" ? value : String(value);
+    });
+  }, [existing, activeModule]);
   const now = new Date();
   const pad = (n: number) => String(n).padStart(2, "0");
   const defaultDate = `${now.getFullYear()}-${pad(now.getMonth() + 1)}-${pad(now.getDate())}`;
