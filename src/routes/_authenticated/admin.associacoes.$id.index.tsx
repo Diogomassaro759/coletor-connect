@@ -1,23 +1,39 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { BackButton } from "@/components/ui/back-button";
 import { useQuery } from "@tanstack/react-query";
 import {
   ArrowLeft,
+  ArrowRight,
   Calculator,
   CalendarDays,
   ClipboardPlus,
+  FileCheck2,
   FileDown,
   FolderOpen,
+  HardHat,
   MapPin,
   Pencil,
   Scale,
   UserPlus,
   Users,
+  Users2,
+  Wallet,
 } from "lucide-react";
+import { useState } from "react";
 import { toast } from "sonner";
 import { AdminShell } from "@/components/admin/AdminShell";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 import { supabase } from "@/integrations/supabase/client";
 import { buildAssociationReportPDF } from "@/lib/association-report";
 import { FilledFormsList } from "@/components/admin/FilledFormsList";
@@ -26,6 +42,7 @@ export const Route = createFileRoute("/_authenticated/admin/associacoes/$id/")({
   head: () => ({ meta: [{ title: "Detalhes da associação — PROCATE" }] }),
   component: AssociationDetails,
 });
+
 
 const STATUS_LABEL = {
   regular: "Regular",
