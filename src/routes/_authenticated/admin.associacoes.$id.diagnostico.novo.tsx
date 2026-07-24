@@ -2440,33 +2440,23 @@ function CompactChoice({
   useEffect(() => setLocalValue(value), [value]);
   return (
     <>
-      <input type="hidden" name={name} value={localValue} disabled={readOnly} />
-      <Select
+      <select
+        name={name}
         disabled={readOnly}
         value={localValue}
-        onValueChange={(next) => {
+        onChange={(event) => {
+          const next = event.currentTarget.value;
           setLocalValue(next);
           onChange(name, next);
         }}
+        className="min-w-36 flex h-9 rounded-md border border-input bg-transparent px-3 py-2 text-sm shadow-sm ring-offset-background focus:outline-none focus:ring-1 focus:ring-ring disabled:cursor-not-allowed disabled:opacity-50"
       >
-        <SelectTrigger className="min-w-36">
-          <SelectValue />
-        </SelectTrigger>
-        <SelectContent>
-          {options.map((option) => (
-            <SelectItem
-              key={option}
-              value={option}
-              onClick={() => {
-                setLocalValue(option);
-                onChange(name, option);
-              }}
-            >
-              {option}
-            </SelectItem>
-          ))}
-        </SelectContent>
-      </Select>
+        {options.map((option) => (
+          <option key={option} value={option}>
+            {option}
+          </option>
+        ))}
+      </select>
     </>
   );
 }
@@ -3030,33 +3020,24 @@ function Choice({
   const isOutro = localValue.toLowerCase() === "outro";
   return (
     <Field label={label}>
-      <input type="hidden" name={name} value={localValue} disabled={readOnly} />
-      <Select
+      <select
+        name={name}
         disabled={readOnly}
         value={localValue}
-        onValueChange={(next) => {
+        onChange={(event) => {
+          const next = event.currentTarget.value;
           setLocalValue(next);
           onChange(name, next);
         }}
+        className="flex h-9 w-full rounded-md border border-input bg-transparent px-3 py-2 text-sm shadow-sm ring-offset-background focus:outline-none focus:ring-1 focus:ring-ring disabled:cursor-not-allowed disabled:opacity-50"
       >
-        <SelectTrigger>
-          <SelectValue placeholder={placeholder} />
-        </SelectTrigger>
-        <SelectContent>
-          {options.map((option) => (
-            <SelectItem
-              key={option}
-              value={option}
-              onClick={() => {
-                setLocalValue(option);
-                onChange(name, option);
-              }}
-            >
-              {option}
-            </SelectItem>
-          ))}
-        </SelectContent>
-      </Select>
+        <option value="">{placeholder}</option>
+        {options.map((option) => (
+          <option key={option} value={option}>
+            {option}
+          </option>
+        ))}
+      </select>
       {hasOutro && isOutro && (
         <Input
           name={`${name}_outro`}
