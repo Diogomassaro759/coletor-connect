@@ -357,19 +357,6 @@ function AssociationDetails() {
       </AlertDialog>
 
 
-      <div className="mb-10 grid gap-4 sm:grid-cols-3">
-        <Info
-          label="Associados no início"
-          value={association.numero_associados_inicial}
-          icon={Users}
-        />
-        <Info
-          label="Associados atualmente"
-          value={association.numero_associados_atual}
-          icon={Users}
-        />
-        <Info label="Diagnósticos realizados" value={assessments.length} icon={CalendarDays} />
-      </div>
 
       <FilledFormsList associationId={id} />
     </AdminShell>
