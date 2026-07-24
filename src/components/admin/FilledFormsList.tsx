@@ -87,7 +87,7 @@ export function FilledFormsList({ associationId }: { associationId: string }) {
       }
 
       const visibleAssessmentRows = assessmentRows.filter((r) => {
-        const formArea = creatorAreas[r.created_by] ?? "social";
+        const formArea = r.area ?? creatorAreas[r.created_by] ?? "social";
         return isAdmin || !area || formArea === area;
       });
 
@@ -105,7 +105,7 @@ export function FilledFormsList({ associationId }: { associationId: string }) {
             }]
           : []),
         ...visibleAssessmentRows.map((r) => {
-          const formArea = creatorAreas[r.created_by] ?? "social";
+          const formArea = r.area ?? creatorAreas[r.created_by] ?? "social";
           return {
           ...r,
           consultant_name: r.consultant_name ?? creatorNames[r.created_by] ?? null,
