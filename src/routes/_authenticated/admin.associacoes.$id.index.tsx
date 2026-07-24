@@ -83,6 +83,29 @@ function AssociationDetails() {
       return data;
     },
   });
+  const { data: existingByArea = {} } = useQuery({
+    queryKey: ["association-existing-forms", id],
+    queryFn: async () => {
+      const [{ data: rows }, { data: infra }] = await Promise.all([
+        supabase
+          .from("association_assessments")
+          .select("id, area")
+          .eq("association_id", id),
+        supabase
+          .from("infrastructure_assessments")
+          .select("id")
+          .eq("association_id", id)
+          .maybeSingle(),
+      ]);
+      const map: Record<string, string | null> = {};
+      (rows ?? []).forEach((r: any) => {
+        if (r.area) map[r.area] = r.id;
+      });
+      if (infra?.id) map.infraestrutura = infra.id;
+      return map;
+    },
+  });
+
 
   if (isLoading)
     return (
