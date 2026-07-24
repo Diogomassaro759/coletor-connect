@@ -172,13 +172,6 @@ function AssociationDetails() {
               </Button>
             </>
           )}
-          {isAdminLike && (
-            <Link to="/admin/associacoes/$id/editar" params={{ id }}>
-              <Button size="lg" variant="outline">
-                <Pencil className="size-4" /> Editar entidade
-              </Button>
-            </Link>
-          )}
         </div>
       </div>
 
