@@ -115,7 +115,7 @@ export function FilledFormsList({ associationId }: { associationId: string }) {
         }),
         ...infraRows.map((r: any) => ({
           ...r,
-          consultant_name: r.consultant_name ?? creatorNames[r.created_by] ?? null,
+          consultant_name: r.consultant_name ?? creatorNames[r.consultant_id] ?? null,
           formulario: "Infraestrutura",
           kind: "infra" as const,
         })),
