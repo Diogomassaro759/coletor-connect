@@ -268,6 +268,8 @@ function AssociationsPage() {
 
   return (
     <AdminShell>
+      <BackButton className="mb-4" />
+
       
       {!isAdminLike && (() => {
         const MODULE_STYLES = {
