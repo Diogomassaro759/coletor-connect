@@ -34,7 +34,7 @@ export function FilledFormsList({ associationId }: { associationId: string }) {
         showInfra
           ? supabase
               .from("infrastructure_assessments")
-              .select("id,data_visita,horario_visita,consultant_name,created_at,created_by")
+              .select("id,data_visita,horario_visita,consultant_name,created_at,consultant_id")
               .eq("association_id", associationId)
               .order("data_visita", { ascending: false })
           : Promise.resolve({ data: [] as any[] }),
@@ -54,7 +54,7 @@ export function FilledFormsList({ associationId }: { associationId: string }) {
         ...new Set(
           [
             ...assessmentRows.map((r) => r.created_by),
-            ...infraRows.map((r: any) => r.created_by),
+            ...infraRows.map((r: any) => r.consultant_id),
             assocRow?.created_by,
           ].filter(Boolean),
         ),
@@ -115,7 +115,7 @@ export function FilledFormsList({ associationId }: { associationId: string }) {
         }),
         ...infraRows.map((r: any) => ({
           ...r,
-          consultant_name: r.consultant_name ?? creatorNames[r.created_by] ?? null,
+          consultant_name: r.consultant_name ?? creatorNames[r.consultant_id] ?? null,
           formulario: "Infraestrutura",
           kind: "infra" as const,
         })),
