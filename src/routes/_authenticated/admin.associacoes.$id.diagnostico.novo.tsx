@@ -207,10 +207,17 @@ function NewAssessment() {
       elements.forEach((el) => {
         const name = el.name;
         if (!name) return;
-        if ((el as HTMLInputElement).type === "checkbox") return;
         const direct = source[name];
         const infraStripped = name.startsWith("infra_") ? source[name.slice(6)] : undefined;
         let value = direct ?? infraStripped ?? extras[name];
+        if ((el as HTMLInputElement).type === "checkbox") {
+          if (value === null || value === undefined) return;
+          const checked =
+            value === true || value === "true" || value === "on" ||
+            value === "Sim" || value === 1 || value === "1";
+          (el as HTMLInputElement).checked = checked;
+          return;
+        }
         if (value === null || value === undefined) return;
         if ((el as HTMLInputElement).type === "time" && typeof value === "string") {
           value = value.slice(0, 5);
