@@ -179,6 +179,24 @@ export function FilledFormsList({ associationId }: { associationId: string }) {
                           </Link>
                         )}
                       </div>
+                    ) : r.kind === "social-entity" ? (
+                      <div className="flex justify-end gap-2">
+                        <Link
+                          to="/admin/associacoes/$id/editar"
+                          params={{ id: associationId }}
+                          search={{ mode: "view" as const }}
+                        >
+                          <Button size="sm" variant="outline">Visualizar</Button>
+                        </Link>
+                        {canEdit && (
+                          <Link
+                            to="/admin/associacoes/$id/editar"
+                            params={{ id: associationId }}
+                          >
+                            <Button size="sm">Editar</Button>
+                          </Link>
+                        )}
+                      </div>
                     ) : (
                       <div className="flex justify-end gap-2">
                         <Button size="sm" variant="outline" disabled>
@@ -189,6 +207,7 @@ export function FilledFormsList({ associationId }: { associationId: string }) {
                         </Button>
                       </div>
                     )}
+
                   </td>
                 </tr>
               ))
