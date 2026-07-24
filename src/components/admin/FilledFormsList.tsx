@@ -54,7 +54,7 @@ export function FilledFormsList({ associationId }: { associationId: string }) {
         ...new Set(
           [
             ...assessmentRows.map((r) => r.created_by),
-            ...infraRows.map((r: any) => r.created_by),
+            ...infraRows.map((r: any) => r.consultant_id),
             assocRow?.created_by,
           ].filter(Boolean),
         ),
