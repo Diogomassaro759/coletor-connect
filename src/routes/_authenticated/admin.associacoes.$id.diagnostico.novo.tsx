@@ -44,6 +44,16 @@ export const Route = createFileRoute("/_authenticated/admin/associacoes/$id/diag
       search.modulo === "infraestrutura"
         ? (search.modulo as "juridico" | "contabil" | "infraestrutura")
         : "social",
+    assessmentId:
+      typeof search.assessmentId === "string" && search.assessmentId
+        ? (search.assessmentId as string)
+        : undefined,
+    mode:
+      search.mode === "edit"
+        ? ("edit" as const)
+        : search.mode === "view"
+          ? ("view" as const)
+          : undefined,
   }),
   head: () => ({ meta: [{ title: "Novo diagnóstico — PROCATE" }] }),
   component: NewAssessment,
