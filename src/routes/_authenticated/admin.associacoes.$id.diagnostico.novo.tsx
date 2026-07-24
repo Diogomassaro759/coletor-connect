@@ -1,7 +1,7 @@
 import { createFileRoute, Link, redirect, useNavigate } from "@tanstack/react-router";
 import { BackButton } from "@/components/ui/back-button";
 import { useQuery } from "@tanstack/react-query";
-import { useState, type FormEvent, type ReactNode } from "react";
+import { useEffect, useRef, useState, type FormEvent, type ReactNode } from "react";
 import { ArrowLeft, Calculator, Loader2, Scale, Users } from "lucide-react";
 import {
   AlertDialog,
@@ -44,6 +44,16 @@ export const Route = createFileRoute("/_authenticated/admin/associacoes/$id/diag
       search.modulo === "infraestrutura"
         ? (search.modulo as "juridico" | "contabil" | "infraestrutura")
         : "social",
+    assessmentId:
+      typeof search.assessmentId === "string" && search.assessmentId
+        ? (search.assessmentId as string)
+        : undefined,
+    mode:
+      search.mode === "edit"
+        ? ("edit" as const)
+        : search.mode === "view"
+          ? ("view" as const)
+          : undefined,
   }),
   head: () => ({ meta: [{ title: "Novo diagnóstico — PROCATE" }] }),
   component: NewAssessment,
@@ -51,10 +61,13 @@ export const Route = createFileRoute("/_authenticated/admin/associacoes/$id/diag
 
 function NewAssessment() {
   const { id } = Route.useParams();
-  const { modulo } = Route.useSearch();
+  const { modulo, assessmentId, mode } = Route.useSearch();
   const { area, user, isAdmin, isCoordenador } = Route.useRouteContext() as any;
   const navigate = useNavigate();
   const [saving, setSaving] = useState(false);
+  const isEditing = !!assessmentId;
+  const readOnly = mode === "view";
+  const formRef = useRef<HTMLFormElement | null>(null);
   // Admins/coordenadores podem escolher qualquer módulo via URL.
   // Consultores são restritos à sua própria área.
   const canChooseModule = isAdmin || isCoordenador;
@@ -71,6 +84,91 @@ function NewAssessment() {
   const isInfrastructure = activeModule === "infraestrutura";
   const [materials, setMaterials] = useState<string[]>([]);
   const [choices, setChoices] = useState<Record<string, string>>({});
+
+  // Load existing assessment/infra for edit or view mode.
+  const { data: existing } = useQuery({
+    queryKey: ["assessment-prefill", assessmentId, modulo],
+    enabled: !!assessmentId,
+    queryFn: async () => {
+      if (modulo === "infraestrutura") {
+        const { data } = await supabase
+          .from("infrastructure_assessments")
+          .select("*")
+          .eq("id", assessmentId!)
+          .maybeSingle();
+        return { kind: "infra" as const, infra: data };
+      }
+      const { data } = await supabase
+        .from("association_assessments")
+        .select("*")
+        .eq("id", assessmentId!)
+        .maybeSingle();
+      return { kind: "assessment" as const, assessment: data };
+    },
+  });
+
+  // Force active module to match loaded record when editing.
+  useEffect(() => {
+    if (!existing) return;
+    if (existing.kind === "infra") {
+      setActiveModule("infraestrutura");
+    } else if (existing.assessment?.area) {
+      setActiveModule(existing.assessment.area as any);
+    }
+  }, [existing]);
+
+  // Seed choices/materials state from existing record.
+  useEffect(() => {
+    if (!existing) return;
+    const source: Record<string, any> =
+      existing.kind === "infra"
+        ? { ...(existing.infra ?? {}), ...((existing.infra as any)?.payload ?? {}) }
+        : (existing.assessment ?? {});
+    const nextChoices: Record<string, string> = {};
+    for (const [k, v] of Object.entries(source)) {
+      if (v === null || v === undefined) continue;
+      if (typeof v === "boolean") nextChoices[k] = v ? "Sim" : "Não";
+      else if (typeof v === "string") nextChoices[k] = v;
+      else if (typeof v === "number") nextChoices[k] = String(v);
+    }
+    // Prefix infra keys so infra Choice components (which use "infra_" prefix) resolve.
+    if (existing.kind === "infra") {
+      for (const [k, v] of Object.entries(source)) {
+        if (v === null || v === undefined) continue;
+        const prefKey = k.startsWith("infra_") ? k : `infra_${k}`;
+        if (typeof v === "boolean") nextChoices[prefKey] = v ? "Sim" : "Não";
+        else if (typeof v === "string") nextChoices[prefKey] = v;
+        else if (typeof v === "number") nextChoices[prefKey] = String(v);
+      }
+    }
+    setChoices(nextChoices);
+    if (existing.kind === "assessment" && Array.isArray(existing.assessment?.materiais_coletados)) {
+      setMaterials(existing.assessment.materiais_coletados as string[]);
+    }
+  }, [existing]);
+
+  // Prefill uncontrolled inputs/textareas via DOM after form remounts with loaded data.
+  useEffect(() => {
+    if (!existing || !formRef.current) return;
+    const source: Record<string, any> =
+      existing.kind === "infra"
+        ? { ...(existing.infra ?? {}), ...((existing.infra as any)?.payload ?? {}) }
+        : (existing.assessment ?? {});
+    const elements = formRef.current.querySelectorAll<HTMLInputElement | HTMLTextAreaElement>(
+      "input[name], textarea[name]",
+    );
+    elements.forEach((el) => {
+      const name = el.name;
+      if (!name) return;
+      // Handle checkboxes via choices state instead.
+      if ((el as HTMLInputElement).type === "checkbox") return;
+      const direct = source[name];
+      const infraStripped = name.startsWith("infra_") ? source[name.slice(6)] : undefined;
+      const value = direct ?? infraStripped;
+      if (value === null || value === undefined) return;
+      el.value = typeof value === "string" ? value : String(value);
+    });
+  }, [existing, activeModule]);
   const now = new Date();
   const pad = (n: number) => String(n).padStart(2, "0");
   const defaultDate = `${now.getFullYear()}-${pad(now.getMonth() + 1)}-${pad(now.getDate())}`;
@@ -161,17 +259,19 @@ function NewAssessment() {
     if (!auth.user) return toast.error("Sua sessão expirou.");
 
     if (isInfrastructure) {
-      const { data: existingInfra } = await supabase
-        .from("infrastructure_assessments")
-        .select("id")
-        .eq("association_id", id)
-        .maybeSingle();
-      if (existingInfra?.id) {
-        toast.error("Já existe um formulário de infraestrutura para esta entidade.", {
-          description: "Abra o formulário existente para editar.",
-        });
-        navigate({ to: "/admin/associacoes/$id", params: { id } });
-        return;
+      if (!isEditing) {
+        const { data: existingInfra } = await supabase
+          .from("infrastructure_assessments")
+          .select("id")
+          .eq("association_id", id)
+          .maybeSingle();
+        if (existingInfra?.id) {
+          toast.error("Já existe um formulário de infraestrutura para esta entidade.", {
+            description: "Abra o formulário existente para editar.",
+          });
+          navigate({ to: "/admin/associacoes/$id", params: { id } });
+          return;
+        }
       }
       setSaving(true);
       const payload: Record<string, unknown> = {};
@@ -181,7 +281,7 @@ function NewAssessment() {
       for (const [k, v] of Object.entries(choices)) {
         if (k.startsWith("infra_")) payload[k.slice(6)] = v;
       }
-      const { error: infraError } = await supabase.from("infrastructure_assessments").insert({
+      const infraRecord = {
         association_id: id,
         consultant_id: auth.user.id,
         consultant_name: String(values.get("consultant_name") ?? "").trim(),
@@ -197,7 +297,13 @@ function NewAssessment() {
         pessoas_mulheres: numberOrNull(values, "infra_pessoas_mulheres"),
         pessoas_especifique: text(values, "infra_pessoas_especifique"),
         payload: payload as any,
-      });
+      };
+      const { error: infraError } = isEditing
+        ? await supabase
+            .from("infrastructure_assessments")
+            .update(infraRecord)
+            .eq("id", assessmentId!)
+        : await supabase.from("infrastructure_assessments").insert(infraRecord);
       setSaving(false);
       if (infraError) return toast.error("Erro ao salvar diagnóstico de infraestrutura", { description: infraError.message });
       toast.success("Diagnóstico de infraestrutura salvo.");
@@ -209,27 +315,27 @@ function NewAssessment() {
       return toast.error("Confirme o consentimento e a veracidade das informações.");
     }
     const assessmentArea = activeModule as "social" | "juridico" | "contabil";
-    const { data: existing } = await supabase
-      .from("association_assessments")
-      .select("id")
-      .eq("association_id", id)
-      .eq("area", assessmentArea)
-      .maybeSingle();
-    if (existing?.id) {
-      toast.error(`Já existe um formulário ${assessmentArea} para esta entidade.`, {
-        description: "Abra o formulário existente para editar.",
-      });
-      navigate({
-        to: "/admin/associacoes/$id/diagnostico/$assessmentId",
-        params: { id, assessmentId: existing.id },
-        search: { mode: "edit" },
-      });
-      return;
+    if (!isEditing) {
+      const { data: existingRec } = await supabase
+        .from("association_assessments")
+        .select("id")
+        .eq("association_id", id)
+        .eq("area", assessmentArea)
+        .maybeSingle();
+      if (existingRec?.id) {
+        toast.error(`Já existe um formulário ${assessmentArea} para esta entidade.`, {
+          description: "Abra o formulário existente para editar.",
+        });
+        navigate({
+          to: "/admin/associacoes/$id/diagnostico/novo",
+          params: { id },
+          search: { modulo: assessmentArea, assessmentId: existingRec.id, mode: "edit" },
+        });
+        return;
+      }
     }
     setSaving(true);
-    const { data: assessment, error } = await supabase
-      .from("association_assessments")
-      .insert({
+    const record = {
         association_id: id,
         area: assessmentArea,
         consultant_id: auth.user.id,
@@ -367,9 +473,19 @@ function NewAssessment() {
         evidencia_livro_trabalho_confirmada: values.has("evidencia_livro_trabalho_confirmada"),
         consentimento_dados: true,
         declaracao_veracidade: true,
-      })
-      .select("id")
-      .single();
+      };
+    const { data: assessment, error } = isEditing
+      ? await supabase
+          .from("association_assessments")
+          .update(record)
+          .eq("id", assessmentId!)
+          .select("id")
+          .single()
+      : await supabase
+          .from("association_assessments")
+          .insert(record)
+          .select("id")
+          .single();
     if (error) {
       setSaving(false);
       return toast.error("Erro ao salvar diagnóstico", { description: error.message });
@@ -412,6 +528,12 @@ function NewAssessment() {
           ? [{ assessment_id: assessment.id, tipo: equipment.label, quantidade }]
           : [];
       });
+      if (isEditing) {
+        await Promise.all([
+          supabase.from("material_prices").delete().eq("assessment_id", assessment.id),
+          supabase.from("association_equipment").delete().eq("assessment_id", assessment.id),
+        ]);
+      }
       const [associationResult, pricesResult, equipmentResult] = await Promise.all([
         associationUpdate,
         priceRows.length
@@ -460,6 +582,9 @@ function NewAssessment() {
         nao_sabe: choice(`livro_${book.key}_implantado`) === "Não sabe informar",
         observacao: text(values, `livro_${book.key}_observacao`),
       }));
+      if (isEditing) {
+        await supabase.from("accounting_books").delete().eq("assessment_id", assessment.id);
+      }
       const { error: booksError } = await supabase.from("accounting_books").insert(bookRows);
       if (associationError || booksError) {
         setSaving(false);
@@ -496,7 +621,7 @@ function NewAssessment() {
 
   return (
     <AdminShell>
-      <AlertDialog open={!!existingForm}>
+      <AlertDialog open={!isEditing && !!existingForm}>
         <AlertDialogContent>
           <AlertDialogHeader>
             <AlertDialogTitle>Formulário já preenchido</AlertDialogTitle>
@@ -523,9 +648,9 @@ function NewAssessment() {
                   });
                 } else {
                   navigate({
-                    to: "/admin/associacoes/$id/diagnostico/$assessmentId",
-                    params: { id, assessmentId: existingForm.id },
-                    search: { mode: "edit" },
+                    to: "/admin/associacoes/$id/diagnostico/novo",
+                    params: { id },
+                    search: { modulo: activeModule as any, assessmentId: existingForm.id, mode: "edit" },
                   });
                 }
               }}
@@ -545,7 +670,8 @@ function NewAssessment() {
         <p className="mt-2 text-muted-foreground">
           Selecione o tipo de cadastro e preencha o formulário correspondente ao documento de campo.
         </p>
-        <form onSubmit={submit} className="mt-7">
+        <form ref={formRef} onSubmit={submit} className="mt-7" key={existing ? "loaded" : "empty"}>
+          <fieldset disabled={readOnly} className="contents">
           <div className="mb-6 grid gap-4 rounded-xl border border-border bg-card p-5 shadow-card md:grid-cols-4">
             <Field label="Nome do consultor">
               <Input
@@ -598,12 +724,14 @@ function NewAssessment() {
                 entityId={id}
                 onEntityChange={onEntityChange}
               />
-              <div className="flex justify-end">
-                <Button type="submit" size="lg" disabled={saving}>
-                  {saving && <Loader2 className="mr-2 size-4 animate-spin" />}
-                  Salvar
-                </Button>
-              </div>
+              {!readOnly && (
+                <div className="flex justify-end">
+                  <Button type="submit" size="lg" disabled={saving}>
+                    {saving && <Loader2 className="mr-2 size-4 animate-spin" />}
+                    Salvar
+                  </Button>
+                </div>
+              )}
             </div>
           )}
           <Tabs
@@ -1452,11 +1580,14 @@ function NewAssessment() {
               </fieldset>
             </TabsContent>
           </Tabs>
-          <div className="sticky bottom-4 mt-6 flex justify-end rounded-xl border border-border bg-background/95 p-4 shadow-card backdrop-blur">
-            <Button type="submit" size="lg" disabled={saving}>
-              {saving && <Loader2 className="size-4 animate-spin" />} Salvar
-            </Button>
-          </div>
+          </fieldset>
+          {!readOnly && (
+            <div className="sticky bottom-4 mt-6 flex justify-end rounded-xl border border-border bg-background/95 p-4 shadow-card backdrop-blur">
+              <Button type="submit" size="lg" disabled={saving}>
+                {saving && <Loader2 className="size-4 animate-spin" />} Salvar
+              </Button>
+            </div>
+          )}
         </form>
       </div>
     </AdminShell>

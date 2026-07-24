@@ -170,23 +170,58 @@ export function FilledFormsList({ associationId }: { associationId: string }) {
                     {r.kind === "assessment" ? (
                       <div className="flex justify-end gap-2">
                         <Link
-                          to="/admin/associacoes/$id/diagnostico/$assessmentId"
-                          params={{ id: associationId, assessmentId: r.id }}
-                          search={{ mode: "view" as const }}
+                          to="/admin/associacoes/$id/diagnostico/novo"
+                          params={{ id: associationId }}
+                          search={{
+                            modulo: (r.area ?? "social") as any,
+                            assessmentId: r.id,
+                            mode: "view" as const,
+                          }}
                         >
                           <Button size="sm" variant="outline">Visualizar</Button>
                         </Link>
                         {canEdit && (
                           <Link
-                            to="/admin/associacoes/$id/diagnostico/$assessmentId"
-                            params={{ id: associationId, assessmentId: r.id }}
-                            search={{ mode: "edit" as const }}
+                            to="/admin/associacoes/$id/diagnostico/novo"
+                            params={{ id: associationId }}
+                            search={{
+                              modulo: (r.area ?? "social") as any,
+                              assessmentId: r.id,
+                              mode: "edit" as const,
+                            }}
                           >
                             <Button size="sm">Editar</Button>
                           </Link>
                         )}
                       </div>
-                    ) : r.kind === "social-entity" ? (
+                    ) : r.kind === "infra" ? (
+                      <div className="flex justify-end gap-2">
+                        <Link
+                          to="/admin/associacoes/$id/diagnostico/novo"
+                          params={{ id: associationId }}
+                          search={{
+                            modulo: "infraestrutura" as const,
+                            assessmentId: r.id,
+                            mode: "view" as const,
+                          }}
+                        >
+                          <Button size="sm" variant="outline">Visualizar</Button>
+                        </Link>
+                        {canEdit && (
+                          <Link
+                            to="/admin/associacoes/$id/diagnostico/novo"
+                            params={{ id: associationId }}
+                            search={{
+                              modulo: "infraestrutura" as const,
+                              assessmentId: r.id,
+                              mode: "edit" as const,
+                            }}
+                          >
+                            <Button size="sm">Editar</Button>
+                          </Link>
+                        )}
+                      </div>
+                    ) : (
                       <div className="flex justify-end gap-2">
                         <Link
                           to="/admin/associacoes/$id/editar"
@@ -203,15 +238,6 @@ export function FilledFormsList({ associationId }: { associationId: string }) {
                             <Button size="sm">Editar</Button>
                           </Link>
                         )}
-                      </div>
-                    ) : (
-                      <div className="flex justify-end gap-2">
-                        <Button size="sm" variant="outline" disabled>
-                          Visualizar
-                        </Button>
-                        <Button size="sm" disabled>
-                          Editar
-                        </Button>
                       </div>
                     )}
 
