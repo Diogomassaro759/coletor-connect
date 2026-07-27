@@ -158,6 +158,23 @@ export function FilledFormsList({ associationId }: { associationId: string }) {
     },
   });
 
+  const queryClient = useQueryClient();
+  const deleteFormMutation = useMutation({
+    mutationFn: async ({ kind, id }: { kind: "assessment" | "infra"; id: string }) => {
+      const table = kind === "infra" ? "infrastructure_assessments" : "association_assessments";
+      const { error } = await supabase.from(table).delete().eq("id", id);
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      toast.success("Formulário excluído.");
+      queryClient.invalidateQueries({ queryKey: ["filled-forms"] });
+      queryClient.invalidateQueries({ queryKey: ["association-existing-forms"] });
+    },
+    onError: (err: any) => toast.error(err?.message ?? "Falha ao excluir formulário."),
+  });
+
+
+
 
   return (
     <section className="mt-8 rounded-xl border border-border bg-card p-6 shadow-card md:p-8">
