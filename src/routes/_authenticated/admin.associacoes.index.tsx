@@ -769,7 +769,7 @@ function AssociationsPage() {
               <TableHead className="hidden md:table-cell">CNPJ</TableHead>
               <TableHead>Município</TableHead>
               <TableHead className="hidden sm:table-cell">Associados</TableHead>
-              <TableHead>Consultor</TableHead>
+              <TableHead>Usuário</TableHead>
               
               <TableHead className="w-24 text-right">Ações</TableHead>
             </TableRow>
