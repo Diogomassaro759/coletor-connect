@@ -93,6 +93,13 @@ function AssociationsPage() {
     | { modulo: "social" | "juridico" | "contabil" | "infraestrutura"; associationId: string; assessmentId: string | null; ownerId: string | null }
     | null
   >(null);
+  const canEditExistingPrompt =
+    !!existingPrompt &&
+    (isAdmin ||
+      isCoordenador ||
+      (isConsultant &&
+        existingPrompt.modulo !== "social" &&
+        (!existingPrompt.ownerId || existingPrompt.ownerId === currentUserId)));
 
   const [tipoFilter, setTipoFilter] = useState<"todas" | "cooperativa" | "associacao" | "coletivo">("todas");
   const [municipioFilter, setMunicipioFilter] = useState<string>("todos");
