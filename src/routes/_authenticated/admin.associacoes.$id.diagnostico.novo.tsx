@@ -1676,22 +1676,23 @@ function NewAssessment() {
                     />
                     <div className="space-y-3 md:col-span-2">
                       <p className="text-sm font-medium">Checklist obrigatório de evidências</p>
-                      <label className="flex items-center gap-3 text-sm">
-                        <Checkbox name="evidencia_frente_confirmada" required /> Foto da frente da
-                        entidade
-                      </label>
-                      <label className="flex items-center gap-3 text-sm">
-                        <Checkbox name="evidencia_administrativo_confirmada" required /> Foto da
-                        área administrativa/financeira/almoxarifado
-                      </label>
-                      <label className="flex items-center gap-3 text-sm">
-                        <Checkbox name="evidencia_reuniao_confirmada" required /> Foto da reunião ou
-                        entrevista
-                      </label>
-                      <label className="flex items-center gap-3 text-sm">
-                        <Checkbox name="evidencia_livro_trabalho_confirmada" required /> Foto da
-                        ficha ou livro de trabalho
-                      </label>
+                      <Evidence
+                        name="evidencia_frente_confirmada"
+                        label="Foto da frente da entidade"
+                      />
+                      <Evidence
+                        name="evidencia_administrativo_confirmada"
+                        label="Foto da área administrativa/financeira/almoxarifado"
+                      />
+                      <Evidence
+                        name="evidencia_reuniao_confirmada"
+                        label="Foto da reunião ou entrevista"
+                      />
+                      <Evidence
+                        name="evidencia_livro_trabalho_confirmada"
+                        label="Foto da ficha ou livro de trabalho"
+                      />
+
                     </div>
                   </Grid>
                 </Module>
