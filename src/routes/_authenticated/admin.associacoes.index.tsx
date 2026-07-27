@@ -829,8 +829,6 @@ function AssociationsPage() {
                           (isConsultant &&
                             areaForForm !== "social" &&
                             (!form.ownerId || form.ownerId === currentUserId)));
-                      const canOpenNew =
-                        !form && !blocked && areaForForm !== "social" && (isAdmin || isCoordenador || isConsultant);
                       return (
                         <DropdownMenu>
                           <DropdownMenuTrigger asChild>
@@ -880,19 +878,6 @@ function AssociationsPage() {
                             {!form && blocked && (
                               <DropdownMenuItem disabled onSelect={(e) => e.preventDefault()}>
                                 <Lock className="size-4 mr-2" /> Aguardando Social
-                              </DropdownMenuItem>
-                            )}
-                            {canOpenNew && (
-                              <DropdownMenuItem
-                                onSelect={() =>
-                                  navigate({
-                                    to: "/admin/associacoes/$id/diagnostico/novo",
-                                    params: { id: item.id },
-                                    search: { modulo: areaForForm },
-                                  })
-                                }
-                              >
-                                <ClipboardPlus className="size-4 mr-2" /> Abrir formulário
                               </DropdownMenuItem>
                             )}
                           </DropdownMenuContent>
