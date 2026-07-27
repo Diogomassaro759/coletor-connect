@@ -832,7 +832,10 @@ function AssociationsPage() {
                       return (
                         <DropdownMenu>
                           <DropdownMenuTrigger asChild>
-                            <Button variant="ghost" size="sm">Ações</Button>
+                            <Button variant="ghost" size="icon" aria-label="Ações">
+                              <MoreHorizontal className="size-4" />
+                            </Button>
+
                           </DropdownMenuTrigger>
                           <DropdownMenuContent align="end">
                             <DropdownMenuItem
