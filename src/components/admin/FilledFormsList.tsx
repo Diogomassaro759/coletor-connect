@@ -2,6 +2,14 @@ import { Link, useRouteContext } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
+import { MoreHorizontal } from "lucide-react";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+
 
 export function FilledFormsList({ associationId }: { associationId: string }) {
   const ctx = useRouteContext({ from: "/_authenticated" }) as any;
@@ -175,81 +183,64 @@ export function FilledFormsList({ associationId }: { associationId: string }) {
                   </td>
                   <td className="py-3 pr-4">{r.consultant_name ?? "—"}</td>
                   <td className="py-3 pr-4 text-right">
-                    {r.kind === "assessment" ? (
-                      <div className="flex justify-end gap-2">
-                        <Link
-                          to="/admin/associacoes/$id/diagnostico/novo"
-                          params={{ id: associationId }}
-                          search={{
-                            modulo: (r.area ?? "social") as any,
-                            assessmentId: r.id,
-                            mode: "view" as const,
-                          }}
-                        >
-                          <Button size="sm" variant="outline">Visualizar</Button>
-                        </Link>
-                        {canEditForm(r.area ?? "social", r.consultant_id ?? r.created_by) && (
-                          <Link
-                            to="/admin/associacoes/$id/diagnostico/novo"
-                            params={{ id: associationId }}
-                            search={{
-                              modulo: (r.area ?? "social") as any,
-                              assessmentId: r.id,
-                              mode: "edit" as const,
-                            }}
-                          >
-                            <Button size="sm">Editar</Button>
-                          </Link>
-                        )}
-                      </div>
-                    ) : r.kind === "infra" ? (
-                      <div className="flex justify-end gap-2">
-                        <Link
-                          to="/admin/associacoes/$id/diagnostico/novo"
-                          params={{ id: associationId }}
-                          search={{
-                            modulo: "infraestrutura" as const,
-                            assessmentId: r.id,
-                            mode: "view" as const,
-                          }}
-                        >
-                          <Button size="sm" variant="outline">Visualizar</Button>
-                        </Link>
-                        {canEditForm("infraestrutura", r.consultant_id) && (
-                          <Link
-                            to="/admin/associacoes/$id/diagnostico/novo"
-                            params={{ id: associationId }}
-                            search={{
-                              modulo: "infraestrutura" as const,
-                              assessmentId: r.id,
-                              mode: "edit" as const,
-                            }}
-                          >
-                            <Button size="sm">Editar</Button>
-                          </Link>
-                        )}
-                      </div>
-                    ) : (
-                      <div className="flex justify-end gap-2">
-                        <Link
-                          to="/admin/associacoes/$id/editar"
-                          params={{ id: associationId }}
-                          search={{ mode: "view" as const }}
-                        >
-                          <Button size="sm" variant="outline">Visualizar</Button>
-                        </Link>
-                        {canEditForm("social", r.created_by) && (
-                          <Link
-                            to="/admin/associacoes/$id/editar"
-                            params={{ id: associationId }}
-                          >
-                            <Button size="sm">Editar</Button>
-                          </Link>
-                        )}
-                      </div>
-                    )}
-
+                    {(() => {
+                      const isAssessment = r.kind === "assessment";
+                      const isInfra = r.kind === "infra";
+                      const modulo = isInfra
+                        ? "infraestrutura"
+                        : isAssessment
+                          ? (r.area ?? "social")
+                          : "social";
+                      const canEdit = isAssessment
+                        ? canEditForm(r.area ?? "social", r.consultant_id ?? r.created_by)
+                        : isInfra
+                          ? canEditForm("infraestrutura", r.consultant_id)
+                          : canEditForm("social", r.created_by);
+                      const viewLink =
+                        isAssessment || isInfra
+                          ? {
+                              to: "/admin/associacoes/$id/diagnostico/novo" as const,
+                              params: { id: associationId },
+                              search: { modulo: modulo as any, assessmentId: r.id, mode: "view" as const },
+                            }
+                          : {
+                              to: "/admin/associacoes/$id/editar" as const,
+                              params: { id: associationId },
+                              search: { mode: "view" as const },
+                            };
+                      const editLink =
+                        isAssessment || isInfra
+                          ? {
+                              to: "/admin/associacoes/$id/diagnostico/novo" as const,
+                              params: { id: associationId },
+                              search: { modulo: modulo as any, assessmentId: r.id, mode: "edit" as const },
+                            }
+                          : {
+                              to: "/admin/associacoes/$id/editar" as const,
+                              params: { id: associationId },
+                            };
+                      return (
+                        <DropdownMenu>
+                          <DropdownMenuTrigger asChild>
+                            <Button variant="ghost" size="icon" aria-label="Ações">
+                              <MoreHorizontal className="size-4" />
+                            </Button>
+                          </DropdownMenuTrigger>
+                          <DropdownMenuContent align="end">
+                            <DropdownMenuItem asChild>
+                              <Link {...(viewLink as any)}>Visualizar</Link>
+                            </DropdownMenuItem>
+                            {canEdit && (
+                              <DropdownMenuItem asChild>
+                                <Link {...(editLink as any)}>Editar</Link>
+                              </DropdownMenuItem>
+                            )}
+                          </DropdownMenuContent>
+                        </DropdownMenu>
+                      );
+                    })()}
                   </td>
+
                 </tr>
               ))
             )}
