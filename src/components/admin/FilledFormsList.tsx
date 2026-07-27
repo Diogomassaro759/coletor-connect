@@ -9,11 +9,12 @@ export function FilledFormsList({ associationId }: { associationId: string }) {
   const isAdmin = !!ctx?.isAdmin;
   const isConsultant = !!ctx?.isConsultant;
   const isCoordenador = !!ctx?.isCoordenador;
-  const canEditForm = (formArea: string | null | undefined) => {
+  const currentUserId = ctx?.user?.id as string | undefined;
+  const canEditForm = (formArea: string | null | undefined, ownerId?: string | null) => {
     if (isAdmin || isCoordenador) return true;
     if (!isConsultant) return true;
     if (!area || area === "social") return false;
-    return formArea === area;
+    return formArea === area && ownerId === currentUserId;
   };
   const areaLabels: Record<string, string> = {
     social: "Social",
@@ -33,7 +34,7 @@ export function FilledFormsList({ associationId }: { associationId: string }) {
         showAssessment
           ? supabase
               .from("association_assessments")
-              .select("id,data_visita,horario_visita,consultant_name,created_at,created_by,area")
+              .select("id,data_visita,horario_visita,consultant_name,created_at,created_by,consultant_id,area")
               .eq("association_id", associationId)
               .order("data_visita", { ascending: false })
           : Promise.resolve({ data: [] as any[] }),
@@ -60,6 +61,7 @@ export function FilledFormsList({ associationId }: { associationId: string }) {
         ...new Set(
           [
             ...assessmentRows.map((r) => r.created_by),
+            ...assessmentRows.map((r) => r.consultant_id),
             ...infraRows.map((r: any) => r.consultant_id),
             assocRow?.created_by,
           ].filter(Boolean),
@@ -115,6 +117,7 @@ export function FilledFormsList({ associationId }: { associationId: string }) {
           return {
           ...r,
           consultant_name: r.consultant_name ?? creatorNames[r.created_by] ?? null,
+          consultant_name: r.consultant_name ?? creatorNames[r.consultant_id] ?? creatorNames[r.created_by] ?? null,
           formulario: areaLabels[formArea] ?? "Social",
           kind: "assessment" as const,
           };
@@ -186,7 +189,7 @@ export function FilledFormsList({ associationId }: { associationId: string }) {
                         >
                           <Button size="sm" variant="outline">Visualizar</Button>
                         </Link>
-                        {canEditForm(r.area ?? "social") && (
+                        {canEditForm(r.area ?? "social", r.consultant_id ?? r.created_by) && (
                           <Link
                             to="/admin/associacoes/$id/diagnostico/novo"
                             params={{ id: associationId }}
@@ -213,7 +216,7 @@ export function FilledFormsList({ associationId }: { associationId: string }) {
                         >
                           <Button size="sm" variant="outline">Visualizar</Button>
                         </Link>
-                        {canEditForm("infraestrutura") && (
+                        {canEditForm("infraestrutura", r.consultant_id) && (
                           <Link
                             to="/admin/associacoes/$id/diagnostico/novo"
                             params={{ id: associationId }}
@@ -236,7 +239,7 @@ export function FilledFormsList({ associationId }: { associationId: string }) {
                         >
                           <Button size="sm" variant="outline">Visualizar</Button>
                         </Link>
-                        {canEditForm("social") && (
+                        {canEditForm("social", r.created_by) && (
                           <Link
                             to="/admin/associacoes/$id/editar"
                             params={{ id: associationId }}
