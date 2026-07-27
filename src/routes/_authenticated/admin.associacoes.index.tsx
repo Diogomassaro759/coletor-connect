@@ -877,7 +877,7 @@ function AssociationsPage() {
                             >
                               <Pencil className="size-4 mr-2" /> Editar
                             </DropdownMenuItem>
-                            {!form && blocked && areaForForm !== "social" && (
+                            {!form && blocked && (
                               <DropdownMenuItem disabled onSelect={(e) => e.preventDefault()}>
                                 <Lock className="size-4 mr-2" /> Aguardando Social
                               </DropdownMenuItem>
