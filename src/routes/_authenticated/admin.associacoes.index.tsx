@@ -767,7 +767,6 @@ function AssociationsPage() {
               <TableHead>Município</TableHead>
               <TableHead className="hidden sm:table-cell">Associados</TableHead>
               <TableHead>Consultor</TableHead>
-              <TableHead>Situação</TableHead>
               
               <TableHead className="w-24 text-right">Ações</TableHead>
             </TableRow>
@@ -775,14 +774,14 @@ function AssociationsPage() {
           <TableBody>
             {isLoading && (
               <TableRow>
-                <TableCell colSpan={7} className="py-12 text-center text-muted-foreground">
+                <TableCell colSpan={6} className="py-12 text-center text-muted-foreground">
                   Carregando entidades...
                 </TableCell>
               </TableRow>
             )}
             {!isLoading && filtered.length === 0 && (
               <TableRow>
-                <TableCell colSpan={7} className="py-16 text-center">
+                <TableCell colSpan={6} className="py-16 text-center">
                   <Building2 className="mx-auto mb-3 size-10 text-muted-foreground" />
                   <p className="text-muted-foreground">Nenhuma entidade encontrada.</p>
                 </TableCell>
@@ -790,8 +789,6 @@ function AssociationsPage() {
             )}
 
             {filtered.map((item) => {
-              const latest = latestByAssoc.get(item.id);
-              const situacao = latest?.status ?? null;
               return (
                 <TableRow key={item.id} className="hover:bg-muted/40">
                   <TableCell>
@@ -812,15 +809,6 @@ function AssociationsPage() {
                       <span>{item.consultor_nome}</span>
                     ) : (
                       <span className="text-xs text-muted-foreground">—</span>
-                    )}
-                  </TableCell>
-                  <TableCell>
-                    {situacao ? (
-                      <Badge variant="outline" className={SITUACAO_TONE[situacao] ?? ""}>
-                        {SITUACAO_LABEL[situacao]}
-                      </Badge>
-                    ) : (
-                      <span className="text-xs text-muted-foreground">Sem diagnóstico</span>
                     )}
                   </TableCell>
 
