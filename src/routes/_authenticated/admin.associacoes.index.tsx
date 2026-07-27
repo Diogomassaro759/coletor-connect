@@ -1,7 +1,7 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
-import { ArrowRight, Building2, ClipboardPlus, Download, Eye, HardHat, Lock, MoreHorizontal, Pencil, Plus, Scale, Search, Trash2, Users, Users2, Wallet } from "lucide-react";
+import { ArrowRight, Building2, ClipboardPlus, Download, Eye, FileText, HardHat, Lock, MoreHorizontal, Pencil, Plus, Scale, Search, Trash2, Users, Users2, Wallet } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 import { toast } from "sonner";
 import { AdminShell } from "@/components/admin/AdminShell";
