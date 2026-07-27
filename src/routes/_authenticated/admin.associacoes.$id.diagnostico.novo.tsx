@@ -40,6 +40,8 @@ import { supabase } from "@/integrations/supabase/client";
 import { MATERIAIS_OPTIONS } from "@/lib/catador-constants";
 
 const FormReadOnlyContext = createContext(false);
+const FormSavedValuesContext = createContext<Record<string, any> | null>(null);
+
 
 export const Route = createFileRoute("/_authenticated/admin/associacoes/$id/diagnostico/novo")({
   beforeLoad: ({ context }) => {
