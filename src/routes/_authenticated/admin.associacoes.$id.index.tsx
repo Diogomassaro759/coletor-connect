@@ -253,8 +253,7 @@ function AssociationDetails() {
                     <p className="mb-8 text-sm leading-relaxed text-muted-foreground">{m.descricao}</p>
                     <div className="mt-auto">
                       {(() => {
-                        // Social é criado junto com a entidade — sempre considerado preenchido
-                        const jaExiste = k === "social" || existingByArea[k] !== undefined;
+                        const jaExiste = existingByArea[k] !== undefined;
                         return (
                           <button
                             type="button"
