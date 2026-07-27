@@ -1,7 +1,7 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
-import { ArrowRight, Building2, ClipboardPlus, Download, Eye, HardHat, Lock, Pencil, Plus, Scale, Search, Users, Users2, Wallet } from "lucide-react";
+import { ArrowRight, Building2, ClipboardPlus, Download, Eye, HardHat, Lock, MoreHorizontal, Pencil, Plus, Scale, Search, Users, Users2, Wallet } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 import { toast } from "sonner";
 import { AdminShell } from "@/components/admin/AdminShell";
@@ -832,7 +832,10 @@ function AssociationsPage() {
                       return (
                         <DropdownMenu>
                           <DropdownMenuTrigger asChild>
-                            <Button variant="ghost" size="sm">Ações</Button>
+                            <Button variant="ghost" size="icon" aria-label="Ações">
+                              <MoreHorizontal className="size-4" />
+                            </Button>
+
                           </DropdownMenuTrigger>
                           <DropdownMenuContent align="end">
                             <DropdownMenuItem
