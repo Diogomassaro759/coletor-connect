@@ -20,6 +20,7 @@ function AuthPage() {
   const [loading, setLoading] = useState(false);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
 
   async function goPostLogin(userId: string) {
     const [{ data: profile }, { data: roles }] = await Promise.all([
