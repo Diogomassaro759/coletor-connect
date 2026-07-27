@@ -90,9 +90,16 @@ function AssociationsPage() {
   const [entitySearch, setEntitySearch] = useState("");
   const [pendingModulo, setPendingModulo] = useState<"social" | "juridico" | "contabil" | "infraestrutura" | null>(null);
   const [existingPrompt, setExistingPrompt] = useState<
-    | { modulo: "social" | "juridico" | "contabil" | "infraestrutura"; associationId: string; assessmentId: string | null }
+    | { modulo: "social" | "juridico" | "contabil" | "infraestrutura"; associationId: string; assessmentId: string | null; ownerId: string | null }
     | null
   >(null);
+  const canEditExistingPrompt =
+    !!existingPrompt &&
+    (isAdmin ||
+      isCoordenador ||
+      (isConsultant &&
+        existingPrompt.modulo !== "social" &&
+        (!existingPrompt.ownerId || existingPrompt.ownerId === currentUserId)));
 
   const [tipoFilter, setTipoFilter] = useState<"todas" | "cooperativa" | "associacao" | "coletivo">("todas");
   const [municipioFilter, setMunicipioFilter] = useState<string>("todos");
@@ -659,20 +666,25 @@ function AssociationsPage() {
                 if (modulo === "infraestrutura") {
                   const { data: existing } = await supabase
                     .from("infrastructure_assessments")
-                    .select("id")
+                    .select("id,consultant_id")
                     .eq("association_id", id)
                     .maybeSingle();
                   if (existing?.id) {
                     setPendingModulo(null);
                     setSelectedEntity("");
                     setEntitySearch("");
-                    setExistingPrompt({ modulo, associationId: id, assessmentId: null });
+                    setExistingPrompt({
+                      modulo,
+                      associationId: id,
+                      assessmentId: null,
+                      ownerId: (existing as any).consultant_id ?? null,
+                    });
                     return;
                   }
                 } else {
                   const { data: existing } = await supabase
                     .from("association_assessments")
-                    .select("id")
+                    .select("id,consultant_id,created_by")
                     .eq("association_id", id)
                     .eq("area", modulo)
                     .maybeSingle();
@@ -680,7 +692,12 @@ function AssociationsPage() {
                     setPendingModulo(null);
                     setSelectedEntity("");
                     setEntitySearch("");
-                    setExistingPrompt({ modulo, associationId: id, assessmentId: existing.id });
+                    setExistingPrompt({
+                      modulo,
+                      associationId: id,
+                      assessmentId: existing.id,
+                      ownerId: (existing as any).consultant_id ?? (existing as any).created_by ?? null,
+                    });
                     return;
                   }
                 }
@@ -721,32 +738,39 @@ function AssociationsPage() {
               <span className="font-medium text-foreground">
                 {existingPrompt ? moduloLabel[existingPrompt.modulo] : ""}
               </span>{" "}
-              para esta entidade. Deseja editar o formulário existente?
+              para esta entidade.{" "}
+              {canEditExistingPrompt
+                ? "Deseja editar o formulário existente?"
+                : "Ele foi preenchido por outro usuário e não pode ser editado por você."}
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter className="sm:justify-center gap-2">
-            <AlertDialogCancel className="mt-0">Não, voltar</AlertDialogCancel>
-            <AlertDialogAction
-              onClick={() => {
-                if (!existingPrompt) return;
-                const { modulo, associationId, assessmentId } = existingPrompt;
-                setExistingPrompt(null);
-                if (modulo === "infraestrutura") {
-                  navigate({
-                    to: "/admin/associacoes/$id",
-                    params: { id: associationId },
-                  });
-                } else if (assessmentId) {
-                  navigate({
-                    to: "/admin/associacoes/$id/diagnostico/$assessmentId",
-                    params: { id: associationId, assessmentId },
-                    search: { mode: "edit" },
-                  });
-                }
-              }}
-            >
-              Sim, editar
-            </AlertDialogAction>
+            <AlertDialogCancel className="mt-0">
+              {canEditExistingPrompt ? "Não, voltar" : "Voltar"}
+            </AlertDialogCancel>
+            {canEditExistingPrompt && (
+              <AlertDialogAction
+                onClick={() => {
+                  if (!existingPrompt) return;
+                  const { modulo, associationId, assessmentId } = existingPrompt;
+                  setExistingPrompt(null);
+                  if (modulo === "infraestrutura") {
+                    navigate({
+                      to: "/admin/associacoes/$id",
+                      params: { id: associationId },
+                    });
+                  } else if (assessmentId) {
+                    navigate({
+                      to: "/admin/associacoes/$id/diagnostico/$assessmentId",
+                      params: { id: associationId, assessmentId },
+                      search: { mode: "edit" },
+                    });
+                  }
+                }}
+              >
+                Sim, editar
+              </AlertDialogAction>
+            )}
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
