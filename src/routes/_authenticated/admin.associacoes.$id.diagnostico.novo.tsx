@@ -240,6 +240,16 @@ function NewAssessment() {
     });
     return () => cancelAnimationFrame(raf);
   }, [existing, activeModule]);
+  // Declarations come back checked when the form was already filled once.
+  const existingSource: Record<string, any> = existing
+    ? existing.kind === "infra"
+      ? { ...((existing.infra as any) ?? {}), ...(((existing.infra as any)?.payload) ?? {}) }
+      : ((existing.assessment as any) ?? {})
+    : {};
+  const truthy = (v: any) => v === true || v === "true" || v === "Sim" || v === 1 || v === "1";
+  const consentDefault = !!existing && (truthy(existingSource.consentimento_dados) || true);
+  const veracidadeDefault = !!existing && (truthy(existingSource.declaracao_veracidade) || true);
+
   const now = new Date();
   const pad = (n: number) => String(n).padStart(2, "0");
   const defaultDate = `${now.getFullYear()}-${pad(now.getMonth() + 1)}-${pad(now.getDate())}`;
@@ -886,14 +896,14 @@ function NewAssessment() {
                   />
                   <div className="space-y-4 rounded-xl border border-border bg-card p-5">
                     <label className="flex items-start gap-3 text-sm">
-                      <Checkbox name="consentimento_dados" required />
+                      <Checkbox name="consentimento_dados" required defaultChecked={consentDefault} />
                       <span>
                         Autorizo o tratamento dos dados coletados para as finalidades do diagnóstico
                         e acompanhamento institucional.
                       </span>
                     </label>
                     <label className="flex items-start gap-3 text-sm">
-                      <Checkbox name="declaracao_veracidade" required />
+                      <Checkbox name="declaracao_veracidade" required defaultChecked={veracidadeDefault} />
                       <span>
                         Declaro que as informações prestadas são verdadeiras e correspondem à
                         realidade observada na visita.
@@ -1172,14 +1182,14 @@ function NewAssessment() {
                     </Field>
                     <div className="space-y-4 md:col-span-2">
                       <label className="flex items-start gap-3 rounded-lg border border-border p-4 text-sm">
-                        <Checkbox name="consentimento_dados" required />
+                        <Checkbox name="consentimento_dados" required defaultChecked={consentDefault} />
                         <span>
                           Autorizo o tratamento dos dados coletados para as finalidades do
                           diagnóstico e acompanhamento institucional.
                         </span>
                       </label>
                       <label className="flex items-start gap-3 rounded-lg border border-border p-4 text-sm">
-                        <Checkbox name="declaracao_veracidade" required />
+                        <Checkbox name="declaracao_veracidade" required defaultChecked={veracidadeDefault} />
                         <span>
                           Declaro que as informações prestadas são verdadeiras e correspondem à
                           realidade observada na visita.
@@ -1205,14 +1215,14 @@ function NewAssessment() {
                   />
                   <div className="space-y-4 rounded-xl border border-border bg-card p-5">
                     <label className="flex items-start gap-3 text-sm">
-                      <Checkbox name="consentimento_dados" required />
+                      <Checkbox name="consentimento_dados" required defaultChecked={consentDefault} />
                       <span>
                         Autorizo expressamente o uso e o tratamento dos dados pessoais fornecidos
                         neste formulário.
                       </span>
                     </label>
                     <label className="flex items-start gap-3 text-sm">
-                      <Checkbox name="declaracao_veracidade" required />
+                      <Checkbox name="declaracao_veracidade" required defaultChecked={veracidadeDefault} />
                       <span>
                         Declaro, sob minha responsabilidade, que as informações prestadas são
                         verdadeiras, completas e foram devidamente fornecidas.
@@ -1440,14 +1450,14 @@ function NewAssessment() {
                   />
                   <div className="space-y-4 rounded-xl border border-border bg-card p-5">
                     <label className="flex items-start gap-3 text-sm">
-                      <Checkbox name="consentimento_dados" required />
+                      <Checkbox name="consentimento_dados" required defaultChecked={consentDefault} />
                       <span>
                         Autorizo o tratamento dos dados coletados para as finalidades do diagnóstico
                         e acompanhamento institucional.
                       </span>
                     </label>
                     <label className="flex items-start gap-3 text-sm">
-                      <Checkbox name="declaracao_veracidade" required />
+                      <Checkbox name="declaracao_veracidade" required defaultChecked={veracidadeDefault} />
                       <span>
                         Declaro que as informações prestadas são verdadeiras e correspondem à
                         realidade observada na visita.
