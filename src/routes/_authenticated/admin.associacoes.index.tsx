@@ -829,8 +829,6 @@ function AssociationsPage() {
                           (isConsultant &&
                             areaForForm !== "social" &&
                             (!form.ownerId || form.ownerId === currentUserId)));
-                      const canOpenNew =
-                        !form && !blocked && areaForForm !== "social" && (isAdmin || isCoordenador || isConsultant);
                       return (
                         <DropdownMenu>
                           <DropdownMenuTrigger asChild>
