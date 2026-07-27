@@ -90,7 +90,7 @@ function AssociationsPage() {
   const [entitySearch, setEntitySearch] = useState("");
   const [pendingModulo, setPendingModulo] = useState<"social" | "juridico" | "contabil" | "infraestrutura" | null>(null);
   const [existingPrompt, setExistingPrompt] = useState<
-    | { modulo: "social" | "juridico" | "contabil" | "infraestrutura"; associationId: string; assessmentId: string | null }
+    | { modulo: "social" | "juridico" | "contabil" | "infraestrutura"; associationId: string; assessmentId: string | null; ownerId: string | null }
     | null
   >(null);
 
@@ -659,20 +659,25 @@ function AssociationsPage() {
                 if (modulo === "infraestrutura") {
                   const { data: existing } = await supabase
                     .from("infrastructure_assessments")
-                    .select("id")
+                    .select("id,consultant_id")
                     .eq("association_id", id)
                     .maybeSingle();
                   if (existing?.id) {
                     setPendingModulo(null);
                     setSelectedEntity("");
                     setEntitySearch("");
-                    setExistingPrompt({ modulo, associationId: id, assessmentId: null });
+                    setExistingPrompt({
+                      modulo,
+                      associationId: id,
+                      assessmentId: null,
+                      ownerId: (existing as any).consultant_id ?? null,
+                    });
                     return;
                   }
                 } else {
                   const { data: existing } = await supabase
                     .from("association_assessments")
-                    .select("id")
+                    .select("id,consultant_id,created_by")
                     .eq("association_id", id)
                     .eq("area", modulo)
                     .maybeSingle();
@@ -680,7 +685,12 @@ function AssociationsPage() {
                     setPendingModulo(null);
                     setSelectedEntity("");
                     setEntitySearch("");
-                    setExistingPrompt({ modulo, associationId: id, assessmentId: existing.id });
+                    setExistingPrompt({
+                      modulo,
+                      associationId: id,
+                      assessmentId: existing.id,
+                      ownerId: (existing as any).consultant_id ?? (existing as any).created_by ?? null,
+                    });
                     return;
                   }
                 }
