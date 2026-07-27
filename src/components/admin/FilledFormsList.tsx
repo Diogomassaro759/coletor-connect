@@ -122,18 +122,7 @@ export function FilledFormsList({ associationId }: { associationId: string }) {
       });
 
       const list = [
-        ...(showSocial && assocRow
-          ? [{
-              id: assocRow.id,
-              data_visita: assocRow.data_visita,
-              horario_visita: assocRow.horario_visita,
-              consultant_name: creatorNames[assocRow.created_by] ?? null,
-              created_at: assocRow.created_at,
-              created_by: assocRow.created_by,
-              formulario: "Social",
-              kind: "social-entity" as const,
-            }]
-          : []),
+
         ...visibleAssessmentRows.map((r) => {
           const formArea = r.area ?? creatorAreas[r.created_by] ?? "social";
           return {
