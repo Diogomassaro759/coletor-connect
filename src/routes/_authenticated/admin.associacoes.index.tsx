@@ -731,32 +731,39 @@ function AssociationsPage() {
               <span className="font-medium text-foreground">
                 {existingPrompt ? moduloLabel[existingPrompt.modulo] : ""}
               </span>{" "}
-              para esta entidade. Deseja editar o formulário existente?
+              para esta entidade.{" "}
+              {canEditExistingPrompt
+                ? "Deseja editar o formulário existente?"
+                : "Ele foi preenchido por outro usuário e não pode ser editado por você."}
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter className="sm:justify-center gap-2">
-            <AlertDialogCancel className="mt-0">Não, voltar</AlertDialogCancel>
-            <AlertDialogAction
-              onClick={() => {
-                if (!existingPrompt) return;
-                const { modulo, associationId, assessmentId } = existingPrompt;
-                setExistingPrompt(null);
-                if (modulo === "infraestrutura") {
-                  navigate({
-                    to: "/admin/associacoes/$id",
-                    params: { id: associationId },
-                  });
-                } else if (assessmentId) {
-                  navigate({
-                    to: "/admin/associacoes/$id/diagnostico/$assessmentId",
-                    params: { id: associationId, assessmentId },
-                    search: { mode: "edit" },
-                  });
-                }
-              }}
-            >
-              Sim, editar
-            </AlertDialogAction>
+            <AlertDialogCancel className="mt-0">
+              {canEditExistingPrompt ? "Não, voltar" : "Voltar"}
+            </AlertDialogCancel>
+            {canEditExistingPrompt && (
+              <AlertDialogAction
+                onClick={() => {
+                  if (!existingPrompt) return;
+                  const { modulo, associationId, assessmentId } = existingPrompt;
+                  setExistingPrompt(null);
+                  if (modulo === "infraestrutura") {
+                    navigate({
+                      to: "/admin/associacoes/$id",
+                      params: { id: associationId },
+                    });
+                  } else if (assessmentId) {
+                    navigate({
+                      to: "/admin/associacoes/$id/diagnostico/$assessmentId",
+                      params: { id: associationId, assessmentId },
+                      search: { mode: "edit" },
+                    });
+                  }
+                }}
+              >
+                Sim, editar
+              </AlertDialogAction>
+            )}
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
