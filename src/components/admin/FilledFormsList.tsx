@@ -1,14 +1,28 @@
 import { Link, useRouteContext } from "@tanstack/react-router";
-import { useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
-import { MoreHorizontal } from "lucide-react";
+import { MoreHorizontal, Trash2 } from "lucide-react";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
+  DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
+
 
 
 export function FilledFormsList({ associationId }: { associationId: string }) {
@@ -144,6 +158,23 @@ export function FilledFormsList({ associationId }: { associationId: string }) {
     },
   });
 
+  const queryClient = useQueryClient();
+  const deleteFormMutation = useMutation({
+    mutationFn: async ({ kind, id }: { kind: "assessment" | "infra"; id: string }) => {
+      const table = kind === "infra" ? "infrastructure_assessments" : "association_assessments";
+      const { error } = await supabase.from(table).delete().eq("id", id);
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      toast.success("Formulário excluído.");
+      queryClient.invalidateQueries({ queryKey: ["filled-forms"] });
+      queryClient.invalidateQueries({ queryKey: ["association-existing-forms"] });
+    },
+    onError: (err: any) => toast.error(err?.message ?? "Falha ao excluir formulário."),
+  });
+
+
+
 
   return (
     <section className="mt-8 rounded-xl border border-border bg-card p-6 shadow-card md:p-8">
@@ -235,7 +266,47 @@ export function FilledFormsList({ associationId }: { associationId: string }) {
                                 <Link {...(editLink as any)}>Editar</Link>
                               </DropdownMenuItem>
                             )}
+                            {isAdmin && (isAssessment || isInfra) && (
+                              <>
+                                <DropdownMenuSeparator />
+                                <AlertDialog>
+                                  <AlertDialogTrigger asChild>
+                                    <DropdownMenuItem
+                                      onSelect={(e) => e.preventDefault()}
+                                      className="text-destructive focus:text-destructive"
+                                    >
+                                      <Trash2 className="size-4 mr-2" /> Excluir
+                                    </DropdownMenuItem>
+                                  </AlertDialogTrigger>
+                                  <AlertDialogContent>
+                                    <AlertDialogHeader>
+                                      <AlertDialogTitle>Excluir formulário?</AlertDialogTitle>
+                                      <AlertDialogDescription>
+                                        Esta ação é irreversível. O formulário{" "}
+                                        <strong>{r.formulario}</strong> será removido
+                                        permanentemente desta entidade.
+                                      </AlertDialogDescription>
+                                    </AlertDialogHeader>
+                                    <AlertDialogFooter>
+                                      <AlertDialogCancel>Cancelar</AlertDialogCancel>
+                                      <AlertDialogAction
+                                        onClick={() =>
+                                          deleteFormMutation.mutate({
+                                            kind: isInfra ? "infra" : "assessment",
+                                            id: r.id,
+                                          })
+                                        }
+                                        className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                                      >
+                                        Excluir
+                                      </AlertDialogAction>
+                                    </AlertDialogFooter>
+                                  </AlertDialogContent>
+                                </AlertDialog>
+                              </>
+                            )}
                           </DropdownMenuContent>
+
                         </DropdownMenu>
                       );
                     })()}
