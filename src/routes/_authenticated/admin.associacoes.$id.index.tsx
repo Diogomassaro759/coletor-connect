@@ -175,7 +175,7 @@ function AssociationDetails() {
         </div>
       </div>
 
-      {(isConsultant || isAdmin) && (() => {
+      {(isConsultant || isAdmin || isCoordenador) && (() => {
         const MODULE_STYLES = {
           social: {
             titulo: "Social",
