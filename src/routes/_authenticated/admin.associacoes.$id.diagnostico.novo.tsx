@@ -247,8 +247,9 @@ function NewAssessment() {
       : ((existing.assessment as any) ?? {})
     : {};
   const truthy = (v: any) => v === true || v === "true" || v === "Sim" || v === 1 || v === "1";
-  const consentDefault = !!existing && (truthy(existingSource.consentimento_dados) || true);
-  const veracidadeDefault = !!existing && (truthy(existingSource.declaracao_veracidade) || true);
+  // A saved record implies both declarations were accepted at submission time.
+  const consentDefault = !!existing && (truthy(existingSource.consentimento_dados) || existingSource.consentimento_dados == null || true);
+  const veracidadeDefault = !!existing;
 
   const now = new Date();
   const pad = (n: number) => String(n).padStart(2, "0");
