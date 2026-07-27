@@ -151,3 +151,13 @@
 @utility shadow-card {
   box-shadow: var(--shadow-card);
 }
+
+/* Oculta o ícone nativo de revelar senha do navegador (Edge/Chrome) */
+input[type="password"]::-ms-reveal,
+input[type="password"]::-ms-clear,
+input::-webkit-credentials-auto-fill-button,
+input::-webkit-strong-password-auto-fill-button {
+  display: none !important;
+  visibility: hidden;
+  pointer-events: none;
+}
