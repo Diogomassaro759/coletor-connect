@@ -40,6 +40,8 @@ import { supabase } from "@/integrations/supabase/client";
 import { MATERIAIS_OPTIONS } from "@/lib/catador-constants";
 
 const FormReadOnlyContext = createContext(false);
+const FormSavedValuesContext = createContext<Record<string, any> | null>(null);
+
 
 export const Route = createFileRoute("/_authenticated/admin/associacoes/$id/diagnostico/novo")({
   beforeLoad: ({ context }) => {
@@ -791,6 +793,8 @@ function NewAssessment() {
           Selecione o tipo de cadastro e preencha o formulário correspondente ao documento de campo.
         </p>
         <FormReadOnlyContext.Provider value={readOnly}>
+        <FormSavedValuesContext.Provider value={existing ? existingSource : null}>
+
         <form ref={formRef} onSubmit={submit} className="mt-7" key={existing ? "loaded" : "empty"}>
           <fieldset disabled={readOnly} className="contents">
           <div className="mb-6 grid gap-4 rounded-xl border border-border bg-card p-5 shadow-card md:grid-cols-4">
@@ -1672,22 +1676,23 @@ function NewAssessment() {
                     />
                     <div className="space-y-3 md:col-span-2">
                       <p className="text-sm font-medium">Checklist obrigatório de evidências</p>
-                      <label className="flex items-center gap-3 text-sm">
-                        <Checkbox name="evidencia_frente_confirmada" required /> Foto da frente da
-                        entidade
-                      </label>
-                      <label className="flex items-center gap-3 text-sm">
-                        <Checkbox name="evidencia_administrativo_confirmada" required /> Foto da
-                        área administrativa/financeira/almoxarifado
-                      </label>
-                      <label className="flex items-center gap-3 text-sm">
-                        <Checkbox name="evidencia_reuniao_confirmada" required /> Foto da reunião ou
-                        entrevista
-                      </label>
-                      <label className="flex items-center gap-3 text-sm">
-                        <Checkbox name="evidencia_livro_trabalho_confirmada" required /> Foto da
-                        ficha ou livro de trabalho
-                      </label>
+                      <Evidence
+                        name="evidencia_frente_confirmada"
+                        label="Foto da frente da entidade"
+                      />
+                      <Evidence
+                        name="evidencia_administrativo_confirmada"
+                        label="Foto da área administrativa/financeira/almoxarifado"
+                      />
+                      <Evidence
+                        name="evidencia_reuniao_confirmada"
+                        label="Foto da reunião ou entrevista"
+                      />
+                      <Evidence
+                        name="evidencia_livro_trabalho_confirmada"
+                        label="Foto da ficha ou livro de trabalho"
+                      />
+
                     </div>
                   </Grid>
                 </Module>
@@ -1703,7 +1708,9 @@ function NewAssessment() {
             </div>
           )}
         </form>
+        </FormSavedValuesContext.Provider>
         </FormReadOnlyContext.Provider>
+
       </div>
     </AdminShell>
   );
@@ -2464,13 +2471,17 @@ function CompactChoice({
   );
 }
 function Evidence({ name, label }: { name: string; label: string }) {
+  const saved = useContext(FormSavedValuesContext);
+  // A saved record implies the checklist was confirmed at submission time.
+  const defaultChecked = saved ? (name in saved ? !!saved[name] : true) : false;
   return (
     <label className="flex items-start gap-3 text-sm">
-      <Checkbox name={name} required />
+      <Checkbox name={name} required defaultChecked={defaultChecked} />
       <span>{label}</span>
     </label>
   );
 }
+
 
 function LegalSection({
   number,
