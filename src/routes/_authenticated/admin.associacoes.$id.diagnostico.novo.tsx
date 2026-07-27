@@ -246,9 +246,9 @@ function NewAssessment() {
       ? { ...((existing.infra as any) ?? {}), ...(((existing.infra as any)?.payload) ?? {}) }
       : ((existing.assessment as any) ?? {})
     : {};
-  const truthy = (v: any) => v === true || v === "true" || v === "Sim" || v === 1 || v === "1";
+  void existingSource;
   // A saved record implies both declarations were accepted at submission time.
-  const consentDefault = !!existing && (truthy(existingSource.consentimento_dados) || existingSource.consentimento_dados == null || true);
+  const consentDefault = !!existing;
   const veracidadeDefault = !!existing;
 
   const now = new Date();
