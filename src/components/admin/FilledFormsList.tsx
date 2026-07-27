@@ -266,7 +266,47 @@ export function FilledFormsList({ associationId }: { associationId: string }) {
                                 <Link {...(editLink as any)}>Editar</Link>
                               </DropdownMenuItem>
                             )}
+                            {isAdmin && (isAssessment || isInfra) && (
+                              <>
+                                <DropdownMenuSeparator />
+                                <AlertDialog>
+                                  <AlertDialogTrigger asChild>
+                                    <DropdownMenuItem
+                                      onSelect={(e) => e.preventDefault()}
+                                      className="text-destructive focus:text-destructive"
+                                    >
+                                      <Trash2 className="size-4 mr-2" /> Excluir
+                                    </DropdownMenuItem>
+                                  </AlertDialogTrigger>
+                                  <AlertDialogContent>
+                                    <AlertDialogHeader>
+                                      <AlertDialogTitle>Excluir formulário?</AlertDialogTitle>
+                                      <AlertDialogDescription>
+                                        Esta ação é irreversível. O formulário{" "}
+                                        <strong>{r.formulario}</strong> será removido
+                                        permanentemente desta entidade.
+                                      </AlertDialogDescription>
+                                    </AlertDialogHeader>
+                                    <AlertDialogFooter>
+                                      <AlertDialogCancel>Cancelar</AlertDialogCancel>
+                                      <AlertDialogAction
+                                        onClick={() =>
+                                          deleteFormMutation.mutate({
+                                            kind: isInfra ? "infra" : "assessment",
+                                            id: r.id,
+                                          })
+                                        }
+                                        className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                                      >
+                                        Excluir
+                                      </AlertDialogAction>
+                                    </AlertDialogFooter>
+                                  </AlertDialogContent>
+                                </AlertDialog>
+                              </>
+                            )}
                           </DropdownMenuContent>
+
                         </DropdownMenu>
                       );
                     })()}
