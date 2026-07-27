@@ -150,24 +150,27 @@ function AssociationsPage() {
       if (areaKey === "infraestrutura") {
         const { data, error } = await supabase
           .from("infrastructure_assessments")
-          .select("id,association_id")
+          .select("id,association_id,consultant_id")
           .order("created_at", { ascending: false });
         if (error) throw error;
-        return (data ?? []) as { id: string; association_id: string }[];
+        return (data ?? []) as any[];
       }
       const { data, error } = await supabase
         .from("association_assessments")
-        .select("id,association_id,area")
+        .select("id,association_id,area,consultant_id,created_by")
         .eq("area", areaKey as any)
         .order("created_at", { ascending: false });
       if (error) throw error;
-      return (data ?? []) as { id: string; association_id: string }[];
+      return (data ?? []) as any[];
     },
   });
 
   const areaFormByAssoc = useMemo(() => {
-    const map = new Map<string, string>();
-    for (const f of areaForms as any[]) if (!map.has(f.association_id)) map.set(f.association_id, f.id);
+    const map = new Map<string, { id: string; ownerId: string | null }>();
+    for (const f of areaForms as any[]) {
+      if (!map.has(f.association_id))
+        map.set(f.association_id, { id: f.id, ownerId: f.consultant_id ?? f.created_by ?? null });
+    }
     return map;
   }, [areaForms]);
 
@@ -814,161 +817,88 @@ function AssociationsPage() {
 
 
                   <TableCell className="text-right">
-                    {isConsultant ? (
-                      (() => {
-                        const requiresSocial = areaForForm !== "social";
-                        const hasSocial = socialSet.has(item.id);
-                        const blocked = requiresSocial && !hasSocial;
-                        const existingFormId = areaFormByAssoc.get(item.id);
-                        return (
-                          <DropdownMenu>
-                            <DropdownMenuTrigger asChild>
-                              <Button variant="ghost" size="sm">Ações</Button>
-                            </DropdownMenuTrigger>
-                            <DropdownMenuContent align="end">
-                              <DropdownMenuItem
-                                onSelect={() =>
-                                  navigate({
-                                    to: "/admin/associacoes/$id/editar",
-                                    params: { id: item.id },
-                                    search: { mode: "view" },
-                                  })
-                                }
-                              >
-                                <Eye className="size-4 mr-2" /> Visualizar
-                              </DropdownMenuItem>
-                              {(isAdmin || isCoordenador || item.created_by === currentUserId) && (
-                                <DropdownMenuItem
-                                  onSelect={() =>
-                                    navigate({
-                                      to: "/admin/associacoes/$id/editar",
-                                      params: { id: item.id },
-                                    })
-                                  }
-                                >
-                                  <Pencil className="size-4 mr-2" /> Editar
-                                </DropdownMenuItem>
-                              )}
-                              {existingFormId ? (
-                                <DropdownMenuItem
-                                  onSelect={() =>
-                                    navigate({
-                                      to: "/admin/associacoes/$id/diagnostico/novo",
-                                      params: { id: item.id },
-                                      search: {
-                                        modulo: areaForForm,
-                                        assessmentId: existingFormId,
-                                        mode: "edit",
-                                      } as any,
-                                    })
-                                  }
-                                >
-                                  <Pencil className="size-4 mr-2" /> Editar formulário
-                                </DropdownMenuItem>
-                              ) : (
-                                areaForForm !== "social" && (
-                                  blocked ? (
-                                    <DropdownMenuItem disabled onSelect={(e) => e.preventDefault()}>
-                                      <Lock className="size-4 mr-2" /> Aguardando Social
-                                    </DropdownMenuItem>
-                                  ) : (
-                                    <DropdownMenuItem
-                                      onSelect={() =>
-                                        navigate({
-                                          to: "/admin/associacoes/$id/diagnostico/novo",
-                                          params: { id: item.id },
-                                          search: { modulo: areaForForm },
-                                        })
-                                      }
-                                    >
-                                      <ClipboardPlus className="size-4 mr-2" /> Abrir formulário
-                                    </DropdownMenuItem>
-                                  )
-                                )
-                              )}
-                            </DropdownMenuContent>
-                          </DropdownMenu>
-                        );
-                      })()
-                    ) : (
-                      <DropdownMenu>
-                        <DropdownMenuTrigger asChild>
-                          <Button variant="ghost" size="sm">Ações</Button>
-                        </DropdownMenuTrigger>
-                        <DropdownMenuContent align="end">
-                          <DropdownMenuItem
-                            onSelect={() =>
-                              navigate({
-                                to: "/admin/associacoes/$id/editar",
-                                params: { id: item.id },
-                                search: { mode: "view" },
-                              })
-                            }
-                          >
-                            <Eye className="size-4 mr-2" /> Visualizar
-                          </DropdownMenuItem>
-                          {(isAdmin || isCoordenador) && (
+                    {(() => {
+                      const form = areaFormByAssoc.get(item.id);
+                      const requiresSocial = areaForForm !== "social";
+                      const blocked = requiresSocial && !socialSet.has(item.id);
+                      // Consultor social is view-only on filled forms.
+                      const canEditForm =
+                        !!form &&
+                        (isAdmin ||
+                          isCoordenador ||
+                          (isConsultant &&
+                            areaForForm !== "social" &&
+                            (!form.ownerId || form.ownerId === currentUserId)));
+                      const canOpenNew =
+                        !form && !blocked && areaForForm !== "social" && (isAdmin || isCoordenador || isConsultant);
+                      return (
+                        <DropdownMenu>
+                          <DropdownMenuTrigger asChild>
+                            <Button variant="ghost" size="sm">Ações</Button>
+                          </DropdownMenuTrigger>
+                          <DropdownMenuContent align="end">
                             <DropdownMenuItem
-                              onSelect={() =>
+                              disabled={!form}
+                              onSelect={(e) => {
+                                if (!form) {
+                                  e.preventDefault();
+                                  return;
+                                }
                                 navigate({
-                                  to: "/admin/associacoes/$id/editar",
+                                  to: "/admin/associacoes/$id/diagnostico/novo",
                                   params: { id: item.id },
-                                })
-                              }
+                                  search: {
+                                    modulo: areaForForm,
+                                    assessmentId: form.id,
+                                    mode: "view",
+                                  } as any,
+                                });
+                              }}
+                            >
+                              <Eye className="size-4 mr-2" /> Visualizar
+                            </DropdownMenuItem>
+                            <DropdownMenuItem
+                              disabled={!canEditForm}
+                              onSelect={(e) => {
+                                if (!canEditForm || !form) {
+                                  e.preventDefault();
+                                  return;
+                                }
+                                navigate({
+                                  to: "/admin/associacoes/$id/diagnostico/novo",
+                                  params: { id: item.id },
+                                  search: {
+                                    modulo: areaForForm,
+                                    assessmentId: form.id,
+                                    mode: "edit",
+                                  } as any,
+                                });
+                              }}
                             >
                               <Pencil className="size-4 mr-2" /> Editar
                             </DropdownMenuItem>
-                          )}
-                          {isCoordenador && (
-                            (() => {
-                              const requiresSocial = areaForForm !== "social";
-                              const hasSocial = socialSet.has(item.id);
-                              const blocked = requiresSocial && !hasSocial;
-                              const existingFormId = areaFormByAssoc.get(item.id);
-                              if (existingFormId) {
-                                return (
-                                  <DropdownMenuItem
-                                    onSelect={() =>
-                                      navigate({
-                                        to: "/admin/associacoes/$id/diagnostico/novo",
-                                        params: { id: item.id },
-                                        search: {
-                                          modulo: areaForForm,
-                                          assessmentId: existingFormId,
-                                          mode: "edit",
-                                        } as any,
-                                      })
-                                    }
-                                  >
-                                    <Pencil className="size-4 mr-2" /> Editar formulário
-                                  </DropdownMenuItem>
-                                );
-                              }
-                              if (blocked) {
-                                return (
-                                  <DropdownMenuItem disabled onSelect={(e) => e.preventDefault()}>
-                                    <Lock className="size-4 mr-2" /> Aguardando cadastro Social
-                                  </DropdownMenuItem>
-                                );
-                              }
-                              return (
-                                <DropdownMenuItem
-                                  onSelect={() =>
-                                    navigate({
-                                      to: "/admin/associacoes/$id/diagnostico/novo",
-                                      params: { id: item.id },
-                                      search: { modulo: areaForForm },
-                                    })
-                                  }
-                                >
-                                  <ClipboardPlus className="size-4 mr-2" /> Abrir formulário
-                                </DropdownMenuItem>
-                              );
-                            })()
-                          )}
-                        </DropdownMenuContent>
-                      </DropdownMenu>
-                    )}
+                            {!form && blocked && areaForForm !== "social" && (
+                              <DropdownMenuItem disabled onSelect={(e) => e.preventDefault()}>
+                                <Lock className="size-4 mr-2" /> Aguardando Social
+                              </DropdownMenuItem>
+                            )}
+                            {canOpenNew && (
+                              <DropdownMenuItem
+                                onSelect={() =>
+                                  navigate({
+                                    to: "/admin/associacoes/$id/diagnostico/novo",
+                                    params: { id: item.id },
+                                    search: { modulo: areaForForm },
+                                  })
+                                }
+                              >
+                                <ClipboardPlus className="size-4 mr-2" /> Abrir formulário
+                              </DropdownMenuItem>
+                            )}
+                          </DropdownMenuContent>
+                        </DropdownMenu>
+                      );
+                    })()}
                   </TableCell>
 
                 </TableRow>
