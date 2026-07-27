@@ -882,19 +882,6 @@ function AssociationsPage() {
                                 <Lock className="size-4 mr-2" /> Aguardando Social
                               </DropdownMenuItem>
                             )}
-                            {canOpenNew && (
-                              <DropdownMenuItem
-                                onSelect={() =>
-                                  navigate({
-                                    to: "/admin/associacoes/$id/diagnostico/novo",
-                                    params: { id: item.id },
-                                    search: { modulo: areaForForm },
-                                  })
-                                }
-                              >
-                                <ClipboardPlus className="size-4 mr-2" /> Abrir formulário
-                              </DropdownMenuItem>
-                            )}
                           </DropdownMenuContent>
                         </DropdownMenu>
                       );
