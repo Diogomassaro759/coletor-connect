@@ -7,7 +7,14 @@ import { Button } from "@/components/ui/button";
 
 export const Route = createFileRoute("/_authenticated/admin/novo")({
   beforeLoad: ({ context }) => {
-    if (!context.isRecenseador) throw redirect({ to: "/admin" });
+    const ctx = context as unknown as {
+      isRecenseador?: boolean;
+      isAdmin?: boolean;
+      isCoordenadorRecenseador?: boolean;
+    };
+    if (!ctx.isRecenseador && !ctx.isAdmin && !ctx.isCoordenadorRecenseador) {
+      throw redirect({ to: "/admin" });
+    }
   },
   head: () => ({ meta: [{ title: "Novo catador — RecicladoresBR" }] }),
   component: NovoCatadorPage,
