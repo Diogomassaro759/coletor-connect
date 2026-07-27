@@ -1,7 +1,7 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
-import { useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
-import { ArrowRight, Building2, ClipboardPlus, Download, Eye, HardHat, Lock, MoreHorizontal, Pencil, Plus, Scale, Search, Users, Users2, Wallet } from "lucide-react";
+import { ArrowRight, Building2, ClipboardPlus, Download, Eye, HardHat, Lock, MoreHorizontal, Pencil, Plus, Scale, Search, Trash2, Users, Users2, Wallet } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 import { toast } from "sonner";
 import { AdminShell } from "@/components/admin/AdminShell";
@@ -21,6 +21,7 @@ import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
+  DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import {
@@ -47,6 +48,7 @@ import {
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
+  AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import { FileCheck2 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
@@ -120,6 +122,22 @@ function AssociationsPage() {
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [searchParams.abrir, isConsultant, area]);
+
+  const qc = useQueryClient();
+  const deleteAssociationMutation = useMutation({
+    mutationFn: async (id: string) => {
+      const { error } = await supabase.from("associations").delete().eq("id", id);
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      toast.success("Entidade excluída.");
+      qc.invalidateQueries({ queryKey: ["associations"] });
+      qc.invalidateQueries({ queryKey: ["associations-latest-assessment"] });
+      qc.invalidateQueries({ queryKey: ["associations-with-social"] });
+      qc.invalidateQueries({ queryKey: ["area-forms-by-association"] });
+    },
+    onError: (e: Error) => toast.error("Erro ao excluir", { description: e.message }),
+  });
 
   const { data: associations = [], isLoading } = useQuery({
     queryKey: ["associations"],
@@ -902,6 +920,39 @@ function AssociationsPage() {
                             >
                               <Pencil className="size-4 mr-2" /> Editar
                             </DropdownMenuItem>
+                            {isAdmin && (
+                              <>
+                                <DropdownMenuSeparator />
+                                <AlertDialog>
+                                  <AlertDialogTrigger asChild>
+                                    <DropdownMenuItem
+                                      onSelect={(e) => e.preventDefault()}
+                                      className="text-destructive focus:text-destructive"
+                                    >
+                                      <Trash2 className="size-4 mr-2" /> Excluir
+                                    </DropdownMenuItem>
+                                  </AlertDialogTrigger>
+                                  <AlertDialogContent>
+                                    <AlertDialogHeader>
+                                      <AlertDialogTitle>Excluir entidade?</AlertDialogTitle>
+                                      <AlertDialogDescription>
+                                        Esta ação é irreversível. O cadastro de{" "}
+                                        <strong>{item.nome}</strong> será removido permanentemente.
+                                      </AlertDialogDescription>
+                                    </AlertDialogHeader>
+                                    <AlertDialogFooter>
+                                      <AlertDialogCancel>Cancelar</AlertDialogCancel>
+                                      <AlertDialogAction
+                                        onClick={() => deleteAssociationMutation.mutate(item.id)}
+                                        className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                                      >
+                                        Excluir
+                                      </AlertDialogAction>
+                                    </AlertDialogFooter>
+                                  </AlertDialogContent>
+                                </AlertDialog>
+                              </>
+                            )}
                             {!form && blocked && (
                               <DropdownMenuItem disabled onSelect={(e) => e.preventDefault()}>
                                 <Lock className="size-4 mr-2" /> Aguardando Social
