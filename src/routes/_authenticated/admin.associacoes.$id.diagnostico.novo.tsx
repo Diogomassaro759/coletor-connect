@@ -2471,13 +2471,17 @@ function CompactChoice({
   );
 }
 function Evidence({ name, label }: { name: string; label: string }) {
+  const saved = useContext(FormSavedValuesContext);
+  // A saved record implies the checklist was confirmed at submission time.
+  const defaultChecked = saved ? (name in saved ? !!saved[name] : true) : false;
   return (
     <label className="flex items-start gap-3 text-sm">
-      <Checkbox name={name} required />
+      <Checkbox name={name} required defaultChecked={defaultChecked} />
       <span>{label}</span>
     </label>
   );
 }
+
 
 function LegalSection({
   number,
