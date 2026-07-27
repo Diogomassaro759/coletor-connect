@@ -116,7 +116,6 @@ export function FilledFormsList({ associationId }: { associationId: string }) {
           const formArea = r.area ?? creatorAreas[r.created_by] ?? "social";
           return {
           ...r,
-          consultant_name: r.consultant_name ?? creatorNames[r.created_by] ?? null,
           consultant_name: r.consultant_name ?? creatorNames[r.consultant_id] ?? creatorNames[r.created_by] ?? null,
           formulario: areaLabels[formArea] ?? "Social",
           kind: "assessment" as const,
