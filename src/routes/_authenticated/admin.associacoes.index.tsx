@@ -1,7 +1,7 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
-import { ArrowRight, Building2, ClipboardPlus, Download, Eye, HardHat, Lock, MoreHorizontal, Pencil, Plus, Scale, Search, Trash2, Users, Users2, Wallet } from "lucide-react";
+import { ArrowRight, Building2, ClipboardPlus, Download, Eye, FileText, HardHat, Lock, MoreHorizontal, Pencil, Plus, Scale, Search, Trash2, Users, Users2, Wallet } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 import { toast } from "sonner";
 import { AdminShell } from "@/components/admin/AdminShell";
@@ -860,17 +860,6 @@ function AssociationsPage() {
 
                   <TableCell className="text-right">
                     {(() => {
-                      const form = areaFormByAssoc.get(item.id);
-                      const requiresSocial = areaForForm !== "social";
-                      const blocked = requiresSocial && !socialSet.has(item.id);
-                      // Consultor social is view-only on filled forms.
-                      const canEditForm =
-                        !!form &&
-                        (isAdmin ||
-                          isCoordenador ||
-                          (isConsultant &&
-                            areaForForm !== "social" &&
-                            (!form.ownerId || form.ownerId === currentUserId)));
                       return (
                         <DropdownMenu>
                           <DropdownMenuTrigger asChild>
@@ -881,45 +870,16 @@ function AssociationsPage() {
                           </DropdownMenuTrigger>
                           <DropdownMenuContent align="end">
                             <DropdownMenuItem
-                              disabled={!form}
-                              onSelect={(e) => {
-                                if (!form) {
-                                  e.preventDefault();
-                                  return;
-                                }
+                              onSelect={() => {
                                 navigate({
-                                  to: "/admin/associacoes/$id/diagnostico/novo",
+                                  to: "/admin/associacoes/$id",
                                   params: { id: item.id },
-                                  search: {
-                                    modulo: areaForForm,
-                                    assessmentId: form.id,
-                                    mode: "view",
-                                  } as any,
                                 });
                               }}
                             >
-                              <Eye className="size-4 mr-2" /> Visualizar
+                              <FileText className="size-4 mr-2" /> Formulários
                             </DropdownMenuItem>
-                            <DropdownMenuItem
-                              disabled={!canEditForm}
-                              onSelect={(e) => {
-                                if (!canEditForm || !form) {
-                                  e.preventDefault();
-                                  return;
-                                }
-                                navigate({
-                                  to: "/admin/associacoes/$id/diagnostico/novo",
-                                  params: { id: item.id },
-                                  search: {
-                                    modulo: areaForForm,
-                                    assessmentId: form.id,
-                                    mode: "edit",
-                                  } as any,
-                                });
-                              }}
-                            >
-                              <Pencil className="size-4 mr-2" /> Editar
-                            </DropdownMenuItem>
+
                             {isAdmin && (
                               <>
                                 <DropdownMenuSeparator />
@@ -952,11 +912,6 @@ function AssociationsPage() {
                                   </AlertDialogContent>
                                 </AlertDialog>
                               </>
-                            )}
-                            {!form && blocked && (
-                              <DropdownMenuItem disabled onSelect={(e) => e.preventDefault()}>
-                                <Lock className="size-4 mr-2" /> Aguardando Social
-                              </DropdownMenuItem>
                             )}
                           </DropdownMenuContent>
                         </DropdownMenu>
