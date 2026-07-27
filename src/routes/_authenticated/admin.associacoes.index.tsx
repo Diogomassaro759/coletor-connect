@@ -142,6 +142,35 @@ function AssociationsPage() {
 
   const socialSet = useMemo(() => new Set((socialAssocIds ?? []) as string[]), [socialAssocIds]);
 
+  // Existing forms for the current user's area, so "Editar formulário" can be offered.
+  const areaKey = ((area ?? "social") as string);
+  const { data: areaForms = [] } = useQuery({
+    queryKey: ["area-forms-by-association", areaKey],
+    queryFn: async () => {
+      if (areaKey === "infraestrutura") {
+        const { data, error } = await supabase
+          .from("infrastructure_assessments")
+          .select("id,association_id")
+          .order("created_at", { ascending: false });
+        if (error) throw error;
+        return (data ?? []) as { id: string; association_id: string }[];
+      }
+      const { data, error } = await supabase
+        .from("association_assessments")
+        .select("id,association_id,area")
+        .eq("area", areaKey as any)
+        .order("created_at", { ascending: false });
+      if (error) throw error;
+      return (data ?? []) as { id: string; association_id: string }[];
+    },
+  });
+
+  const areaFormByAssoc = useMemo(() => {
+    const map = new Map<string, string>();
+    for (const f of areaForms as any[]) if (!map.has(f.association_id)) map.set(f.association_id, f.id);
+    return map;
+  }, [areaForms]);
+
   const latestByAssoc = useMemo(() => {
     const map = new Map<string, { status: string | null; data_visita: string | null }>();
     for (const a of latestAssessments as any[]) {
@@ -802,6 +831,7 @@ function AssociationsPage() {
                         const requiresSocial = areaForForm !== "social";
                         const hasSocial = socialSet.has(item.id);
                         const blocked = requiresSocial && !hasSocial;
+                        const existingFormId = areaFormByAssoc.get(item.id);
                         return (
                           <DropdownMenu>
                             <DropdownMenuTrigger asChild>
@@ -831,23 +861,41 @@ function AssociationsPage() {
                                   <Pencil className="size-4 mr-2" /> Editar
                                 </DropdownMenuItem>
                               )}
-                              {areaForForm !== "social" && (
-                                blocked ? (
-                                  <DropdownMenuItem disabled onSelect={(e) => e.preventDefault()}>
-                                    <Lock className="size-4 mr-2" /> Aguardando Social
-                                  </DropdownMenuItem>
-                                ) : (
-                                  <DropdownMenuItem
-                                    onSelect={() =>
-                                      navigate({
-                                        to: "/admin/associacoes/$id/diagnostico/novo",
-                                        params: { id: item.id },
-                                        search: { modulo: areaForForm },
-                                      })
-                                    }
-                                  >
-                                    <ClipboardPlus className="size-4 mr-2" /> Abrir formulário
-                                  </DropdownMenuItem>
+                              {existingFormId ? (
+                                <DropdownMenuItem
+                                  onSelect={() =>
+                                    navigate({
+                                      to: "/admin/associacoes/$id/diagnostico/novo",
+                                      params: { id: item.id },
+                                      search: {
+                                        modulo: areaForForm,
+                                        assessmentId: existingFormId,
+                                        mode: "edit",
+                                      } as any,
+                                    })
+                                  }
+                                >
+                                  <Pencil className="size-4 mr-2" /> Editar formulário
+                                </DropdownMenuItem>
+                              ) : (
+                                areaForForm !== "social" && (
+                                  blocked ? (
+                                    <DropdownMenuItem disabled onSelect={(e) => e.preventDefault()}>
+                                      <Lock className="size-4 mr-2" /> Aguardando Social
+                                    </DropdownMenuItem>
+                                  ) : (
+                                    <DropdownMenuItem
+                                      onSelect={() =>
+                                        navigate({
+                                          to: "/admin/associacoes/$id/diagnostico/novo",
+                                          params: { id: item.id },
+                                          search: { modulo: areaForForm },
+                                        })
+                                      }
+                                    >
+                                      <ClipboardPlus className="size-4 mr-2" /> Abrir formulário
+                                    </DropdownMenuItem>
+                                  )
                                 )
                               )}
                             </DropdownMenuContent>
@@ -888,6 +936,26 @@ function AssociationsPage() {
                               const requiresSocial = areaForForm !== "social";
                               const hasSocial = socialSet.has(item.id);
                               const blocked = requiresSocial && !hasSocial;
+                              const existingFormId = areaFormByAssoc.get(item.id);
+                              if (existingFormId) {
+                                return (
+                                  <DropdownMenuItem
+                                    onSelect={() =>
+                                      navigate({
+                                        to: "/admin/associacoes/$id/diagnostico/novo",
+                                        params: { id: item.id },
+                                        search: {
+                                          modulo: areaForForm,
+                                          assessmentId: existingFormId,
+                                          mode: "edit",
+                                        } as any,
+                                      })
+                                    }
+                                  >
+                                    <Pencil className="size-4 mr-2" /> Editar formulário
+                                  </DropdownMenuItem>
+                                );
+                              }
                               if (blocked) {
                                 return (
                                   <DropdownMenuItem disabled onSelect={(e) => e.preventDefault()}>
