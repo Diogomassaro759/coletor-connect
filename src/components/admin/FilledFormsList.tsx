@@ -8,7 +8,13 @@ export function FilledFormsList({ associationId }: { associationId: string }) {
   const area = ctx?.area as "social" | "juridico" | "contabil" | "infraestrutura" | null;
   const isAdmin = !!ctx?.isAdmin;
   const isConsultant = !!ctx?.isConsultant;
-  const canEdit = isAdmin || !isConsultant;
+  const isCoordenador = !!ctx?.isCoordenador;
+  const canEditForm = (formArea: string | null | undefined) => {
+    if (isAdmin || isCoordenador) return true;
+    if (!isConsultant) return true;
+    if (!area || area === "social") return false;
+    return formArea === area;
+  };
   const areaLabels: Record<string, string> = {
     social: "Social",
     juridico: "Jurídico",
@@ -180,7 +186,7 @@ export function FilledFormsList({ associationId }: { associationId: string }) {
                         >
                           <Button size="sm" variant="outline">Visualizar</Button>
                         </Link>
-                        {canEdit && (
+                        {canEditForm(r.area ?? "social") && (
                           <Link
                             to="/admin/associacoes/$id/diagnostico/novo"
                             params={{ id: associationId }}
@@ -207,7 +213,7 @@ export function FilledFormsList({ associationId }: { associationId: string }) {
                         >
                           <Button size="sm" variant="outline">Visualizar</Button>
                         </Link>
-                        {canEdit && (
+                        {canEditForm("infraestrutura") && (
                           <Link
                             to="/admin/associacoes/$id/diagnostico/novo"
                             params={{ id: associationId }}
@@ -230,7 +236,7 @@ export function FilledFormsList({ associationId }: { associationId: string }) {
                         >
                           <Button size="sm" variant="outline">Visualizar</Button>
                         </Link>
-                        {canEdit && (
+                        {canEditForm("social") && (
                           <Link
                             to="/admin/associacoes/$id/editar"
                             params={{ id: associationId }}
