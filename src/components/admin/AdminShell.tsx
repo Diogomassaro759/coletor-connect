@@ -4,17 +4,15 @@ import {
   LayoutDashboard,
   Building2,
   BarChart3,
-  Bell,
   ClipboardPenLine,
   UserCog,
   UserCircle2,
 } from "lucide-react";
-import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { useQueryClient } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
 import { supabase } from "@/integrations/supabase/client";
 import procateLogo from "@/assets/procate-logo.png";
-import { loadNotifications } from "@/lib/notifications";
+
 
 export function AdminShell({ children }: { children: React.ReactNode }) {
   const navigate = useNavigate();
@@ -30,13 +28,8 @@ export function AdminShell({ children }: { children: React.ReactNode }) {
     infraestrutura: "Infraestrutura",
   };
 
-  const { data: notifications = [] } = useQuery({
-    queryKey: ["notifications", user.id],
-    queryFn: () => loadNotifications({ isAdmin, isConsultant: isViewer, userId: user.id }),
-    enabled: isAdmin || isViewer,
-    refetchInterval: 60_000,
-  });
-  const unreadCount = notifications.filter((n: any) => !n.read).length;
+
+
 
   async function signOut() {
     await qc.cancelQueries();
@@ -110,21 +103,8 @@ export function AdminShell({ children }: { children: React.ReactNode }) {
                 </Link>
               </Button>
             )}
-            {(isAdmin || isViewer) && (
-              <Button variant="ghost" size="sm" title="Notificações" asChild>
-                <Link to="/admin/notificacoes" className="relative">
-                  <Bell className="size-4" />
-                  {unreadCount > 0 && (
-                    <Badge
-                      variant="destructive"
-                      className="absolute -right-1 -top-1 h-4 min-w-4 px-1 text-[10px]"
-                    >
-                      {unreadCount > 9 ? "9+" : unreadCount}
-                    </Badge>
-                  )}
-                </Link>
-              </Button>
-            )}
+
+
 
             <Button variant="ghost" size="sm" title="Meu perfil" asChild>
               <Link to="/admin/perfil">
