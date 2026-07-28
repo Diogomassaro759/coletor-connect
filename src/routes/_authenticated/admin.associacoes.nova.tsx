@@ -38,6 +38,10 @@ function NewAssociationPage() {
     (ctx?.user?.user_metadata?.full_name as string | undefined) ??
     (ctx?.user?.email as string | undefined) ??
     "";
+  const [now] = useState(() => new Date());
+  const pad = (n: number) => String(n).padStart(2, "0");
+  const defaultData = `${now.getFullYear()}-${pad(now.getMonth() + 1)}-${pad(now.getDate())}`;
+  const defaultHora = `${pad(now.getHours())}:${pad(now.getMinutes())}`;
 
   async function submit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -98,10 +102,10 @@ function NewAssociationPage() {
               <Input name="consultor_nome" defaultValue={defaultConsultor} maxLength={200} />
             </Field>
             <Field label="Data da visita">
-              <Input name="data_visita" type="date" />
+              <Input name="data_visita" type="date" defaultValue={defaultData} />
             </Field>
             <Field label="Horário da visita">
-              <Input name="horario_visita" type="time" />
+              <Input name="horario_visita" type="time" defaultValue={defaultHora} />
             </Field>
           </div>
           <div className="grid gap-5 md:grid-cols-2">
