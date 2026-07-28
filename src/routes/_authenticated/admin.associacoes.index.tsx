@@ -215,6 +215,12 @@ function AssociationsPage() {
     return Array.from(set).sort((a, b) => a.localeCompare(b, "pt-BR"));
   }, [associations]);
 
+  const usuarios = useMemo(() => {
+    const set = new Set<string>();
+    for (const a of associations as any[]) if (a.consultor_nome) set.add(a.consultor_nome);
+    return Array.from(set).sort((a, b) => a.localeCompare(b, "pt-BR"));
+  }, [associations]);
+
   const tipoMatches = (item: any, f: string) => {
     if (f === "todas") return true;
     if (f === "cooperativa") return item.tipo === "cooperativa";
@@ -228,12 +234,13 @@ function AssociationsPage() {
     return (associations as any[]).filter((item) => {
       if (!tipoMatches(item, tipoFilter)) return false;
       if (municipioFilter !== "todos" && item.municipio !== municipioFilter) return false;
+      if (usuarioFilter !== "todos" && item.consultor_nome !== usuarioFilter) return false;
       if (!term) return true;
-      return `${item.nome} ${item.municipio} ${item.cnpj ?? ""}`
+      return `${item.nome} ${item.municipio} ${item.cnpj ?? ""} ${item.consultor_nome ?? ""}`
         .toLocaleLowerCase("pt-BR")
         .includes(term);
     });
-  }, [associations, search, tipoFilter, municipioFilter]);
+  }, [associations, search, tipoFilter, municipioFilter, usuarioFilter]);
 
   const entityStats = useMemo(() => {
     const all = associations as any[];
