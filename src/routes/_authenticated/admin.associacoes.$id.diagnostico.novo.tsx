@@ -365,7 +365,8 @@ function NewAssessment() {
     event.preventDefault();
     const values = new FormData(event.currentTarget);
     const nowSave = new Date();
-    const currentTime = `${pad(nowSave.getHours())}:${pad(nowSave.getMinutes())}`;
+    const pad2 = (n: number) => String(n).padStart(2, "0");
+    const currentTime = `${pad2(nowSave.getHours())}:${pad2(nowSave.getMinutes())}`;
     const { data: auth } = await supabase.auth.getUser();
     if (!auth.user) return toast.error("Sua sessão expirou.");
     const submittedChoices = { ...choicesRef.current };
