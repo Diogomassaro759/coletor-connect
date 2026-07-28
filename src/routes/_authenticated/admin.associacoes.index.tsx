@@ -504,6 +504,19 @@ function AssociationsPage() {
             ))}
           </SelectContent>
         </Select>
+        <Select value={usuarioFilter} onValueChange={setUsuarioFilter}>
+          <SelectTrigger className="h-8 w-[220px] rounded-full border-primary/40 text-xs font-bold uppercase tracking-wide text-primary">
+            <SelectValue placeholder="SELECIONE O USUÁRIO" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="todos">Todos os usuários</SelectItem>
+            {usuarios.map((u) => (
+              <SelectItem key={u} value={u}>
+                {u}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
       </div>
 
 
