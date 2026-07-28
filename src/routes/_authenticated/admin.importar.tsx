@@ -32,7 +32,8 @@ import {
 
 export const Route = createFileRoute("/_authenticated/admin/importar")({
   beforeLoad: ({ context }) => {
-    if (!context.isRecenseador) throw redirect({ to: "/admin" });
+    if (!context.isRecenseador && !context.isAdmin && !context.isCoordenadorRecenseador)
+      throw redirect({ to: "/admin" });
   },
   head: () => ({ meta: [{ title: "Importar catadores — RecicladoresBR" }] }),
   component: ImportarCatadoresPage,
