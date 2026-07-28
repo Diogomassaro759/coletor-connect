@@ -105,7 +105,7 @@ function NewAssociationPage() {
               <Input name="data_visita" type="date" defaultValue={defaultData} />
             </Field>
             <Field label="Horário da visita">
-              <Input name="horario_visita" type="time" />
+              <Input name="horario_visita" type="time" defaultValue={defaultHora} />
             </Field>
           </div>
           <div className="grid gap-5 md:grid-cols-2">
