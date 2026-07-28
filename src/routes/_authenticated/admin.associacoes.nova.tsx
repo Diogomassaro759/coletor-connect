@@ -102,7 +102,7 @@ function NewAssociationPage() {
               <Input name="consultor_nome" defaultValue={defaultConsultor} maxLength={200} />
             </Field>
             <Field label="Data da visita">
-              <Input name="data_visita" type="date" />
+              <Input name="data_visita" type="date" defaultValue={defaultData} />
             </Field>
             <Field label="Horário da visita">
               <Input name="horario_visita" type="time" />
