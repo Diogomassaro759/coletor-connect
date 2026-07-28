@@ -105,6 +105,7 @@ function AssociationsPage() {
 
   const [tipoFilter, setTipoFilter] = useState<"todas" | "cooperativa" | "associacao" | "coletivo">("todas");
   const [municipioFilter, setMunicipioFilter] = useState<string>("todos");
+  const [usuarioFilter, setUsuarioFilter] = useState<string>("todos");
   const navigate = useNavigate();
   const listSocialAssociations = useServerFn(listAssociationsWithSocial);
 
