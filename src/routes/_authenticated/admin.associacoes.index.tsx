@@ -105,6 +105,7 @@ function AssociationsPage() {
 
   const [tipoFilter, setTipoFilter] = useState<"todas" | "cooperativa" | "associacao" | "coletivo">("todas");
   const [municipioFilter, setMunicipioFilter] = useState<string>("todos");
+  const [usuarioFilter, setUsuarioFilter] = useState<string>("todos");
   const navigate = useNavigate();
   const listSocialAssociations = useServerFn(listAssociationsWithSocial);
 
@@ -214,6 +215,12 @@ function AssociationsPage() {
     return Array.from(set).sort((a, b) => a.localeCompare(b, "pt-BR"));
   }, [associations]);
 
+  const usuarios = useMemo(() => {
+    const set = new Set<string>();
+    for (const a of associations as any[]) if (a.consultor_nome) set.add(a.consultor_nome);
+    return Array.from(set).sort((a, b) => a.localeCompare(b, "pt-BR"));
+  }, [associations]);
+
   const tipoMatches = (item: any, f: string) => {
     if (f === "todas") return true;
     if (f === "cooperativa") return item.tipo === "cooperativa";
@@ -227,12 +234,13 @@ function AssociationsPage() {
     return (associations as any[]).filter((item) => {
       if (!tipoMatches(item, tipoFilter)) return false;
       if (municipioFilter !== "todos" && item.municipio !== municipioFilter) return false;
+      if (usuarioFilter !== "todos" && item.consultor_nome !== usuarioFilter) return false;
       if (!term) return true;
-      return `${item.nome} ${item.municipio} ${item.cnpj ?? ""}`
+      return `${item.nome} ${item.municipio} ${item.cnpj ?? ""} ${item.consultor_nome ?? ""}`
         .toLocaleLowerCase("pt-BR")
         .includes(term);
     });
-  }, [associations, search, tipoFilter, municipioFilter]);
+  }, [associations, search, tipoFilter, municipioFilter, usuarioFilter]);
 
   const entityStats = useMemo(() => {
     const all = associations as any[];
@@ -500,6 +508,19 @@ function AssociationsPage() {
             {municipios.map((m) => (
               <SelectItem key={m} value={m}>
                 {m}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+        <Select value={usuarioFilter} onValueChange={setUsuarioFilter}>
+          <SelectTrigger className="h-8 w-[220px] rounded-full border-primary/40 text-xs font-bold uppercase tracking-wide text-primary">
+            <SelectValue placeholder="SELECIONE O USUÁRIO" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="todos">Todos os usuários</SelectItem>
+            {usuarios.map((u) => (
+              <SelectItem key={u} value={u}>
+                {u}
               </SelectItem>
             ))}
           </SelectContent>
