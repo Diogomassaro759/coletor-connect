@@ -445,7 +445,7 @@ function AdminDashboard() {
                   </Link>
                 </>
               )}
-              {(isRecenseador || isAdmin) && (
+              {(isRecenseador || isAdmin || isCoordenadorRecenseador) && (
                 <Link to="/admin/novo">
                   <Button>
                     <Plus className="size-4" /> Novo catador
