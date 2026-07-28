@@ -30,13 +30,8 @@ export function AdminShell({ children }: { children: React.ReactNode }) {
     infraestrutura: "Infraestrutura",
   };
 
-  const { data: notifications = [] } = useQuery({
-    queryKey: ["notifications", user.id],
-    queryFn: () => loadNotifications({ isAdmin, isConsultant: isViewer, userId: user.id }),
-    enabled: isAdmin || isViewer,
-    refetchInterval: 60_000,
-  });
-  const unreadCount = notifications.filter((n: any) => !n.read).length;
+
+
 
   async function signOut() {
     await qc.cancelQueries();
