@@ -255,8 +255,6 @@ function NewAssessment() {
 
   const now = new Date();
   const pad = (n: number) => String(n).padStart(2, "0");
-  const defaultDate = `${now.getFullYear()}-${pad(now.getMonth() + 1)}-${pad(now.getDate())}`;
-  const defaultTime = `${pad(now.getHours())}:${pad(now.getMinutes())}`;
   const { data: consultantProfile } = useQuery({
     queryKey: ["consultant-profile-me", user?.id ?? null],
     queryFn: async () => {
