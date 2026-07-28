@@ -17,7 +17,6 @@ import { Route as AuthenticatedAdminIndexRouteImport } from './routes/_authentic
 import { Route as AuthenticatedAdminAssociacoesRouteImport } from './routes/_authenticated/admin.associacoes'
 import { Route as AuthenticatedAdminDiagnosticosRouteImport } from './routes/_authenticated/admin.diagnosticos'
 import { Route as AuthenticatedAdminImportarRouteImport } from './routes/_authenticated/admin.importar'
-import { Route as AuthenticatedAdminNotificacoesRouteImport } from './routes/_authenticated/admin.notificacoes'
 import { Route as AuthenticatedAdminNovoRouteImport } from './routes/_authenticated/admin.novo'
 import { Route as AuthenticatedAdminPerfilRouteImport } from './routes/_authenticated/admin.perfil'
 import { Route as AuthenticatedAdminTrocarSenhaRouteImport } from './routes/_authenticated/admin.trocar-senha'
@@ -75,12 +74,6 @@ const AuthenticatedAdminImportarRoute =
   AuthenticatedAdminImportarRouteImport.update({
     id: '/importar',
     path: '/importar',
-    getParentRoute: () => AuthenticatedAdminRoute,
-  } as any)
-const AuthenticatedAdminNotificacoesRoute =
-  AuthenticatedAdminNotificacoesRouteImport.update({
-    id: '/notificacoes',
-    path: '/notificacoes',
     getParentRoute: () => AuthenticatedAdminRoute,
   } as any)
 const AuthenticatedAdminNovoRoute = AuthenticatedAdminNovoRouteImport.update({
@@ -186,7 +179,6 @@ export interface FileRoutesByFullPath {
   '/admin/associacoes': typeof AuthenticatedAdminAssociacoesRouteWithChildren
   '/admin/diagnosticos': typeof AuthenticatedAdminDiagnosticosRoute
   '/admin/importar': typeof AuthenticatedAdminImportarRoute
-  '/admin/notificacoes': typeof AuthenticatedAdminNotificacoesRoute
   '/admin/novo': typeof AuthenticatedAdminNovoRoute
   '/admin/perfil': typeof AuthenticatedAdminPerfilRoute
   '/admin/trocar-senha': typeof AuthenticatedAdminTrocarSenhaRoute
@@ -210,7 +202,6 @@ export interface FileRoutesByTo {
   '/auth': typeof AuthRoute
   '/admin/diagnosticos': typeof AuthenticatedAdminDiagnosticosRoute
   '/admin/importar': typeof AuthenticatedAdminImportarRoute
-  '/admin/notificacoes': typeof AuthenticatedAdminNotificacoesRoute
   '/admin/novo': typeof AuthenticatedAdminNovoRoute
   '/admin/perfil': typeof AuthenticatedAdminPerfilRoute
   '/admin/trocar-senha': typeof AuthenticatedAdminTrocarSenhaRoute
@@ -238,7 +229,6 @@ export interface FileRoutesById {
   '/_authenticated/admin/associacoes': typeof AuthenticatedAdminAssociacoesRouteWithChildren
   '/_authenticated/admin/diagnosticos': typeof AuthenticatedAdminDiagnosticosRoute
   '/_authenticated/admin/importar': typeof AuthenticatedAdminImportarRoute
-  '/_authenticated/admin/notificacoes': typeof AuthenticatedAdminNotificacoesRoute
   '/_authenticated/admin/novo': typeof AuthenticatedAdminNovoRoute
   '/_authenticated/admin/perfil': typeof AuthenticatedAdminPerfilRoute
   '/_authenticated/admin/trocar-senha': typeof AuthenticatedAdminTrocarSenhaRoute
@@ -266,7 +256,6 @@ export interface FileRouteTypes {
     | '/admin/associacoes'
     | '/admin/diagnosticos'
     | '/admin/importar'
-    | '/admin/notificacoes'
     | '/admin/novo'
     | '/admin/perfil'
     | '/admin/trocar-senha'
@@ -290,7 +279,6 @@ export interface FileRouteTypes {
     | '/auth'
     | '/admin/diagnosticos'
     | '/admin/importar'
-    | '/admin/notificacoes'
     | '/admin/novo'
     | '/admin/perfil'
     | '/admin/trocar-senha'
@@ -317,7 +305,6 @@ export interface FileRouteTypes {
     | '/_authenticated/admin/associacoes'
     | '/_authenticated/admin/diagnosticos'
     | '/_authenticated/admin/importar'
-    | '/_authenticated/admin/notificacoes'
     | '/_authenticated/admin/novo'
     | '/_authenticated/admin/perfil'
     | '/_authenticated/admin/trocar-senha'
@@ -399,13 +386,6 @@ declare module '@tanstack/react-router' {
       path: '/importar'
       fullPath: '/admin/importar'
       preLoaderRoute: typeof AuthenticatedAdminImportarRouteImport
-      parentRoute: typeof AuthenticatedAdminRoute
-    }
-    '/_authenticated/admin/notificacoes': {
-      id: '/_authenticated/admin/notificacoes'
-      path: '/notificacoes'
-      fullPath: '/admin/notificacoes'
-      preLoaderRoute: typeof AuthenticatedAdminNotificacoesRouteImport
       parentRoute: typeof AuthenticatedAdminRoute
     }
     '/_authenticated/admin/novo': {
@@ -563,7 +543,6 @@ interface AuthenticatedAdminRouteChildren {
   AuthenticatedAdminAssociacoesRoute: typeof AuthenticatedAdminAssociacoesRouteWithChildren
   AuthenticatedAdminDiagnosticosRoute: typeof AuthenticatedAdminDiagnosticosRoute
   AuthenticatedAdminImportarRoute: typeof AuthenticatedAdminImportarRoute
-  AuthenticatedAdminNotificacoesRoute: typeof AuthenticatedAdminNotificacoesRoute
   AuthenticatedAdminNovoRoute: typeof AuthenticatedAdminNovoRoute
   AuthenticatedAdminPerfilRoute: typeof AuthenticatedAdminPerfilRoute
   AuthenticatedAdminTrocarSenhaRoute: typeof AuthenticatedAdminTrocarSenhaRoute
@@ -580,7 +559,6 @@ const AuthenticatedAdminRouteChildren: AuthenticatedAdminRouteChildren = {
     AuthenticatedAdminAssociacoesRouteWithChildren,
   AuthenticatedAdminDiagnosticosRoute: AuthenticatedAdminDiagnosticosRoute,
   AuthenticatedAdminImportarRoute: AuthenticatedAdminImportarRoute,
-  AuthenticatedAdminNotificacoesRoute: AuthenticatedAdminNotificacoesRoute,
   AuthenticatedAdminNovoRoute: AuthenticatedAdminNovoRoute,
   AuthenticatedAdminPerfilRoute: AuthenticatedAdminPerfilRoute,
   AuthenticatedAdminTrocarSenhaRoute: AuthenticatedAdminTrocarSenhaRoute,
