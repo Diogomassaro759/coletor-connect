@@ -78,7 +78,7 @@ export function AdminShell({ children }: { children: React.ReactNode }) {
 
           </Link>
           <nav className="flex items-center gap-1">
-            {isAdmin && (
+            {(isAdmin || isCoordenadorRecenseador) && (
               <Button variant="ghost" size="sm" asChild>
                 <Link to="/admin" search={{ view: "catadores" as const }}>
                   <LayoutDashboard className="size-4" />{" "}

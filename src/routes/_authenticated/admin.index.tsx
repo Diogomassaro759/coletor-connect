@@ -445,7 +445,7 @@ function AdminDashboard() {
                   </Link>
                 </>
               )}
-              {(isRecenseador || isAdmin) && (
+              {(isRecenseador || isAdmin || isCoordenadorRecenseador) && (
                 <Link to="/admin/novo">
                   <Button>
                     <Plus className="size-4" /> Novo catador
@@ -539,7 +539,7 @@ function AdminDashboard() {
               <TableRow>
                 <TableCell colSpan={readOnlyCatadores ? 6 : 7} className="text-center py-16">
                   <p className="text-muted-foreground">Nenhum catador encontrado.</p>
-                  {isRecenseador && (
+                  {(isRecenseador || isAdmin || isCoordenadorRecenseador) && (
                     <Link to="/admin/novo" className="inline-block mt-4">
                       <Button size="sm">
                         <Plus className="size-4" /> Novo catador
