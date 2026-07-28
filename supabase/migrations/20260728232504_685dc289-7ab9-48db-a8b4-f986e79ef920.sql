@@ -1,0 +1,2 @@
+ALTER TABLE public.catadores DROP CONSTRAINT catadores_association_id_fkey;
+ALTER TABLE public.catadores ADD CONSTRAINT catadores_association_id_fkey FOREIGN KEY (association_id) REFERENCES public.associations(id) ON DELETE SET NULL;
