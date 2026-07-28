@@ -33,7 +33,7 @@ function NewAssociationPage() {
   const navigate = useNavigate();
   const ctx = Route.useRouteContext() as any;
   const [saving, setSaving] = useState(false);
-  const [tipo, setTipo] = useState("associacao");
+  const [tipo, setTipo] = useState("");
   const defaultConsultor =
     (ctx?.user?.user_metadata?.full_name as string | undefined) ??
     (ctx?.user?.email as string | undefined) ??
@@ -105,9 +105,9 @@ function NewAssociationPage() {
               <Input name="nome" required minLength={2} maxLength={200} />
             </Field>
             <Field label="Tipo">
-              <Select value={tipo} onValueChange={setTipo}>
+              <Select value={tipo} onValueChange={setTipo} required>
                 <SelectTrigger>
-                  <SelectValue />
+                  <SelectValue placeholder="Selecione" />
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="associacao">Associação</SelectItem>
