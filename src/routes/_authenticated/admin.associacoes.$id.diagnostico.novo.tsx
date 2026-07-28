@@ -807,10 +807,10 @@ function NewAssessment() {
               />
             </Field>
             <Field label="Data da visita">
-              <Input name="data_visita" type="date" required defaultValue={defaultDate} />
+              <Input name="data_visita" type="date" required />
             </Field>
             <Field label="Horário da visita">
-              <Input name="horario_visita" type="time" required defaultValue={defaultTime} />
+              <Input name="horario_visita" type="time" required />
             </Field>
             <Field label="Escolha entidade">
               <Select

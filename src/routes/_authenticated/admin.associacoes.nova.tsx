@@ -25,7 +25,7 @@ export const Route = createFileRoute("/_authenticated/admin/associacoes/nova")({
       (context.isConsultant && context.area === "social");
     if (!allowed) throw redirect({ to: "/admin/associacoes" });
   },
-  head: () => ({ meta: [{ title: "Nova associação — PROCATE" }] }),
+  head: () => ({ meta: [{ title: "Nova entidade — PROCATE" }] }),
   component: NewAssociationPage,
 });
 
@@ -84,7 +84,7 @@ function NewAssociationPage() {
           <p className="text-sm font-semibold uppercase tracking-wider text-primary">
             Cadastro institucional
           </p>
-          <h1 className="mt-1 text-3xl font-bold">Nova associação ou cooperativa</h1>
+          <h1 className="mt-1 text-3xl font-bold">Nova entidade</h1>
           <p className="mt-2 text-muted-foreground">
             Esta entidade ficará disponível na lista fechada dos cadastros e diagnósticos.
           </p>
@@ -98,10 +98,10 @@ function NewAssociationPage() {
               <Input name="consultor_nome" defaultValue={defaultConsultor} maxLength={200} />
             </Field>
             <Field label="Data da visita">
-              <Input name="data_visita" type="date" defaultValue={defaultDate} />
+              <Input name="data_visita" type="date" />
             </Field>
             <Field label="Horário da visita">
-              <Input name="horario_visita" type="time" defaultValue={defaultTime} />
+              <Input name="horario_visita" type="time" />
             </Field>
           </div>
           <div className="grid gap-5 md:grid-cols-2">

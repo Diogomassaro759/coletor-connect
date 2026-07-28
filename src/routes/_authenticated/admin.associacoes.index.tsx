@@ -415,7 +415,7 @@ function AssociationsPage() {
                     }}
                     className={`inline-flex w-full items-center justify-center gap-2 rounded-xl px-4 py-2.5 text-sm font-semibold text-white shadow-sm transition-all duration-200 hover:shadow-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 ${m.button}`}
                   >
-                    Abrir formulário <ArrowRight className="size-4 transition-transform group-hover:translate-x-0.5" />
+                    Novo formulário <ArrowRight className="size-4 transition-transform group-hover:translate-x-0.5" />
                   </button>
                 </div>
               </div>
@@ -613,7 +613,7 @@ function AssociationsPage() {
                       }}
                       className={`inline-flex w-full items-center justify-center rounded-lg px-4 py-2.5 text-sm font-semibold text-white shadow-sm transition-all focus:outline-none focus-visible:ring-4 active:scale-[0.98] ${m.button}`}
                     >
-                      Abrir formulário
+                      Novo formulário
                       <ArrowRight className="ml-2 size-4 transition-transform group-hover:translate-x-1" />
                     </button>
                   </div>
@@ -752,7 +752,7 @@ function AssociationsPage() {
                 });
               }}
             >
-              Abrir formulário
+              Novo formulário
             </Button>
           </DialogFooter>
         </DialogContent>
