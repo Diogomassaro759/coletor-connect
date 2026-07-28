@@ -110,21 +110,8 @@ export function AdminShell({ children }: { children: React.ReactNode }) {
                 </Link>
               </Button>
             )}
-            {(isAdmin || isViewer) && (
-              <Button variant="ghost" size="sm" title="Notificações" asChild>
-                <Link to="/admin/notificacoes" className="relative">
-                  <Bell className="size-4" />
-                  {unreadCount > 0 && (
-                    <Badge
-                      variant="destructive"
-                      className="absolute -right-1 -top-1 h-4 min-w-4 px-1 text-[10px]"
-                    >
-                      {unreadCount > 9 ? "9+" : unreadCount}
-                    </Badge>
-                  )}
-                </Link>
-              </Button>
-            )}
+
+
 
             <Button variant="ghost" size="sm" title="Meu perfil" asChild>
               <Link to="/admin/perfil">
