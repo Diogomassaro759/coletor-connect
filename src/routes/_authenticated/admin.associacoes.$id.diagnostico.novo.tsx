@@ -249,6 +249,11 @@ function NewAssessment() {
       : ((existing.assessment as any) ?? {})
     : {};
   void existingSource;
+  const nowForDefaults = new Date();
+  const pad2Default = (n: number) => String(n).padStart(2, "0");
+  const todayDate = `${nowForDefaults.getFullYear()}-${pad2Default(nowForDefaults.getMonth() + 1)}-${pad2Default(nowForDefaults.getDate())}`;
+  const nowTime = `${pad2Default(nowForDefaults.getHours())}:${pad2Default(nowForDefaults.getMinutes())}`;
+
   // A saved record implies both declarations were accepted at submission time.
   const consentDefault = !!existing;
   const veracidadeDefault = !!existing;
