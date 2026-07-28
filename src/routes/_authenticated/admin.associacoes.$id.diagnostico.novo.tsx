@@ -249,6 +249,11 @@ function NewAssessment() {
       : ((existing.assessment as any) ?? {})
     : {};
   void existingSource;
+  const nowForDefaults = new Date();
+  const pad2Default = (n: number) => String(n).padStart(2, "0");
+  const todayDate = `${nowForDefaults.getFullYear()}-${pad2Default(nowForDefaults.getMonth() + 1)}-${pad2Default(nowForDefaults.getDate())}`;
+  const nowTime = `${pad2Default(nowForDefaults.getHours())}:${pad2Default(nowForDefaults.getMinutes())}`;
+
   // A saved record implies both declarations were accepted at submission time.
   const consentDefault = !!existing;
   const veracidadeDefault = !!existing;
@@ -804,11 +809,28 @@ function NewAssessment() {
               />
             </Field>
             <Field label="Data da visita">
-              <Input name="data_visita" type="date" required />
+              <Input
+                name="data_visita"
+                type="date"
+                required
+                defaultValue={(existingSource.data_visita as string) ?? todayDate}
+                key={`data-${(existingSource.data_visita as string) ?? todayDate}`}
+              />
             </Field>
             <Field label="Horário da visita">
-              <Input name="horario_visita" type="time" required />
+              <Input
+                name="horario_visita"
+                type="time"
+                required
+                defaultValue={
+                  existingSource.horario_visita
+                    ? String(existingSource.horario_visita).slice(0, 5)
+                    : nowTime
+                }
+                key={`hora-${existingSource.horario_visita ?? nowTime}`}
+              />
             </Field>
+
             <Field label="Escolha entidade">
               <Select
                 disabled={readOnly}
