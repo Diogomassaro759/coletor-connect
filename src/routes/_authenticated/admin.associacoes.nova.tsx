@@ -38,6 +38,10 @@ function NewAssociationPage() {
     (ctx?.user?.user_metadata?.full_name as string | undefined) ??
     (ctx?.user?.email as string | undefined) ??
     "";
+  const [now] = useState(() => new Date());
+  const pad = (n: number) => String(n).padStart(2, "0");
+  const defaultData = `${now.getFullYear()}-${pad(now.getMonth() + 1)}-${pad(now.getDate())}`;
+  const defaultHora = `${pad(now.getHours())}:${pad(now.getMinutes())}`;
 
   async function submit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
