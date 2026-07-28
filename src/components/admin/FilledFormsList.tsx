@@ -35,7 +35,7 @@ export function FilledFormsList({ associationId }: { associationId: string }) {
   const canEditForm = (formArea: string | null | undefined, ownerId?: string | null) => {
     if (isAdmin || isCoordenador) return true;
     if (!isConsultant) return true;
-    if (!area || area === "social") return false;
+    if (!area) return false;
     return formArea === area && ownerId === currentUserId;
   };
   const areaLabels: Record<string, string> = {
