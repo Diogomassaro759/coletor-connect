@@ -41,6 +41,10 @@ function NewAssociationPage() {
 
   async function submit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
+    if (!tipo) {
+      toast.error("Selecione o tipo da entidade.");
+      return;
+    }
     const form = new FormData(event.currentTarget);
     setSaving(true);
     const { data: association, error } = await supabase
