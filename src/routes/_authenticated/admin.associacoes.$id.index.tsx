@@ -274,7 +274,7 @@ function AssociationDetails() {
                           >
                             {jaExiste ? "Formulário já preenchido" : (
                               <>
-                                Abrir formulário <ArrowRight className="size-4 transition-transform group-hover:translate-x-0.5" />
+                                Novo formulário <ArrowRight className="size-4 transition-transform group-hover:translate-x-0.5" />
                               </>
                             )}
                           </button>
@@ -403,7 +403,7 @@ function DiagnosticModule({
       <h3 className="font-display font-bold">{title}</h3>
       <p className="mt-1 text-xs leading-relaxed text-muted-foreground">{description}</p>
       <p className="mt-4 text-xs font-bold uppercase tracking-wider text-primary">
-        Abrir formulário →
+        Novo formulário →
       </p>
     </Link>
   );

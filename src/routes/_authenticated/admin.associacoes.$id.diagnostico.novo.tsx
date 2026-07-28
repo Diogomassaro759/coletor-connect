@@ -253,10 +253,6 @@ function NewAssessment() {
   const consentDefault = !!existing;
   const veracidadeDefault = !!existing;
 
-  const now = new Date();
-  const pad = (n: number) => String(n).padStart(2, "0");
-  const defaultDate = `${now.getFullYear()}-${pad(now.getMonth() + 1)}-${pad(now.getDate())}`;
-  const defaultTime = `${pad(now.getHours())}:${pad(now.getMinutes())}`;
   const { data: consultantProfile } = useQuery({
     queryKey: ["consultant-profile-me", user?.id ?? null],
     queryFn: async () => {
@@ -369,7 +365,8 @@ function NewAssessment() {
     event.preventDefault();
     const values = new FormData(event.currentTarget);
     const nowSave = new Date();
-    const currentTime = `${pad(nowSave.getHours())}:${pad(nowSave.getMinutes())}`;
+    const pad2 = (n: number) => String(n).padStart(2, "0");
+    const currentTime = `${pad2(nowSave.getHours())}:${pad2(nowSave.getMinutes())}`;
     const { data: auth } = await supabase.auth.getUser();
     if (!auth.user) return toast.error("Sua sessão expirou.");
     const submittedChoices = { ...choicesRef.current };
@@ -807,10 +804,10 @@ function NewAssessment() {
               />
             </Field>
             <Field label="Data da visita">
-              <Input name="data_visita" type="date" required defaultValue={defaultDate} />
+              <Input name="data_visita" type="date" required />
             </Field>
             <Field label="Horário da visita">
-              <Input name="horario_visita" type="time" required defaultValue={defaultTime} />
+              <Input name="horario_visita" type="time" required />
             </Field>
             <Field label="Escolha entidade">
               <Select
