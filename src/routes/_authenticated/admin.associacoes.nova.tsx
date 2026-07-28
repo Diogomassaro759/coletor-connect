@@ -34,8 +34,6 @@ function NewAssociationPage() {
   const ctx = Route.useRouteContext() as any;
   const [saving, setSaving] = useState(false);
   const [tipo, setTipo] = useState("associacao");
-  const now = new Date();
-  const pad = (n: number) => String(n).padStart(2, "0");
   const defaultConsultor =
     (ctx?.user?.user_metadata?.full_name as string | undefined) ??
     (ctx?.user?.email as string | undefined) ??

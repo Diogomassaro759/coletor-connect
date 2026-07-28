@@ -253,8 +253,6 @@ function NewAssessment() {
   const consentDefault = !!existing;
   const veracidadeDefault = !!existing;
 
-  const now = new Date();
-  const pad = (n: number) => String(n).padStart(2, "0");
   const { data: consultantProfile } = useQuery({
     queryKey: ["consultant-profile-me", user?.id ?? null],
     queryFn: async () => {
