@@ -78,7 +78,7 @@ export function AdminShell({ children }: { children: React.ReactNode }) {
 
           </Link>
           <nav className="flex items-center gap-1">
-            {(isAdmin || isCoordenador) && (
+            {isAdmin && (
               <Button variant="ghost" size="sm" asChild>
                 <Link to="/admin" search={{ view: "catadores" as const }}>
                   <LayoutDashboard className="size-4" />{" "}
@@ -94,7 +94,7 @@ export function AdminShell({ children }: { children: React.ReactNode }) {
                 </Link>
               </Button>
             )}
-            {(isAdmin || isCoordenador) && (
+            {isAdmin && (
               <Button variant="ghost" size="sm" asChild>
                 <Link to="/admin/diagnosticos">
                   <BarChart3 className="size-4" />{" "}
@@ -102,7 +102,7 @@ export function AdminShell({ children }: { children: React.ReactNode }) {
                 </Link>
               </Button>
             )}
-            {(isAdmin || isCoordenador) && (
+            {isAdmin && (
               <Button variant="ghost" size="sm" asChild>
                 <Link to="/admin/usuarios">
                   <UserCog className="size-4" />{" "}
