@@ -7,6 +7,8 @@ import {
   ClipboardPenLine,
   UserCog,
   UserCircle2,
+  DatabaseBackup,
+
 } from "lucide-react";
 import { useQueryClient } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
@@ -103,6 +105,15 @@ export function AdminShell({ children }: { children: React.ReactNode }) {
                 </Link>
               </Button>
             )}
+            {isAdmin && (
+              <Button variant="ghost" size="sm" asChild title="Backup e restauração">
+                <Link to="/admin/backup">
+                  <DatabaseBackup className="size-4" />{" "}
+                  <span className="hidden lg:inline">Backup</span>
+                </Link>
+              </Button>
+            )}
+
 
 
 
