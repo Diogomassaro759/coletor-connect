@@ -371,21 +371,6 @@ function AdminDashboard() {
               { icon: Users, label: "Associação", value: assocStats?.associacao ?? 0, tone: "success" },
               { icon: Users, label: "Coletivo", value: assocStats?.coletivo ?? 0, tone: "warning" },
             ]}
-
-            actions={
-              <>
-                <Link to="/admin/associacoes">
-                  <Button variant="outline" size="sm">
-                    <Download className="size-4" /> Exportar planilha
-                  </Button>
-                </Link>
-                <Link to="/admin/associacoes">
-                  <Button variant="outline" size="sm">
-                    <Upload className="size-4" /> Importar planilha
-                  </Button>
-                </Link>
-              </>
-            }
           />
 
           <LauncherCard
@@ -401,20 +386,8 @@ function AdminDashboard() {
               { icon: Users, label: "Associação", value: stats.associacao, tone: "success" },
               { icon: Users, label: "Coletivo", value: stats.coletivo, tone: "warning" },
             ]}
-
-            actions={
-              <>
-                <Button variant="outline" size="sm" onClick={exportXLSX}>
-                  <Download className="size-4" /> Exportar planilha
-                </Button>
-                <Link to="/admin/importar">
-                  <Button variant="outline" size="sm">
-                    <Upload className="size-4" /> Importar planilha
-                  </Button>
-                </Link>
-              </>
-            }
           />
+
         </div>
       )}
 
