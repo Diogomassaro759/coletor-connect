@@ -1,5 +1,5 @@
 import "./lib/error-capture";
-
+import "./lib/env.server"; // Validate required environment variables on startup
 import { consumeLastCapturedError } from "./lib/error-capture";
 import { renderErrorPage } from "./lib/error-page";
 
