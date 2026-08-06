@@ -150,28 +150,3 @@ cd <repository-name>
 npm i
 npm run dev
 ```
-
-### Environment Variables
-
-This project requires Supabase environment variables to run. Create a `.env` file in the project root:
-
-```sh
-cp .env.example .env
-```
-
-Then fill in the values from your Supabase project:
-
-| Variable | Description | Where to Find |
-|----------|-------------|----------------|
-| `SUPABASE_URL` | Your Supabase project URL | Supabase Dashboard → Settings → API → Project URL |
-| `SUPABASE_PUBLISHABLE_KEY` | Public/Anon key (safe for browser) | Supabase Dashboard → Settings → API → Project API keys → anon public |
-| `SUPABASE_PROJECT_ID` | Your Supabase project ID | Supabase Dashboard → Settings → General |
-| `SUPABASE_SERVICE_ROLE_KEY` | Secret key for server-side operations | Supabase Dashboard → Settings → API → Project API keys → service_role secret |
-| `VITE_SUPABASE_URL` | Client-side Supabase URL | Same as `SUPABASE_URL` |
-| `VITE_SUPABASE_PUBLISHABLE_KEY` | Client-side public key | Same as `SUPABASE_PUBLISHABLE_KEY` |
-| `VITE_SUPABASE_PROJECT_ID` | Client-side project ID | Same as `SUPABASE_PROJECT_ID` |
-
-**⚠️ Security Warning:**
-- Never commit the `.env` file to version control (it's in `.gitignore`)
-- The `SUPABASE_SERVICE_ROLE_KEY` bypasses Row Level Security (RLS) — **never expose it to the client** or frontend code
-- Never share these keys publicly
