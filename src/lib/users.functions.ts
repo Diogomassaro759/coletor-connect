@@ -14,7 +14,7 @@ async function assertAdmin(ctx: { supabase: any; userId: string }) {
     .from("user_roles")
     .select("role")
     .eq("user_id", ctx.userId);
-  if (error) throw new Error("Falha ao verificar permissões.");
+  if (error) throw new Error(`Falha ao verificar permissões: ${error.message} (code: ${error.code ?? "?"}, userId: ${ctx.userId})`);
   const isAdmin = !!data?.some((r: { role: string }) => r.role === "admin");
   if (!isAdmin) throw new Error("Apenas administradores podem executar esta ação.");
 }
@@ -24,7 +24,7 @@ async function assertAdminOrCoordenador(ctx: { supabase: any; userId: string }) 
     .from("user_roles")
     .select("role")
     .eq("user_id", ctx.userId);
-  if (error) throw new Error("Falha ao verificar permissões.");
+  if (error) throw new Error(`Falha ao verificar permissões: ${error.message} (code: ${error.code ?? "?"})`);
   const allowed = !!data?.some((r: { role: string }) =>
     ["admin", "coordenador", "coordenador_recenseador"].includes(r.role),
   );
