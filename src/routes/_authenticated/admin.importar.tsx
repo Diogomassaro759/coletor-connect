@@ -33,6 +33,8 @@ import { SocialAssessmentImport } from "@/components/admin/SocialAssessmentImpor
 
 type ImportTab = "catadores" | "entidades";
 
+const NO_ENTITY = "__sem_entidade__";
+
 export const Route = createFileRoute("/_authenticated/admin/importar")({
   beforeLoad: ({ context }) => {
     if (!context.isRecenseador && !context.isAdmin && !context.isCoordenadorRecenseador)
@@ -144,8 +146,9 @@ function ImportarCatadoresPage() {
         return;
       }
       const cpfsSeen = new Set<string>();
+      const resolvedAssociationId = associationId === NO_ENTITY ? null : associationId;
       const validated = parsed.map((raw, i) => {
-        const r = validateRow(raw, i + 2, associationId);
+        const r = validateRow(raw, i + 2, resolvedAssociationId);
         if (r.data) {
           const key = r.data.cpf.replace(/\D/g, "");
           if (cpfsSeen.has(key)) {
@@ -227,13 +230,15 @@ function ImportarCatadoresPage() {
           <div className="bg-card border border-border rounded-xl p-5 shadow-card">
             <h2 className="font-semibold mb-1">2. Entidade</h2>
             <p className="text-sm text-muted-foreground mb-3">
-              Todos os catadores serão vinculados a esta associação.
+              Todos os catadores serão vinculados a esta associação, ou importados sem entidade
+              para vincular depois.
             </p>
             <Select value={associationId} onValueChange={setAssociationId}>
               <SelectTrigger>
                 <SelectValue placeholder="Selecione..." />
               </SelectTrigger>
               <SelectContent>
+                <SelectItem value={NO_ENTITY}>Sem entidade (definir depois)</SelectItem>
                 {(associations ?? []).map((a) => (
                   <SelectItem key={a.id} value={a.id}>
                     {a.nome}
