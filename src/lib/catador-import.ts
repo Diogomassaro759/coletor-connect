@@ -41,7 +41,7 @@ export type CatadorImportPayload = {
   possui_carroca: boolean;
   tipo_carroca: string | null;
   status: "pendente" | "ativo" | "inativo";
-  association_id: string;
+  association_id: string | null;
 };
 
 export const IMPORT_HEADERS = [
@@ -115,7 +115,7 @@ function caseInsensitiveMatch(value: string, options: readonly string[]): string
 export function validateRow(
   raw: Record<string, unknown>,
   rowNumber: number,
-  associationId: string,
+  associationId: string | null,
 ): ImportRow {
   const errors: string[] = [];
   const get = (k: string) => raw[k] ?? raw[k.toLowerCase()] ?? raw[k.toUpperCase()];
