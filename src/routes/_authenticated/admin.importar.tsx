@@ -29,6 +29,7 @@ import {
   validateRow,
   type ImportRow,
 } from "@/lib/catador-import";
+import { SocialAssessmentImport } from "@/components/admin/SocialAssessmentImport";
 
 export const Route = createFileRoute("/_authenticated/admin/importar")({
   beforeLoad: ({ context }) => {
@@ -36,8 +37,53 @@ export const Route = createFileRoute("/_authenticated/admin/importar")({
       throw redirect({ to: "/admin" });
   },
   head: () => ({ meta: [{ title: "Importar catadores — RecicladoresBR" }] }),
-  component: ImportarCatadoresPage,
+  component: ImportarPage,
 });
+
+function ImportarPage() {
+  const { isAdmin } = Route.useRouteContext() as any;
+  const [tab, setTab] = useState<"catadores" | "diagnostico">("catadores");
+
+  return (
+    <AdminShell>
+      <BackButton label="Voltar à lista" />
+      {isAdmin && (
+        <div className="mb-6 inline-flex rounded-lg border border-border p-1 bg-muted/40">
+          <button
+            type="button"
+            onClick={() => setTab("catadores")}
+            className={`px-4 py-1.5 text-sm rounded-md transition-colors ${tab === "catadores" ? "bg-card shadow-sm font-medium" : "text-muted-foreground"}`}
+          >
+            Catadores
+          </button>
+          <button
+            type="button"
+            onClick={() => setTab("diagnostico")}
+            className={`px-4 py-1.5 text-sm rounded-md transition-colors ${tab === "diagnostico" ? "bg-card shadow-sm font-medium" : "text-muted-foreground"}`}
+          >
+            Diagnóstico Social
+          </button>
+        </div>
+      )}
+      {tab === "catadores" || !isAdmin ? <ImportarCatadoresPage /> : <ImportarDiagnosticoSocialPage />}
+    </AdminShell>
+  );
+}
+
+function ImportarDiagnosticoSocialPage() {
+  return (
+    <div className="mb-8">
+      <div className="mb-6">
+        <h1 className="text-3xl font-bold tracking-tight">Importação de diagnósticos sociais</h1>
+        <p className="text-muted-foreground mt-1">
+          Envie a planilha do Formulário de Campo (Google Forms). Associações novas são criadas
+          automaticamente.
+        </p>
+      </div>
+      <SocialAssessmentImport />
+    </div>
+  );
+}
 
 function ImportarCatadoresPage() {
   const qc = useQueryClient();
@@ -149,8 +195,7 @@ function ImportarCatadoresPage() {
   }
 
   return (
-    <AdminShell>
-      <BackButton label="Voltar à lista" />
+    <>
       <div className="mb-8">
         <h1 className="text-3xl font-bold tracking-tight">Importação em massa de catadores</h1>
         <p className="text-muted-foreground mt-1">
@@ -331,7 +376,7 @@ function ImportarCatadoresPage() {
           )}
         </div>
       </div>
-    </AdminShell>
+    </>
   );
 }
 
