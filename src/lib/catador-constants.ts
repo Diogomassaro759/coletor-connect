@@ -92,32 +92,3 @@ export function isValidCPF(cpf: string) {
   if (d2 === 10) d2 = 0;
   return d2 === parseInt(c[10]);
 }
-
-export function maskCNPJ(v: string) {
-  return v
-    .replace(/\D/g, "")
-    .slice(0, 14)
-    .replace(/(\d{2})(\d)/, "$1.$2")
-    .replace(/(\d{3})(\d)/, "$1.$2")
-    .replace(/(\d{3})(\d)/, "$1/$2")
-    .replace(/(\d{4})(\d{1,2})$/, "$1-$2");
-}
-
-export function isValidCNPJ(cnpj: string) {
-  const c = cnpj.replace(/\D/g, "");
-  if (c.length !== 14 || /^(\d)\1+$/.test(c)) return false;
-  const calcDigit = (base: string) => {
-    const weights =
-      base.length === 12
-        ? [5, 4, 3, 2, 9, 8, 7, 6, 5, 4, 3, 2]
-        : [6, 5, 4, 3, 2, 9, 8, 7, 6, 5, 4, 3, 2];
-    let sum = 0;
-    for (let i = 0; i < base.length; i++) sum += parseInt(base[i]) * weights[i];
-    const r = sum % 11;
-    return r < 2 ? 0 : 11 - r;
-  };
-  const d1 = calcDigit(c.slice(0, 12));
-  if (d1 !== parseInt(c[12])) return false;
-  const d2 = calcDigit(c.slice(0, 13));
-  return d2 === parseInt(c[13]);
-}
