@@ -1,7 +1,7 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
-import { ArrowRight, Building2, ClipboardPlus, Download, Eye, FileText, HardHat, Lock, MoreHorizontal, Pencil, Plus, Scale, Search, Trash2, Users, Users2, Wallet } from "lucide-react";
+import { ArrowRight, Building2, ClipboardPlus, Download, Eye, FileText, HardHat, Lock, MoreHorizontal, Pencil, Plus, Scale, Search, Trash2, Upload, Users, Users2, Wallet } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 import { toast } from "sonner";
 import { AdminShell } from "@/components/admin/AdminShell";
@@ -437,6 +437,11 @@ function AssociationsPage() {
               <Button variant="outline" size="lg" onClick={exportAssociations}>
                 <Download className="size-4" /> Exportar planilha
               </Button>
+              <Link to="/admin/importar" search={{ tab: "entidades" as const }}>
+                <Button variant="outline" size="lg">
+                  <Upload className="size-4" /> Importar planilha
+                </Button>
+              </Link>
               <Link to="/admin/associacoes/nova">
                 <Button size="lg">
                   <Plus className="size-4" /> Nova entidade
