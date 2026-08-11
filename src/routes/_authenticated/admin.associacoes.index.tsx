@@ -598,10 +598,22 @@ function AssociationsPage() {
                   className="group relative flex flex-col overflow-hidden rounded-2xl border border-border bg-card p-6 shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-xl"
                 >
                   <span className={`absolute inset-x-0 top-0 h-1 ${m.accent}`} aria-hidden />
-                  <div
-                    className={`mb-4 flex size-12 items-center justify-center rounded-xl transition-colors ${m.iconBg} ${m.iconText} ${m.iconHover}`}
-                  >
-                    <Icon className="size-6" />
+                  <div className="mb-4 flex items-center justify-between">
+                    <div
+                      className={`flex size-12 items-center justify-center rounded-xl transition-colors ${m.iconBg} ${m.iconText} ${m.iconHover}`}
+                    >
+                      <Icon className="size-6" />
+                    </div>
+                    {isAdmin && (
+                      <Link
+                        to="/admin/importar"
+                        search={{ tab: (m.key === "social" ? "entidades" : m.key) as any }}
+                        onClick={(e) => e.stopPropagation()}
+                        className="inline-flex items-center gap-1 rounded-full border border-border bg-card px-2.5 py-1 text-xs font-medium text-muted-foreground hover:text-foreground hover:border-primary/40 transition-colors"
+                      >
+                        <Upload className="size-3" /> Importar planilha
+                      </Link>
+                    )}
                   </div>
                   <h3 className="mb-2 text-lg font-bold text-foreground">{m.titulo}</h3>
                   <p className="mb-8 text-sm leading-relaxed text-muted-foreground">{m.descricao}</p>
