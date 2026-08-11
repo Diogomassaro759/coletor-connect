@@ -434,10 +434,13 @@ function NewAssessment() {
       return;
     }
 
-    if (!values.has("consentimento_dados") || !values.has("declaracao_veracidade")) {
+    const assessmentArea = activeModule as "social" | "juridico" | "contabil";
+    if (
+      assessmentArea !== "social" &&
+      (!values.has("consentimento_dados") || !values.has("declaracao_veracidade"))
+    ) {
       return toast.error("Confirme o consentimento e a veracidade das informações.");
     }
-    const assessmentArea = activeModule as "social" | "juridico" | "contabil";
     if (!isEditing) {
       const { data: existingRec } = await supabase
         .from("association_assessments")
@@ -918,22 +921,6 @@ function NewAssessment() {
                     entityId={id}
                     onEntityChange={onEntityChange}
                   />
-                  <div className="space-y-4 rounded-xl border border-border bg-card p-5">
-                    <label className="flex items-start gap-3 text-sm">
-                      <Checkbox name="consentimento_dados" required defaultChecked={consentDefault} />
-                      <span>
-                        Autorizo o tratamento dos dados coletados para as finalidades do diagnóstico
-                        e acompanhamento institucional.
-                      </span>
-                    </label>
-                    <label className="flex items-start gap-3 text-sm">
-                      <Checkbox name="declaracao_veracidade" required defaultChecked={veracidadeDefault} />
-                      <span>
-                        Declaro que as informações prestadas são verdadeiras e correspondem à
-                        realidade observada na visita.
-                      </span>
-                    </label>
-                  </div>
                 </div>
               )}
               <fieldset disabled className="hidden">
