@@ -1,4 +1,5 @@
 import { createFileRoute, Link, redirect } from "@tanstack/react-router";
+import { useServerFn } from "@tanstack/react-start";
 import { BackButton } from "@/components/ui/back-button";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useState, useMemo, useRef } from "react";
@@ -30,10 +31,28 @@ import {
   type ImportRow,
 } from "@/lib/catador-import";
 import { SocialAssessmentImport } from "@/components/admin/SocialAssessmentImport";
+import { AreaAssessmentImport } from "@/components/admin/AreaAssessmentImport";
+import { buildJuridicoTemplateXLSX, parseJuridicoRow } from "@/lib/juridico-assessment-import";
+import { importJuridicoAssessments } from "@/lib/juridico-assessment-import.functions";
+import { buildContabilTemplateXLSX, parseContabilRow } from "@/lib/contabil-assessment-import";
+import { importContabilAssessments } from "@/lib/contabil-assessment-import.functions";
+import {
+  buildInfraestruturaTemplateXLSX,
+  parseInfraestruturaRow,
+} from "@/lib/infraestrutura-assessment-import";
+import { importInfraestruturaAssessments } from "@/lib/infraestrutura-assessment-import.functions";
 
-type ImportTab = "catadores" | "entidades";
+type ImportTab = "catadores" | "entidades" | "juridico" | "contabil" | "infraestrutura";
 
 const NO_ENTITY = "__sem_entidade__";
+
+const AREA_TABS: { key: ImportTab; label: string }[] = [
+  { key: "catadores", label: "Catadores" },
+  { key: "entidades", label: "Entidades" },
+  { key: "juridico", label: "Jurídico" },
+  { key: "contabil", label: "Contábil" },
+  { key: "infraestrutura", label: "Infraestrutura" },
+];
 
 export const Route = createFileRoute("/_authenticated/admin/importar")({
   beforeLoad: ({ context }) => {
@@ -41,7 +60,9 @@ export const Route = createFileRoute("/_authenticated/admin/importar")({
       throw redirect({ to: "/admin" });
   },
   validateSearch: (s: Record<string, unknown>) => ({
-    tab: s.tab === "entidades" ? ("entidades" as const) : undefined,
+    tab: AREA_TABS.some((t) => t.key === s.tab && t.key !== "catadores")
+      ? (s.tab as ImportTab)
+      : undefined,
   }),
   head: () => ({ meta: [{ title: "Importar catadores — RecicladoresBR" }] }),
   component: ImportarPage,
@@ -56,25 +77,96 @@ function ImportarPage() {
     <AdminShell>
       <BackButton label="Voltar à lista" />
       {isAdmin && (
-        <div className="mb-6 inline-flex rounded-lg border border-border p-1 bg-muted/40">
-          <button
-            type="button"
-            onClick={() => setTab("catadores")}
-            className={`px-4 py-1.5 text-sm rounded-md transition-colors ${tab === "catadores" ? "bg-card shadow-sm font-medium" : "text-muted-foreground"}`}
-          >
-            Catadores
-          </button>
-          <button
-            type="button"
-            onClick={() => setTab("entidades")}
-            className={`px-4 py-1.5 text-sm rounded-md transition-colors ${tab === "entidades" ? "bg-card shadow-sm font-medium" : "text-muted-foreground"}`}
-          >
-            Entidades
-          </button>
+        <div className="mb-6 inline-flex flex-wrap rounded-lg border border-border p-1 bg-muted/40">
+          {AREA_TABS.map((t) => (
+            <button
+              key={t.key}
+              type="button"
+              onClick={() => setTab(t.key)}
+              className={`px-4 py-1.5 text-sm rounded-md transition-colors ${tab === t.key ? "bg-card shadow-sm font-medium" : "text-muted-foreground"}`}
+            >
+              {t.label}
+            </button>
+          ))}
         </div>
       )}
-      {tab === "catadores" || !isAdmin ? <ImportarCatadoresPage /> : <ImportarEntidadesPage />}
+      {!isAdmin ? (
+        <ImportarCatadoresPage />
+      ) : tab === "catadores" ? (
+        <ImportarCatadoresPage />
+      ) : tab === "entidades" ? (
+        <ImportarEntidadesPage />
+      ) : (
+        <ImportarAreaDiagnosticoPage area={tab} />
+      )}
     </AdminShell>
+  );
+}
+
+function ImportarAreaDiagnosticoPage({ area }: { area: "juridico" | "contabil" | "infraestrutura" }) {
+  const doImportJuridico = useServerFn(importJuridicoAssessments);
+  const doImportContabil = useServerFn(importContabilAssessments);
+  const doImportInfraestrutura = useServerFn(importInfraestruturaAssessments);
+
+  if (area === "juridico") {
+    return (
+      <div className="mb-8">
+        <div className="mb-6">
+          <h1 className="text-3xl font-bold tracking-tight">Importação de diagnósticos jurídicos</h1>
+          <p className="text-muted-foreground mt-1">
+            A entidade precisa já estar cadastrada — o importador só preenche o formulário jurídico dela.
+          </p>
+        </div>
+        <AreaAssessmentImport
+          description="CSV ou XLSX, até 5 MB."
+          templateFileName="modelo-importacao-juridico.xlsx"
+          buildTemplate={buildJuridicoTemplateXLSX}
+          parseRow={parseJuridicoRow}
+          importFn={(rows) => doImportJuridico({ data: { rows } })}
+          createdLabel="diagnósticos jurídicos"
+        />
+      </div>
+    );
+  }
+
+  if (area === "contabil") {
+    return (
+      <div className="mb-8">
+        <div className="mb-6">
+          <h1 className="text-3xl font-bold tracking-tight">Importação de diagnósticos contábeis</h1>
+          <p className="text-muted-foreground mt-1">
+            A entidade precisa já estar cadastrada — o importador só preenche o formulário contábil dela.
+          </p>
+        </div>
+        <AreaAssessmentImport
+          description="CSV ou XLSX, até 5 MB."
+          templateFileName="modelo-importacao-contabil.xlsx"
+          buildTemplate={buildContabilTemplateXLSX}
+          parseRow={parseContabilRow}
+          importFn={(rows) => doImportContabil({ data: { rows } })}
+          createdLabel="diagnósticos contábeis"
+        />
+      </div>
+    );
+  }
+
+  return (
+    <div className="mb-8">
+      <div className="mb-6">
+        <h1 className="text-3xl font-bold tracking-tight">Importação de diagnósticos de infraestrutura</h1>
+        <p className="text-muted-foreground mt-1">
+          A entidade precisa já estar cadastrada — o importador só preenche o formulário de infraestrutura dela.
+        </p>
+      </div>
+      <AreaAssessmentImport
+        description="CSV ou XLSX, até 5 MB."
+        templateFileName="modelo-importacao-infraestrutura.xlsx"
+        buildTemplate={buildInfraestruturaTemplateXLSX}
+        parseRow={parseInfraestruturaRow}
+        importFn={(rows) => doImportInfraestrutura({ data: { rows } })}
+        createdLabel="diagnósticos de infraestrutura"
+      />
+    </div>
   );
 }
 
