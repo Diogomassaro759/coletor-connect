@@ -150,7 +150,14 @@ const schema = z.object({
   ctps: z.string().trim().max(30).optional().or(z.literal("")),
   nis: z.string().trim().max(30).optional().or(z.literal("")),
   renda_media_mensal: z.preprocess(
-    (v) => (v === "" || v === null || v === undefined ? undefined : v),
+    (v) => {
+      if (v === "" || v === null || v === undefined) return undefined;
+      if (typeof v === "number") return v;
+      // Accepts pt-BR formatting (ex.: "1.500,00" or "1500,5"), not just plain decimals.
+      const s = String(v).trim().replace(/[R$\s]/g, "").replace(/\./g, "").replace(",", ".");
+      const n = parseFloat(s);
+      return Number.isNaN(n) ? v : n;
+    },
     z.coerce.number().min(0, "Valor inválido").optional(),
   ),
   contribui_inss: z.boolean().default(false),
@@ -755,11 +762,10 @@ export function CatadorForm({
           />
           <Item n={13} label="Qual a renda média mensal?" error={e.renda_media_mensal?.message}>
             <Input
-              type="number"
-              step="0.01"
-              min="0"
+              type="text"
+              inputMode="decimal"
               {...form.register("renda_media_mensal")}
-              placeholder="R$"
+              placeholder="Ex: 1.500,00"
               disabled={naoTem.renda}
             />
             <NaoInformar
