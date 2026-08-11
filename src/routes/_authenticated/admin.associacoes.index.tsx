@@ -607,7 +607,7 @@ function AssociationsPage() {
                     {isAdmin && (
                       <Link
                         to="/admin/importar"
-                        search={{ tab: (m.key === "social" ? "entidades" : m.key) as any }}
+                        search={{ tab: (m.key === "social" ? "diagnostico" : m.key) as any }}
                         onClick={(e) => e.stopPropagation()}
                         className="inline-flex items-center gap-1 rounded-full border border-border bg-card px-2.5 py-1 text-xs font-medium text-muted-foreground hover:text-foreground hover:border-primary/40 transition-colors"
                       >
