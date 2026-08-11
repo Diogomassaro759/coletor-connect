@@ -621,10 +621,6 @@ function AssociationsPage() {
                     <button
                       type="button"
                       onClick={() => {
-                        if (m.key === "social") {
-                          navigate({ to: "/admin/associacoes/nova" });
-                          return;
-                        }
                         setSelectedEntity("");
                         setPendingModulo(m.key);
                       }}
